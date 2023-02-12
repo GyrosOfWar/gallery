@@ -21,7 +21,7 @@ flyway:
   datasources:
     default:
       enabled: true
-      locations: classpath:db/migrations
+      locations: classpath:db/migration
 netty:
   default:
     allocator:
