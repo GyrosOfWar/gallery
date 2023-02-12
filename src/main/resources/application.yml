@@ -1,0 +1,27 @@
+micronaut:
+  application:
+    name: gallery
+  security:
+    authentication: bearer
+    token:
+      jwt:
+        signatures:
+          secret:
+            generator:
+              secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/gallery
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    db-type: postgres
+    dialect: POSTGRES
+flyway:
+  datasources:
+    default:
+      enabled: true
+netty:
+  default:
+    allocator:
+      max-order: 3
