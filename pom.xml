@@ -291,6 +291,15 @@
           </generator>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>com.hubspot.maven.plugins</groupId>
+        <artifactId>prettier-maven-plugin</artifactId>
+        <version>0.18</version>
+        <configuration>
+          <prettierJavaVersion>2.0.0</prettierJavaVersion>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

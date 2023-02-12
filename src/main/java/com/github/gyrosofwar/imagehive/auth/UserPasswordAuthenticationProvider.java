@@ -10,9 +10,14 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
 @Singleton
-public class UserPasswordAuthenticationProvider implements AuthenticationProvider {
-    @Override
-    public Publisher<AuthenticationResponse> authenticate(@Nullable HttpRequest<?> httpRequest, AuthenticationRequest<?, ?> authenticationRequest) {
-        return null;
-    }
+public class UserPasswordAuthenticationProvider
+  implements AuthenticationProvider {
+
+  @Override
+  public Publisher<AuthenticationResponse> authenticate(
+    @Nullable HttpRequest<?> httpRequest,
+    AuthenticationRequest<?, ?> authenticationRequest
+  ) {
+    return null;
+  }
 }
