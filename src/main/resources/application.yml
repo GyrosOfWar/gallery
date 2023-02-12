@@ -11,9 +11,10 @@ micronaut:
               secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
 datasources:
   default:
-    url: jdbc:postgresql://localhost:5432/gallery
-    username: ${POSTGRES_USERNAME:postgres}
-    password: ${POSTGRES_PASSWORD:}
+    # e.g. jdbc:postgresql://localhost:5432/imagehive
+    url: ${IMAGEHIVE_PG_JDBC_URL}
+    username: ${IMAGEHIVE_PG_USER:postgres}
+    password: ${IMAGEHIVE_PG_PASSWORD:}
     driver-class-name: org.postgresql.Driver
     db-type: postgres
     dialect: POSTGRES
