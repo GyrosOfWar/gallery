@@ -15,5 +15,22 @@ CREATE TABLE image
     height          INT              NOT NULL,
     width           INT              NOT NULL,
     geo_coordinates POINT,
-    metadata        JSONB            NOT NULL
+    metadata        JSONB            NOT NULL,
+    tags            VARCHAR[]        NOT NULL
+);
+
+CREATE TABLE album
+(
+    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    "name"     VARCHAR     NOT NULL,
+    created_on TIMESTAMPTZ NOT NULL,
+    owner_id   BIGINT REFERENCES "user" (id),
+    tags       VARCHAR[]   NOT NULL
+);
+
+CREATE TABLE album_image
+(
+    album_id BIGINT REFERENCES album (id) NOT NULL,
+    image_id UUID REFERENCES image (id)   NOT NULL,
+    UNIQUE (album_id, image_id)
 );
