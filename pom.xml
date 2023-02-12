@@ -20,6 +20,7 @@
     <micronaut.version>3.8.4</micronaut.version>
     <micronaut.data.version>3.9.6</micronaut.data.version>
     <micronaut.runtime>netty</micronaut.runtime>
+    <jooq.version>3.15.11</jooq.version>
     <jib.docker.image>${project.artifactId}</jib.docker.image>
     <jib.docker.tag>${project.version}</jib.docker.tag>
     <exec.mainClass>com.github.gyrosofwar.imagehive.Application</exec.mainClass>
@@ -77,6 +78,11 @@
     <dependency>
       <groupId>io.micronaut.flyway</groupId>
       <artifactId>micronaut-flyway</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.micronaut.reactor</groupId>
+      <artifactId>micronaut-reactor</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -226,6 +232,7 @@
       <plugin>
         <groupId>org.jooq</groupId>
         <artifactId>jooq-codegen-maven</artifactId>
+        <version>${jooq.version}</version>
 
         <executions>
           <execution>
@@ -240,7 +247,7 @@
         <configuration>
           <jdbc>
             <driver>org.postgresql.Driver</driver>
-            <url>jdbc:postgresql://localhost:5432/gallery</url>
+            <url>jdbc:postgresql://localhost:5432/imagehive</url>
             <user>${env.POSTGRES_USER}</user>
             <password>${env.POSTGRES_PASSWORD}</password>
           </jdbc>

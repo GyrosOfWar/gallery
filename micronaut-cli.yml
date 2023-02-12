@@ -3,4 +3,4 @@ defaultPackage: com.github.gyrosofwar.imagehive
 testFramework: junit
 sourceLanguage: java
 buildTool: maven
-features: [annotation-api, app-name, assertj, data, data-jdbc, flyway, github-workflow-ci, github-workflow-docker-registry, graalvm, hibernate-validator, http-client, java, java-application, jdbc-hikari, jooq, junit, logback, maven, netty-server, postgres, readme, security, security-annotations, security-jwt, serialization-jackson, shade, testcontainers, yaml]
+features: [annotation-api, app-name, assertj, data, data-jdbc, flyway, github-workflow-ci, github-workflow-docker-registry, graalvm, hibernate-validator, http-client, java, java-application, jdbc-hikari, jooq, junit, logback, maven, netty-server, postgres, reactor, readme, security, security-annotations, security-jwt, serialization-jackson, shade, testcontainers, yaml]
