@@ -10,8 +10,7 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
 @Singleton
-public class UserPasswordAuthenticationProvider
-  implements AuthenticationProvider {
+public class UserPasswordAuthenticationProvider implements AuthenticationProvider {
 
   @Override
   public Publisher<AuthenticationResponse> authenticate(

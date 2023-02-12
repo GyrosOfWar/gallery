@@ -276,6 +276,7 @@
               <name>org.jooq.meta.postgres.PostgresDatabase</name>
               <includes>.*</includes>
               <excludes>flyway_schema_history</excludes>
+              <inputSchema>public</inputSchema>
             </database>
             <generate>
               <pojos>true</pojos>
@@ -298,6 +299,7 @@
         <version>0.18</version>
         <configuration>
           <prettierJavaVersion>2.0.0</prettierJavaVersion>
+          <printWidth>100</printWidth>
         </configuration>
       </plugin>
     </plugins>
