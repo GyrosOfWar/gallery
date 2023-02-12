@@ -230,6 +230,22 @@
       </plugin>
 
       <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <version>8.5.13</version>
+
+        <configuration>
+          <!--suppress UnresolvedMavenProperty -->
+          <user>${env.IMAGEHIVE_PG_USER}</user>
+          <!--suppress UnresolvedMavenProperty -->
+          <password>${env.IMAGEHIVE_PG_PASSWORD}</password>
+          <driver>org.postgresql.Driver</driver>
+          <!--suppress UnresolvedMavenProperty -->
+          <url>${env.IMAGEHIVE_PG_JDBC_URL}</url>
+        </configuration>
+      </plugin>
+
+      <plugin>
         <groupId>org.jooq</groupId>
         <artifactId>jooq-codegen-maven</artifactId>
         <version>${jooq.version}</version>
@@ -247,9 +263,12 @@
         <configuration>
           <jdbc>
             <driver>org.postgresql.Driver</driver>
-            <url>jdbc:postgresql://localhost:5432/imagehive</url>
-            <user>${env.POSTGRES_USER}</user>
-            <password>${env.POSTGRES_PASSWORD}</password>
+            <!--suppress UnresolvedMavenProperty -->
+            <url>${env.IMAGEHIVE_PG_JDBC_URL}</url>
+            <!--suppress UnresolvedMavenProperty -->
+            <user>${env.IMAGEHIVE_PG_USER}</user>
+            <!--suppress UnresolvedMavenProperty -->
+            <password>${env.IMAGEHIVE_PG_PASSWORD}</password>
           </jdbc>
 
           <generator>
