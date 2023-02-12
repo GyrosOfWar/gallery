@@ -22,7 +22,7 @@
     <micronaut.runtime>netty</micronaut.runtime>
     <jib.docker.image>${project.artifactId}</jib.docker.image>
     <jib.docker.tag>${project.version}</jib.docker.tag>
-    <exec.mainClass>com.github.gyrosofwar.imagehive.Application</exec.mainClass>
+    <exec.mainClass>com.github.gyrosofwar.imagehive.ImageHiveApplication</exec.mainClass>
   </properties>
 
   <repositories>
@@ -224,8 +224,22 @@
       </plugin>
 
       <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <version>8.5.13</version>
+
+        <configuration>
+          <user>${env.POSTGRES_USER}</user>
+          <password>${env.POSTGRES_PASSWORD}</password>
+          <driver>org.postgresql.Driver</driver>
+          <url>jdbc:postgresql://localhost:5432/gallery</url>
+        </configuration>
+      </plugin>
+
+      <plugin>
         <groupId>org.jooq</groupId>
         <artifactId>jooq-codegen-maven</artifactId>
+        <version>3.15.11</version>
 
         <executions>
           <execution>
@@ -250,6 +264,7 @@
               <name>org.jooq.meta.postgres.PostgresDatabase</name>
               <includes>.*</includes>
               <excludes>flyway_schema_history</excludes>
+              <inputSchema>public</inputSchema>
             </database>
             <generate>
               <pojos>true</pojos>
