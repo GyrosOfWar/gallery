@@ -1,6 +1,6 @@
 micronaut:
   application:
-    name: gallery
+    name: imagehive
   security:
     authentication: bearer
     token:
@@ -21,6 +21,7 @@ flyway:
   datasources:
     default:
       enabled: true
+      locations: classpath:db/migrations
 netty:
   default:
     allocator:

@@ -1,4 +1,4 @@
-package at.amsrv.gallery;
+package com.github.gyrosofwar.imagehive;
 
 import io.micronaut.runtime.EmbeddedApplication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import jakarta.inject.Inject;
 
 @MicronautTest
-class GalleryTest {
+class ImageHiveTest {
 
     @Inject
     EmbeddedApplication<?> application;

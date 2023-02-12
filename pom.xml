@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>at.amsrv</groupId>
-  <artifactId>gallery</artifactId>
+  <groupId>com.github.gyrosofwar.imagehive</groupId>
+  <artifactId>imagehive</artifactId>
   <version>0.1</version>
   <packaging>${packaging}</packaging>
 
@@ -22,7 +22,7 @@
     <micronaut.runtime>netty</micronaut.runtime>
     <jib.docker.image>${project.artifactId}</jib.docker.image>
     <jib.docker.tag>${project.version}</jib.docker.tag>
-    <exec.mainClass>at.amsrv.gallery.Application</exec.mainClass>
+    <exec.mainClass>com.github.gyrosofwar.imagehive.Application</exec.mainClass>
   </properties>
 
   <repositories>
@@ -208,8 +208,8 @@
             </path>
           </annotationProcessorPaths>
           <compilerArgs>
-            <arg>-Amicronaut.processing.group=at.amsrv</arg>
-            <arg>-Amicronaut.processing.module=gallery</arg>
+            <arg>-Amicronaut.processing.group=com.github.gyrosofwar.imagehive</arg>
+            <arg>-Amicronaut.processing.module=imagehive</arg>
           </compilerArgs>
         </configuration>
       </plugin>
@@ -220,6 +220,49 @@
           <to>
             <image>${jib.docker.image}:${jib.docker.tag}</image>
           </to>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jooq</groupId>
+        <artifactId>jooq-codegen-maven</artifactId>
+
+        <executions>
+          <execution>
+            <id>jooq-codegen</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+
+        <configuration>
+          <jdbc>
+            <driver>org.postgresql.Driver</driver>
+            <url>jdbc:postgresql://localhost:5432/gallery</url>
+            <user>${env.POSTGRES_USER}</user>
+            <password>${env.POSTGRES_PASSWORD}</password>
+          </jdbc>
+
+          <generator>
+            <database>
+              <name>org.jooq.meta.postgres.PostgresDatabase</name>
+              <includes>.*</includes>
+              <excludes>flyway_schema_history</excludes>
+            </database>
+            <generate>
+              <pojos>true</pojos>
+              <javaTimeTypes>true</javaTimeTypes>
+              <pojosAsJavaRecordClasses>true</pojosAsJavaRecordClasses>
+              <pojosEqualsAndHashCode>false</pojosEqualsAndHashCode>
+              <pojosToString>false</pojosToString>
+              <routines>false</routines>
+            </generate>
+            <target>
+              <packageName>com.github.gyrosofwar.imagehive.sql</packageName>
+            </target>
+          </generator>
         </configuration>
       </plugin>
     </plugins>

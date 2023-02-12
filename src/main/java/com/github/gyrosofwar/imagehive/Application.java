@@ -1,4 +1,4 @@
-package at.amsrv.gallery;
+package com.github.gyrosofwar.imagehive;
 
 import io.micronaut.runtime.Micronaut;
 
