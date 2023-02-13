@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.github.gyrosofwar.imagehive.BaseTest;
 import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import jakarta.inject.Inject;
 import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
 
@@ -16,15 +15,17 @@ class UserServiceTest extends BaseTest {
 
   @Test
   void testCreateUser() {
+    final var username = "new-admin";
+
     userService.create(
-      new UserCreateDTO("admin", "test@example.com", "cool-password", true, false)
+      new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
     );
     assertEquals(2, userService.getUserCount());
-    var user = userService.getByNameOrEmail("admin");
-    assertEquals("admin", user.username());
+    var user = userService.getByNameOrEmail(username);
+    assertEquals(username, user.username());
     assertEquals("test@example.com", user.email());
     assertEquals(true, user.admin());
-    assertEquals(1, user.id());
+    assertEquals(2, user.id());
     assertThat(user.createdOn()).isCloseToUtcNow(within(1, ChronoUnit.SECONDS));
   }
 }
