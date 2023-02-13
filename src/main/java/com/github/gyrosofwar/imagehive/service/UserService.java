@@ -2,7 +2,6 @@ package com.github.gyrosofwar.imagehive.service;
 
 import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
 
-import com.github.gyrosofwar.imagehive.auth.BCryptPasswordEncoderService;
 import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
 import jakarta.inject.Singleton;
@@ -13,17 +12,18 @@ import org.jooq.SelectWhereStep;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Singleton
 public class UserService {
 
   private static final Logger log = LoggerFactory.getLogger(UserService.class);
   private final DSLContext dsl;
-  private final BCryptPasswordEncoderService encoderService;
+  private final PasswordEncoder passwordEncoder;
 
-  public UserService(DSLContext dsl, BCryptPasswordEncoderService encoderService) {
+  public UserService(DSLContext dsl, PasswordEncoder passwordEncoder) {
     this.dsl = dsl;
-    this.encoderService = encoderService;
+    this.passwordEncoder = passwordEncoder;
   }
 
   public int getUserCount() {
@@ -32,20 +32,20 @@ public class UserService {
 
   public void create(UserCreateDTO userCreate) {
     String hashedPassword;
-    if (userCreate.isGeneratePassword()) {
+    if (userCreate.generatePassword()) {
       String random = RandomStringUtils.random(12);
       //TODO: this is only for development purposes, remove logging of password at some point and replace with mail notification
-      log.info("Randomized password \"{}\" for user \"{}\"", random, userCreate.getUsername());
-      hashedPassword = encoderService.encode(random);
+      log.info("Randomized password \"{}\" for user \"{}\"", random, userCreate.username());
+      hashedPassword = passwordEncoder.encode(random);
     } else {
-      hashedPassword = encoderService.encode(userCreate.getPassword());
+      hashedPassword = passwordEncoder.encode(userCreate.password());
     }
     dsl
       .insertInto(USER)
-      .set(USER.USERNAME, userCreate.getUsername())
-      .set(USER.EMAIL, userCreate.getEmail())
+      .set(USER.USERNAME, userCreate.username())
+      .set(USER.EMAIL, userCreate.email())
       .set(USER.PASSWORD_HASH, hashedPassword)
-      .set(USER.ADMIN, userCreate.isAdmin())
+      .set(USER.ADMIN, userCreate.admin())
       .set(USER.CREATED_ON, OffsetDateTime.now())
       .execute();
   }

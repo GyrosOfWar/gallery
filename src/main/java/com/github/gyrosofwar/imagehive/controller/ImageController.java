@@ -6,9 +6,8 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
-
-import javax.transaction.Transactional;
 import java.util.UUID;
+import javax.transaction.Transactional;
 
 @Controller("/api/images")
 public class ImageController {

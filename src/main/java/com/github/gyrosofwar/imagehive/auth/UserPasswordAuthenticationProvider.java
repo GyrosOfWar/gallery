@@ -1,7 +1,6 @@
 package com.github.gyrosofwar.imagehive.auth;
 
 import com.github.gyrosofwar.imagehive.service.UserService;
-import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.AuthenticationProvider;
@@ -9,21 +8,22 @@ import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Singleton
 public class UserPasswordAuthenticationProvider implements AuthenticationProvider {
 
   private final UserService userService;
-  private final BCryptPasswordEncoderService encoderService;
+  private final PasswordEncoder passwordEncoder;
 
   public UserPasswordAuthenticationProvider(
     UserService userService,
-    BCryptPasswordEncoderService encoderService
+    PasswordEncoder passwordEncoder
   ) {
     this.userService = userService;
-    this.encoderService = encoderService;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Override
@@ -32,21 +32,16 @@ public class UserPasswordAuthenticationProvider implements AuthenticationProvide
     AuthenticationRequest<?, ?> authenticationRequest
   ) {
     String identity = authenticationRequest.getIdentity().toString();
-    User user = userService.getByNameOrEmail(identity);
     String secret = authenticationRequest.getSecret().toString();
-
-    return Flux.create(
-      emitter -> {
-        if (user != null && encoderService.matches(secret, user.passwordHash())) {
-          emitter.next(
-            AuthenticationResponse.success((String) authenticationRequest.getIdentity())
-          );
-          emitter.complete();
+    return Mono
+      .fromSupplier(() -> userService.getByNameOrEmail(identity))
+      .flatMap(user -> {
+        if (user != null && passwordEncoder.matches(secret, user.passwordHash())) {
+          return Mono.just(AuthenticationResponse.success(identity));
         } else {
-          emitter.error(AuthenticationResponse.exception());
+          return Mono.error(AuthenticationResponse.exception());
         }
-      },
-      FluxSink.OverflowStrategy.ERROR
-    );
+      })
+      .subscribeOn(Schedulers.boundedElastic());
   }
 }
