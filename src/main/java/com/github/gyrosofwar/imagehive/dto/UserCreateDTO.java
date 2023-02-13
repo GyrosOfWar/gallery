@@ -6,7 +6,26 @@ public class UserCreateDTO {
   private String email;
   private String password;
   private boolean admin;
-  private boolean generate;
+  private boolean generatePassword;
+
+  @SuppressWarnings("unused")
+  public UserCreateDTO() {
+    // no-args constructor for e.g. jackson
+  }
+
+  public UserCreateDTO(
+    String username,
+    String email,
+    String password,
+    boolean admin,
+    boolean generatePassword
+  ) {
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.admin = admin;
+    this.generatePassword = generatePassword;
+  }
 
   public String getUsername() {
     return username;
@@ -40,11 +59,11 @@ public class UserCreateDTO {
     this.admin = admin;
   }
 
-  public boolean isGenerate() {
-    return generate;
+  public boolean isGeneratePassword() {
+    return generatePassword;
   }
 
-  public void setGenerate(boolean generate) {
-    this.generate = generate;
+  public void setGeneratePassword(boolean generatePassword) {
+    this.generatePassword = generatePassword;
   }
 }
