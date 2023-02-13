@@ -7,7 +7,6 @@ import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import jakarta.inject.Singleton;
 import java.util.UUID;
 import org.jooq.DSLContext;
-import org.jooq.SelectWhereStep;
 
 @Singleton
 public class ImageService {

@@ -1,26 +1,24 @@
 package com.github.gyrosofwar.imagehive.service;
 
 import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
-import io.micronaut.context.env.Environment;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.ApplicationEventListener;
 import io.micronaut.context.event.StartupEvent;
 import jakarta.inject.Singleton;
+import javax.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.transaction.Transactional;
-
 @Singleton
+@Requires(notEnv = "test")
 public class StartupService implements ApplicationEventListener<StartupEvent> {
 
   private static final Logger log = LoggerFactory.getLogger(StartupService.class);
   private final UserService userService;
-  private final Environment environment;
 
-  public StartupService(UserService userService, Environment environment) {
+  public StartupService(UserService userService) {
     this.userService = userService;
-    this.environment = environment;
   }
 
   @Override

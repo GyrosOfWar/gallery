@@ -316,6 +316,7 @@
         <configuration>
           <prettierJavaVersion>2.0.0</prettierJavaVersion>
           <printWidth>100</printWidth>
+          <endOfLine>auto</endOfLine>
         </configuration>
       </plugin>
     </plugins>
