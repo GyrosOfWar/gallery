@@ -4,10 +4,12 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
 
 import com.github.gyrosofwar.imagehive.auth.BCryptPasswordEncoderService;
 import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
 import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
+import org.jooq.SelectWhereStep;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,5 +48,13 @@ public class UserService {
       .set(USER.ADMIN, userCreate.isAdmin())
       .set(USER.CREATED_ON, OffsetDateTime.now())
       .execute();
+  }
+
+  public User getByNameOrEmail(String query) {
+    try (SelectWhereStep<?> selectFrom = dsl.selectFrom(USER)) {
+      return selectFrom
+        .where(USER.USERNAME.eq(query).or(USER.EMAIL.eq(query)))
+        .fetchOneInto(User.class);
+    }
   }
 }
