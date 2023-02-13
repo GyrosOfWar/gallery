@@ -1,9 +1,11 @@
 CREATE TABLE "user"
 (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username      VARCHAR     NOT NULL,
     email         VARCHAR     NOT NULL,
     password_hash VARCHAR     NOT NULL,
-    username      VARCHAR     NOT NULL,
+    admin         BOOLEAN     NOT NULL,
+    totp_secret   VARCHAR,
     created_on    TIMESTAMPTZ NOT NULL
 );
 
