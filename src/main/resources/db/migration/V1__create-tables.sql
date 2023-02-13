@@ -6,7 +6,8 @@ CREATE TABLE "user"
     password_hash VARCHAR     NOT NULL,
     admin         BOOLEAN     NOT NULL,
     totp_secret   VARCHAR,
-    created_on    TIMESTAMPTZ NOT NULL
+    created_on    TIMESTAMPTZ NOT NULL,
+    last_login    TIMESTAMPTZ
 );
 
 CREATE TABLE image
