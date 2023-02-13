@@ -22,7 +22,6 @@ public class StartupService implements ApplicationEventListener<StartupEvent> {
   }
 
   @Override
-  @Transactional
   public void onApplicationEvent(StartupEvent event) {
     createAdminUserOnNewInstall();
   }

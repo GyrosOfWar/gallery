@@ -6,6 +6,7 @@ import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
 import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
+import javax.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
 import org.jooq.SelectWhereStep;
@@ -26,10 +27,12 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
+  @Transactional
   public int getUserCount() {
     return dsl.fetchCount(DSL.selectFrom(USER));
   }
 
+  @Transactional
   public void create(UserCreateDTO userCreate) {
     String hashedPassword;
     if (userCreate.generatePassword()) {
@@ -50,6 +53,7 @@ public class UserService {
       .execute();
   }
 
+  @Transactional
   public User getByNameOrEmail(String query) {
     try (SelectWhereStep<?> selectFrom = dsl.selectFrom(USER)) {
       return selectFrom
