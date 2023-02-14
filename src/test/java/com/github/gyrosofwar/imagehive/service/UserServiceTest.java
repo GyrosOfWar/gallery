@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @MicronautTest
 class UserServiceTest extends BaseTest {
@@ -36,12 +37,7 @@ class UserServiceTest extends BaseTest {
   void testCreateUser() {
     final var username = "new-admin";
 
-    assertEquals(
-      1,
-      userService.create(
-        new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
-      )
-    );
+    assertNotEquals(0, userService.create(new UserCreateDTO(username, "test@example.com", "cool-password", true, false)));
   }
 
   @Test
@@ -50,12 +46,12 @@ class UserServiceTest extends BaseTest {
 
     assertEquals(1, userService.getUserCount());
 
-    userService.create(
+    long id = userService.create(
       new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
     );
 
     assertEquals(2, userService.getUserCount());
-    assertEquals(1, userService.deleteById(2));
+    assertEquals(1, userService.deleteById(id));
     assertEquals(1, userService.getUserCount());
   }
 
@@ -81,15 +77,15 @@ class UserServiceTest extends BaseTest {
   void testGetById() {
     final var username = "new-admin";
 
-    userService.create(
+    long id = userService.create(
       new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
     );
 
-    var user = userService.getById(2);
+    var user = userService.getById(id);
     assertEquals(username, user.username());
     assertEquals("test@example.com", user.email());
     assertEquals(true, user.admin());
-    assertEquals(2, user.id());
+    assertEquals(id, user.id());
     assertThat(user.createdOn()).isCloseToUtcNow(within(1, ChronoUnit.SECONDS));
   }
 

@@ -1,5 +1,7 @@
 package com.github.gyrosofwar.imagehive.configuration;
 
+import com.github.gyrosofwar.imagehive.service.mail.EmailService;
+import com.github.gyrosofwar.imagehive.service.mail.LoggingEmailService;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import org.apache.tika.config.TikaConfig;
@@ -17,5 +19,10 @@ public class ImageHiveFactory {
   @Bean
   public TikaConfig tikaConfig() {
     return TikaConfig.getDefaultConfig();
+  }
+
+  @Bean
+  public EmailService emailService() {
+    return new LoggingEmailService();
   }
 }

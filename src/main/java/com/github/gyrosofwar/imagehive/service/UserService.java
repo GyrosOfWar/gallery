@@ -1,9 +1,15 @@
 package com.github.gyrosofwar.imagehive.service;
 
+import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
+
 import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.service.mail.Email;
+import com.github.gyrosofwar.imagehive.service.mail.EmailService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
 import com.github.gyrosofwar.imagehive.sql.tables.records.UserRecord;
 import jakarta.inject.Singleton;
+import java.time.OffsetDateTime;
+import javax.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
 import org.jooq.DeleteUsingStep;
@@ -13,21 +19,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.transaction.Transactional;
-import java.time.OffsetDateTime;
-
-import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
-
 @Singleton
 public class UserService {
 
   private static final Logger log = LoggerFactory.getLogger(UserService.class);
   private final DSLContext dsl;
   private final PasswordEncoder passwordEncoder;
+  private final EmailService emailService;
 
-  public UserService(DSLContext dsl, PasswordEncoder passwordEncoder) {
+  public UserService(DSLContext dsl, PasswordEncoder passwordEncoder, EmailService emailService) {
     this.dsl = dsl;
     this.passwordEncoder = passwordEncoder;
+    this.emailService = emailService;
   }
 
   @Transactional
@@ -35,8 +38,13 @@ public class UserService {
     return dsl.fetchCount(DSL.selectFrom(USER));
   }
 
+  /**
+   *
+   * @param userCreate DTO containing all the necessary info for user creation
+   * @return The id of the newly created user
+   */
   @Transactional
-  public int create(UserCreateDTO userCreate) {
+  public long create(UserCreateDTO userCreate) {
     // First, we check if a user with this username or email already exists
     if (
       getByNameOrEmail(userCreate.username()) != null ||
@@ -45,17 +53,16 @@ public class UserService {
       throw new IllegalArgumentException("User with the given information already exists");
     }
     // Prepare the password hash either by generating a random password or using the given password
-    String hashedPassword;
+    String password;
     if (userCreate.generatePassword()) {
-      String random = RandomStringUtils.random(12);
-      //TODO: this is only for development purposes, remove logging of password at some point and replace with mail notification
-      log.info("Randomized password \"{}\" for user \"{}\"", random, userCreate.username());
-      hashedPassword = passwordEncoder.encode(random);
+      password = RandomStringUtils.random(12);
     } else {
-      hashedPassword = passwordEncoder.encode(userCreate.password());
+      password = userCreate.password();
     }
+    String hashedPassword = passwordEncoder.encode(password);
     // Insert a new user into the database
-    return dsl
+    assert 1 ==
+    dsl
       .insertInto(USER)
       .set(USER.USERNAME, userCreate.username())
       .set(USER.EMAIL, userCreate.email())
@@ -63,6 +70,20 @@ public class UserService {
       .set(USER.ADMIN, userCreate.admin())
       .set(USER.CREATED_ON, OffsetDateTime.now())
       .execute();
+
+    emailService.send(
+      new Email(
+        userCreate.email(),
+        null,
+        null,
+        "ImageHive",
+        null,
+        "Password: " + password,
+        "test@example.com"
+      )
+    );
+
+    return getByNameOrEmail(userCreate.username()).id();
   }
 
   @Transactional
