@@ -2,7 +2,6 @@ package com.github.gyrosofwar.imagehive.configuration;
 
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
