@@ -1,13 +1,9 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
-
 import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
 import com.github.gyrosofwar.imagehive.sql.tables.records.UserRecord;
 import jakarta.inject.Singleton;
-import java.time.OffsetDateTime;
-import javax.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
 import org.jooq.DeleteUsingStep;
@@ -16,6 +12,11 @@ import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.transaction.Transactional;
+import java.time.OffsetDateTime;
+
+import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
 
 @Singleton
 public class UserService {
@@ -65,7 +66,7 @@ public class UserService {
   }
 
   @Transactional
-  public int deleteById(Long id) {
+  public int deleteById(long id) {
     try (DeleteUsingStep<UserRecord> delete = dsl.delete(USER)) {
       return delete.where(USER.ID.eq(id)).execute();
     } catch (Exception e) {
@@ -81,7 +82,7 @@ public class UserService {
   }
 
   @Transactional
-  public User getById(Long id) {
+  public User getById(long id) {
     try (SelectWhereStep<?> selectFrom = dsl.selectFrom(USER)) {
       return selectFrom.where(USER.ID.eq(id)).fetchOneInto(User.class);
     }

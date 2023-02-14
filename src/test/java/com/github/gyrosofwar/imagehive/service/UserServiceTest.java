@@ -55,7 +55,7 @@ class UserServiceTest extends BaseTest {
     );
 
     assertEquals(2, userService.getUserCount());
-    assertEquals(1, userService.deleteById(2L));
+    assertEquals(1, userService.deleteById(2));
     assertEquals(1, userService.getUserCount());
   }
 
@@ -85,7 +85,7 @@ class UserServiceTest extends BaseTest {
       new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
     );
 
-    var user = userService.getById(2L);
+    var user = userService.getById(2);
     assertEquals(username, user.username());
     assertEquals("test@example.com", user.email());
     assertEquals(true, user.admin());
