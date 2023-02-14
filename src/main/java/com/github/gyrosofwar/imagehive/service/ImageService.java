@@ -1,7 +1,5 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
-
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.github.f4b6a3.ulid.Ulid;
@@ -11,13 +9,6 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.OffsetDateTime;
-import java.util.*;
-import javax.imageio.ImageIO;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -27,6 +18,16 @@ import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.util.*;
+
+import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 @Singleton
 public class ImageService {
@@ -49,7 +50,7 @@ public class ImageService {
   }
 
   public ImageDTO toDto(Image image) {
-    return new ImageDTO(image.height(), image.width(), image.createdOn(), image.tags());
+    return new ImageDTO(image.height(), image.width(), image.createdOn(), Arrays.asList(image.tags()));
   }
 
   public Path getImagePath(UUID imageId, String extension) {

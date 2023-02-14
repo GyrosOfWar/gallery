@@ -1,15 +1,11 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
-
 import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
 import com.github.gyrosofwar.imagehive.service.mail.Email;
 import com.github.gyrosofwar.imagehive.service.mail.EmailService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
 import com.github.gyrosofwar.imagehive.sql.tables.records.UserRecord;
 import jakarta.inject.Singleton;
-import java.time.OffsetDateTime;
-import javax.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
 import org.jooq.DeleteUsingStep;
@@ -18,6 +14,11 @@ import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.transaction.Transactional;
+import java.time.OffsetDateTime;
+
+import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
 
 @Singleton
 public class UserService {
@@ -61,8 +62,7 @@ public class UserService {
     }
     String hashedPassword = passwordEncoder.encode(password);
     // Insert a new user into the database
-    assert 1 ==
-    dsl
+    int result = dsl
       .insertInto(USER)
       .set(USER.USERNAME, userCreate.username())
       .set(USER.EMAIL, userCreate.email())
@@ -70,7 +70,10 @@ public class UserService {
       .set(USER.ADMIN, userCreate.admin())
       .set(USER.CREATED_ON, OffsetDateTime.now())
       .execute();
-
+    if (result != 1) {
+      throw new UnknownError("There was an unknown problem creating the user");
+    }
+    // Send mail with password information
     emailService.send(
       new Email(
         userCreate.email(),
