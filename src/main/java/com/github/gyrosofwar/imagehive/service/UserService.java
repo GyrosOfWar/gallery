@@ -56,7 +56,7 @@ public class UserService {
     // Prepare the password hash either by generating a random password or using the given password
     String password;
     if (userCreate.generatePassword()) {
-      password = RandomStringUtils.random(12);
+      password = RandomStringUtils.randomAlphanumeric(12);
     } else {
       password = userCreate.password();
     }
