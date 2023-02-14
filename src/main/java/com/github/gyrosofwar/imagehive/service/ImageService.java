@@ -67,8 +67,7 @@ public class ImageService {
       var detectedMime = tikaConfig.getDetector().detect(inputStream, meta);
       return tikaConfig.getMimeRepository().forName(detectedMime.toString()).getExtension();
     } catch (IOException | MimeTypeException e) {
-      log.error("Error determining extension", e);
-      throw new ImageProcessingException(e);
+      throw new ImageProcessingException("Error determining extension", e);
     }
   }
 
