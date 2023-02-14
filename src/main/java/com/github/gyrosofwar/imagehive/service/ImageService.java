@@ -16,8 +16,6 @@ import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MimeTypeException;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -31,9 +29,6 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 @Singleton
 public class ImageService {
-
-  private static final Logger log = LoggerFactory.getLogger(ImageService.class);
-
   private final DSLContext dsl;
   private final Path imageBasePath = Path.of("images");
   private final TikaConfig tikaConfig;

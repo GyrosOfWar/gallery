@@ -6,19 +6,16 @@ import org.slf4j.LoggerFactory;
 public class LoggingEmailService implements EmailService {
 
   private static final Logger log = LoggerFactory.getLogger(LoggingEmailService.class);
+  private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
   @Override
   public void send(Email email) {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append("to: ").append(email.recipient()).append(System.getProperty("line.separator"));
-    sb.append("cc: ").append(email.cc()).append(System.getProperty("line.separator"));
-    sb.append("bcc: ").append(email.bcc()).append(System.getProperty("line.separator"));
-    sb.append("subject: ").append(email.subject()).append(System.getProperty("line.separator"));
-    sb.append("html: ").append(email.htmlBody()).append(System.getProperty("line.separator"));
-    sb.append("text: ").append(email.textBody()).append(System.getProperty("line.separator"));
-    sb.append("from: ").append(email.from()).append(System.getProperty("line.separator"));
-
-    log.info(sb.toString());
+    log.info("to: " + email.recipient() + LINE_SEPARATOR);
+    log.info("cc: " + email.cc() + LINE_SEPARATOR);
+    log.info("bcc: " + email.bcc() + LINE_SEPARATOR);
+    log.info("subject: " + email.subject() + LINE_SEPARATOR);
+    log.info("html: " + email.htmlBody() + LINE_SEPARATOR);
+    log.info("text: " + email.textBody() + LINE_SEPARATOR);
+    log.info("from: " + email.from() + LINE_SEPARATOR);
   }
 }
