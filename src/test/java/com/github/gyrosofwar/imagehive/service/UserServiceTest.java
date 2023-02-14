@@ -1,16 +1,15 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import com.github.gyrosofwar.imagehive.BaseTest;
-import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.junit.jupiter.api.Test;
-
-import java.time.temporal.ChronoUnit;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import com.github.gyrosofwar.imagehive.BaseTest;
+import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import java.time.temporal.ChronoUnit;
+import org.junit.jupiter.api.Test;
 
 @MicronautTest
 class UserServiceTest extends BaseTest {
@@ -37,7 +36,12 @@ class UserServiceTest extends BaseTest {
   void testCreateUser() {
     final var username = "new-admin";
 
-    assertNotEquals(0, userService.create(new UserCreateDTO(username, "test@example.com", "cool-password", true, false)));
+    assertNotEquals(
+      0,
+      userService.create(
+        new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
+      )
+    );
   }
 
   @Test

@@ -5,11 +5,9 @@ import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.service.ImageService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Put;
-import io.micronaut.http.multipart.StreamingFileUpload;
+import io.micronaut.http.annotation.*;
+import io.micronaut.http.multipart.CompletedFileUpload;
+import io.micronaut.http.server.multipart.MultipartBody;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -17,12 +15,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import javax.transaction.Transactional;
-import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Controller("/api/images")
 @Secured({ SecurityRule.IS_AUTHENTICATED })
 public class ImageController {
+
+  private static final Logger log = LoggerFactory.getLogger(ImageController.class);
 
   private final ImageService imageService;
 
@@ -43,19 +46,27 @@ public class ImageController {
   }
 
   @Put(consumes = MediaType.MULTIPART_FORM_DATA)
-  @Transactional
-  public HttpResponse<Void> uploadImages(
-    Publisher<StreamingFileUpload> files,
+  public Mono<HttpResponse<Void>> uploadImages(
+    @Body MultipartBody files,
     Authentication authentication
   ) throws ImageProcessingException, IOException {
-    var fileUploads = Flux.from(files).collectList().block();
-    if (fileUploads != null) {
-      for (var file : fileUploads) {
-        // TODO
-        imageService.create(file, 1L);
-      }
-    }
-
-    return HttpResponse.ok();
+    return Flux
+      .from(files)
+      .collectList()
+      .flatMap(parts ->
+        Mono
+          .fromSupplier(() -> {
+            for (var file : parts) {
+              try {
+                imageService.create((CompletedFileUpload) file, 1L);
+              } catch (IOException | ImageProcessingException e) {
+                throw new RuntimeException(e);
+              }
+            }
+            return true;
+          })
+          .subscribeOn(Schedulers.boundedElastic())
+      )
+      .map(e -> HttpResponse.ok());
   }
 }
