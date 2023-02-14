@@ -10,12 +10,18 @@ public class LoggingEmailService implements EmailService {
 
   @Override
   public void send(Email email) {
-    log.info("to: " + email.recipient() + LINE_SEPARATOR);
-    log.info("cc: " + email.cc() + LINE_SEPARATOR);
-    log.info("bcc: " + email.bcc() + LINE_SEPARATOR);
-    log.info("subject: " + email.subject() + LINE_SEPARATOR);
-    log.info("html: " + email.htmlBody() + LINE_SEPARATOR);
-    log.info("text: " + email.textBody() + LINE_SEPARATOR);
-    log.info("from: " + email.from() + LINE_SEPARATOR);
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("to: ").append(email.recipient()).append(System.getProperty(LINE_SEPARATOR));
+    sb.append("cc: ").append(email.cc()).append(System.getProperty(LINE_SEPARATOR));
+    sb.append("bcc: ").append(email.bcc()).append(System.getProperty(LINE_SEPARATOR));
+    sb.append("subject: ").append(email.subject()).append(System.getProperty(LINE_SEPARATOR));
+    sb.append("html: ").append(email.htmlBody()).append(System.getProperty(LINE_SEPARATOR));
+    sb.append("text: ").append(email.textBody()).append(System.getProperty(LINE_SEPARATOR));
+    sb.append("from: ").append(email.from()).append(System.getProperty(LINE_SEPARATOR));
+
+    if (log.isInfoEnabled()) {
+      log.info(sb.toString());
+    }
   }
 }
