@@ -1,15 +1,14 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import com.github.gyrosofwar.imagehive.BaseTest;
-import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.junit.jupiter.api.Test;
-
-import java.time.temporal.ChronoUnit;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.github.gyrosofwar.imagehive.BaseTest;
+import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import java.time.temporal.ChronoUnit;
+import org.junit.jupiter.api.Test;
 
 @MicronautTest
 class UserServiceTest extends BaseTest {
@@ -36,9 +35,12 @@ class UserServiceTest extends BaseTest {
   void testCreateUser() {
     final var username = "new-admin";
 
-    assertEquals(1, userService.create(
-      new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
-    ));
+    assertEquals(
+      1,
+      userService.create(
+        new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
+      )
+    );
   }
 
   @Test
@@ -61,17 +63,13 @@ class UserServiceTest extends BaseTest {
     final var username = "new-admin";
     final var email = "test@example.com";
 
-    userService.create(
-      new UserCreateDTO(username, email, "cool-password", true, false)
-    );
+    userService.create(new UserCreateDTO(username, email, "cool-password", true, false));
 
     assertEquals(2, userService.getUserCount());
     assertEquals(1, userService.deleteByNameOrEmail(username));
     assertEquals(1, userService.getUserCount());
 
-    userService.create(
-      new UserCreateDTO(username, email, "cool-password", true, false)
-    );
+    userService.create(new UserCreateDTO(username, email, "cool-password", true, false));
 
     assertEquals(2, userService.getUserCount());
     assertEquals(1, userService.deleteByNameOrEmail(email));
