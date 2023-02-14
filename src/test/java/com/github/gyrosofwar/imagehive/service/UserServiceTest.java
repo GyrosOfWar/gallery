@@ -1,14 +1,15 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.github.gyrosofwar.imagehive.BaseTest;
 import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
+
+import java.time.temporal.ChronoUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @MicronautTest
 class UserServiceTest extends BaseTest {
@@ -25,7 +26,7 @@ class UserServiceTest extends BaseTest {
     assertEquals(2, userService.getUserCount());
 
     userService.create(
-      new UserCreateDTO(username2, "test@example.com", "cool-password", false, false)
+      new UserCreateDTO(username2, "test2@example.com", "cool-password", false, false)
     );
 
     assertEquals(3, userService.getUserCount());
