@@ -1,23 +1,31 @@
 import {Authenticator} from "remix-auth"
 import {sessionStorage} from "~/services/session.server"
 import {FormStrategy} from "remix-auth-form"
+import * as jwt from "jsonwebtoken"
 
 export const BACKEND = "http://localhost:8080"
+
+export type UserRole = "ADMIN" | "USER"
 
 export function url(url: string): string {
   return `${BACKEND}${url}`
 }
 
-export interface Jwt {
+interface LoginResponse {
   username: string
   access_token: string
   token_type: string
   expires_in: number
 }
 
-export const authenticator = new Authenticator<Jwt>(sessionStorage)
+export interface User {
+  username: string
+  roles: UserRole[]
+}
 
-async function login(username: string, password: string): Promise<Jwt> {
+export const authenticator = new Authenticator<User>(sessionStorage)
+
+async function login(username: string, password: string): Promise<User> {
   const response = await fetch(url("/login"), {
     method: "POST",
     body: new URLSearchParams([
@@ -27,7 +35,12 @@ async function login(username: string, password: string): Promise<Jwt> {
   })
 
   if (response.ok) {
-    return await response.json()
+    const data: LoginResponse = await response.json()
+    const token = jwt.decode(data.access_token) as jwt.JwtPayload
+    return {
+      username: data.username,
+      roles: token.roles,
+    }
   } else {
     const text = await response.text()
     throw new Error(

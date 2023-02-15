@@ -155,6 +155,10 @@
       <artifactId>metadata-extractor</artifactId>
       <version>2.18.0</version>
     </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>io.micronaut.test</groupId>
@@ -239,6 +243,11 @@
               <groupId>io.micronaut.serde</groupId>
               <artifactId>micronaut-serde-processor</artifactId>
               <version>${micronaut.serialization.version}</version>
+            </path>
+            <path>
+              <groupId>io.micronaut.openapi</groupId>
+              <artifactId>micronaut-openapi</artifactId>
+              <version>${micronaut.openapi.version}</version>
             </path>
           </annotationProcessorPaths>
           <compilerArgs>

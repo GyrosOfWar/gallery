@@ -2,11 +2,11 @@ import type {TypedResponse} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {useLoaderData} from "@remix-run/react"
 import type {LoaderFunction} from "react-router"
-import type {Jwt} from "~/services/auth.server"
+import type {User} from "~/services/auth.server"
 import {authenticator} from "~/services/auth.server"
 
 interface Data {
-  user: Jwt
+  user: User
 }
 
 export const loader: LoaderFunction = async ({request}) => {
