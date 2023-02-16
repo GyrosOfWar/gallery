@@ -17,10 +17,6 @@ import org.junit.jupiter.api.Test;
 
 class ImageControllerTest extends BaseTest {
 
-  @Inject
-  @Client("/")
-  HttpClient httpClient;
-
   private MultipartBody getImages() throws IOException {
     var builder = MultipartBody.builder();
     for (var path : List.of("/images/test-1.jpg", "/images/test-2.jpg", "/images/test-3.jpg")) {

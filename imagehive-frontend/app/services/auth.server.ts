@@ -61,3 +61,9 @@ authenticator.use(
   }),
   "user-pass"
 )
+
+export async function requireUser(request: Request): Promise<User> {
+  return await authenticator.isAuthenticated(request, {
+    failureRedirect: "/auth/login",
+  })
+}
