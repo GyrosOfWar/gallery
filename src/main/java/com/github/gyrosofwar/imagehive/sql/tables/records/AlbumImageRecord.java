@@ -3,7 +3,7 @@
  */
 package com.github.gyrosofwar.imagehive.sql.tables.records;
 
-import com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage;
+import com.github.gyrosofwar.imagehive.sql.tables.AlbumImage;
 import java.util.UUID;
 import org.jooq.Field;
 import org.jooq.Record2;
@@ -64,12 +64,12 @@ public class AlbumImageRecord
 
   @Override
   public Field<Long> field1() {
-    return com.github.gyrosofwar.imagehive.sql.tables.AlbumImage.ALBUM_IMAGE.ALBUM_ID;
+    return AlbumImage.ALBUM_IMAGE.ALBUM_ID;
   }
 
   @Override
   public Field<UUID> field2() {
-    return com.github.gyrosofwar.imagehive.sql.tables.AlbumImage.ALBUM_IMAGE.IMAGE_ID;
+    return AlbumImage.ALBUM_IMAGE.IMAGE_ID;
   }
 
   @Override
@@ -119,14 +119,14 @@ public class AlbumImageRecord
    * Create a detached AlbumImageRecord
    */
   public AlbumImageRecord() {
-    super(com.github.gyrosofwar.imagehive.sql.tables.AlbumImage.ALBUM_IMAGE);
+    super(AlbumImage.ALBUM_IMAGE);
   }
 
   /**
    * Create a detached, initialised AlbumImageRecord
    */
   public AlbumImageRecord(Long albumId, UUID imageId) {
-    super(com.github.gyrosofwar.imagehive.sql.tables.AlbumImage.ALBUM_IMAGE);
+    super(AlbumImage.ALBUM_IMAGE);
     setAlbumId(albumId);
     setImageId(imageId);
   }
@@ -134,8 +134,8 @@ public class AlbumImageRecord
   /**
    * Create a detached, initialised AlbumImageRecord
    */
-  public AlbumImageRecord(AlbumImage value) {
-    super(com.github.gyrosofwar.imagehive.sql.tables.AlbumImage.ALBUM_IMAGE);
+  public AlbumImageRecord(com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage value) {
+    super(AlbumImage.ALBUM_IMAGE);
     if (value != null) {
       setAlbumId(value.albumId());
       setImageId(value.imageId());

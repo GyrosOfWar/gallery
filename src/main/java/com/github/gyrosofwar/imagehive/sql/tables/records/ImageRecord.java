@@ -3,14 +3,14 @@
  */
 package com.github.gyrosofwar.imagehive.sql.tables.records;
 
-import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
+import com.github.gyrosofwar.imagehive.sql.tables.Image;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.jooq.Field;
 import org.jooq.JSONB;
 import org.jooq.Record1;
-import org.jooq.Record8;
-import org.jooq.Row8;
+import org.jooq.Record9;
+import org.jooq.Row9;
 import org.jooq.impl.UpdatableRecordImpl;
 
 /**
@@ -19,7 +19,8 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ImageRecord
   extends UpdatableRecordImpl<ImageRecord>
-  implements Record8<UUID, OffsetDateTime, Long, Integer, Integer, Object, JSONB, String[]> {
+  implements
+    Record9<UUID, OffsetDateTime, Long, Integer, Integer, Object, JSONB, String[], String> {
 
   private static final long serialVersionUID = 1L;
 
@@ -143,6 +144,20 @@ public class ImageRecord
     return (String[]) get(7);
   }
 
+  /**
+   * Setter for <code>public.image.file_path</code>.
+   */
+  public void setFilePath(String value) {
+    set(8, value);
+  }
+
+  /**
+   * Getter for <code>public.image.file_path</code>.
+   */
+  public String getFilePath() {
+    return (String) get(8);
+  }
+
   // -------------------------------------------------------------------------
   // Primary key information
   // -------------------------------------------------------------------------
@@ -153,42 +168,42 @@ public class ImageRecord
   }
 
   // -------------------------------------------------------------------------
-  // Record8 type implementation
+  // Record9 type implementation
   // -------------------------------------------------------------------------
 
   @Override
-  public Row8<UUID, OffsetDateTime, Long, Integer, Integer, Object, JSONB, String[]> fieldsRow() {
-    return (Row8) super.fieldsRow();
+  public Row9<UUID, OffsetDateTime, Long, Integer, Integer, Object, JSONB, String[], String> fieldsRow() {
+    return (Row9) super.fieldsRow();
   }
 
   @Override
-  public Row8<UUID, OffsetDateTime, Long, Integer, Integer, Object, JSONB, String[]> valuesRow() {
-    return (Row8) super.valuesRow();
+  public Row9<UUID, OffsetDateTime, Long, Integer, Integer, Object, JSONB, String[], String> valuesRow() {
+    return (Row9) super.valuesRow();
   }
 
   @Override
   public Field<UUID> field1() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE.ID;
+    return Image.IMAGE.ID;
   }
 
   @Override
   public Field<OffsetDateTime> field2() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE.CREATED_ON;
+    return Image.IMAGE.CREATED_ON;
   }
 
   @Override
   public Field<Long> field3() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE.OWNER_ID;
+    return Image.IMAGE.OWNER_ID;
   }
 
   @Override
   public Field<Integer> field4() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE.HEIGHT;
+    return Image.IMAGE.HEIGHT;
   }
 
   @Override
   public Field<Integer> field5() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE.WIDTH;
+    return Image.IMAGE.WIDTH;
   }
 
   /**
@@ -200,17 +215,22 @@ public class ImageRecord
   @Deprecated
   @Override
   public Field<Object> field6() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE.GEO_COORDINATES;
+    return Image.IMAGE.GEO_COORDINATES;
   }
 
   @Override
   public Field<JSONB> field7() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE.METADATA;
+    return Image.IMAGE.METADATA;
   }
 
   @Override
   public Field<String[]> field8() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE.TAGS;
+    return Image.IMAGE.TAGS;
+  }
+
+  @Override
+  public Field<String> field9() {
+    return Image.IMAGE.FILE_PATH;
   }
 
   @Override
@@ -261,6 +281,11 @@ public class ImageRecord
   }
 
   @Override
+  public String component9() {
+    return getFilePath();
+  }
+
+  @Override
   public UUID value1() {
     return getId();
   }
@@ -305,6 +330,11 @@ public class ImageRecord
   @Override
   public String[] value8() {
     return getTags();
+  }
+
+  @Override
+  public String value9() {
+    return getFilePath();
   }
 
   @Override
@@ -363,6 +393,12 @@ public class ImageRecord
   }
 
   @Override
+  public ImageRecord value9(String value) {
+    setFilePath(value);
+    return this;
+  }
+
+  @Override
   public ImageRecord values(
     UUID value1,
     OffsetDateTime value2,
@@ -371,7 +407,8 @@ public class ImageRecord
     Integer value5,
     Object value6,
     JSONB value7,
-    String[] value8
+    String[] value8,
+    String value9
   ) {
     value1(value1);
     value2(value2);
@@ -381,6 +418,7 @@ public class ImageRecord
     value6(value6);
     value7(value7);
     value8(value8);
+    value9(value9);
     return this;
   }
 
@@ -392,7 +430,7 @@ public class ImageRecord
    * Create a detached ImageRecord
    */
   public ImageRecord() {
-    super(com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE);
+    super(Image.IMAGE);
   }
 
   /**
@@ -406,9 +444,10 @@ public class ImageRecord
     Integer width,
     Object geoCoordinates,
     JSONB metadata,
-    String[] tags
+    String[] tags,
+    String filePath
   ) {
-    super(com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE);
+    super(Image.IMAGE);
     setId(id);
     setCreatedOn(createdOn);
     setOwnerId(ownerId);
@@ -417,13 +456,14 @@ public class ImageRecord
     setGeoCoordinates(geoCoordinates);
     setMetadata(metadata);
     setTags(tags);
+    setFilePath(filePath);
   }
 
   /**
    * Create a detached, initialised ImageRecord
    */
-  public ImageRecord(Image value) {
-    super(com.github.gyrosofwar.imagehive.sql.tables.Image.IMAGE);
+  public ImageRecord(com.github.gyrosofwar.imagehive.sql.tables.pojos.Image value) {
+    super(Image.IMAGE);
     if (value != null) {
       setId(value.id());
       setCreatedOn(value.createdOn());
@@ -433,6 +473,7 @@ public class ImageRecord
       setGeoCoordinates(value.geoCoordinates());
       setMetadata(value.metadata());
       setTags(value.tags());
+      setFilePath(value.filePath());
     }
   }
 }

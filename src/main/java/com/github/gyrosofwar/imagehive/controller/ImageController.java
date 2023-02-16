@@ -47,10 +47,12 @@ public class ImageController {
   }
 
   @Put(consumes = MediaType.MULTIPART_FORM_DATA)
-  public HttpResponse<Void> uploadImages(StreamingFileUpload file, Authentication authentication)
-    throws ImageProcessingException, IOException {
-    log.info("authentication: {}", authentication);
-    imageService.create(file, 1L);
-    return HttpResponse.ok();
+  public HttpResponse<ImageDTO> uploadImages(
+    StreamingFileUpload file,
+    Authentication authentication
+  ) throws ImageProcessingException, IOException {
+    var userId = (Long) authentication.getAttributes().get("userId");
+    var createdImage = imageService.create(file, userId);
+    return HttpResponse.ok(createdImage);
   }
 }

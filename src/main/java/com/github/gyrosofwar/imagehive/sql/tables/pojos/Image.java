@@ -20,7 +20,8 @@ public record Image(
   Integer width,
   Object geoCoordinates,
   JSONB metadata,
-  String[] tags
+  String[] tags,
+  String filePath
 )
   implements Serializable {
   private static final long serialVersionUID = 1L;

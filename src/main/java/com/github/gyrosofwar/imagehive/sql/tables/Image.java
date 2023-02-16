@@ -15,7 +15,7 @@ import org.jooq.ForeignKey;
 import org.jooq.JSONB;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -130,6 +130,16 @@ public class Image extends TableImpl<ImageRecord> {
     ""
   );
 
+  /**
+   * The column <code>public.image.file_path</code>.
+   */
+  public final TableField<ImageRecord, String> FILE_PATH = createField(
+    DSL.name("file_path"),
+    SQLDataType.VARCHAR.nullable(false),
+    this,
+    ""
+  );
+
   private Image(Name alias, Table<ImageRecord> aliased) {
     this(alias, aliased, null);
   }
@@ -213,11 +223,11 @@ public class Image extends TableImpl<ImageRecord> {
   }
 
   // -------------------------------------------------------------------------
-  // Row8 type methods
+  // Row9 type methods
   // -------------------------------------------------------------------------
 
   @Override
-  public Row8<UUID, OffsetDateTime, Long, Integer, Integer, Object, JSONB, String[]> fieldsRow() {
-    return (Row8) super.fieldsRow();
+  public Row9<UUID, OffsetDateTime, Long, Integer, Integer, Object, JSONB, String[], String> fieldsRow() {
+    return (Row9) super.fieldsRow();
   }
 }

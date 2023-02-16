@@ -3,7 +3,7 @@
  */
 package com.github.gyrosofwar.imagehive.sql.tables.records;
 
-import com.github.gyrosofwar.imagehive.sql.tables.pojos.Album;
+import com.github.gyrosofwar.imagehive.sql.tables.Album;
 import java.time.OffsetDateTime;
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -116,27 +116,27 @@ public class AlbumRecord
 
   @Override
   public Field<Long> field1() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Album.ALBUM.ID;
+    return Album.ALBUM.ID;
   }
 
   @Override
   public Field<String> field2() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Album.ALBUM.NAME;
+    return Album.ALBUM.NAME;
   }
 
   @Override
   public Field<OffsetDateTime> field3() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Album.ALBUM.CREATED_ON;
+    return Album.ALBUM.CREATED_ON;
   }
 
   @Override
   public Field<Long> field4() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Album.ALBUM.OWNER_ID;
+    return Album.ALBUM.OWNER_ID;
   }
 
   @Override
   public Field<String[]> field5() {
-    return com.github.gyrosofwar.imagehive.sql.tables.Album.ALBUM.TAGS;
+    return Album.ALBUM.TAGS;
   }
 
   @Override
@@ -243,14 +243,14 @@ public class AlbumRecord
    * Create a detached AlbumRecord
    */
   public AlbumRecord() {
-    super(com.github.gyrosofwar.imagehive.sql.tables.Album.ALBUM);
+    super(Album.ALBUM);
   }
 
   /**
    * Create a detached, initialised AlbumRecord
    */
   public AlbumRecord(Long id, String name, OffsetDateTime createdOn, Long ownerId, String[] tags) {
-    super(com.github.gyrosofwar.imagehive.sql.tables.Album.ALBUM);
+    super(Album.ALBUM);
     setId(id);
     setName(name);
     setCreatedOn(createdOn);
@@ -261,8 +261,8 @@ public class AlbumRecord
   /**
    * Create a detached, initialised AlbumRecord
    */
-  public AlbumRecord(Album value) {
-    super(com.github.gyrosofwar.imagehive.sql.tables.Album.ALBUM);
+  public AlbumRecord(com.github.gyrosofwar.imagehive.sql.tables.pojos.Album value) {
+    super(Album.ALBUM);
     if (value != null) {
       setId(value.id());
       setName(value.name());

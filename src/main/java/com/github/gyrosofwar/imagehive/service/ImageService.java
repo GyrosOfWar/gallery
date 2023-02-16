@@ -8,13 +8,12 @@ import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.CompletedPart;
 import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
@@ -54,6 +53,7 @@ public class ImageService {
 
   public ImageDTO toDto(Image image) {
     return new ImageDTO(
+      image.id(),
       image.height(),
       image.width(),
       image.createdOn(),
@@ -126,11 +126,12 @@ public class ImageService {
       userId,
       bufferedImage.getHeight(),
       bufferedImage.getWidth(),
-      // TODO
+      // TODO geo coordinates
       null,
       metadata,
-      // TODO
-      new String[] {}
+      // TODO tags
+      new String[] {},
+      destinationPath.toString()
     );
     dsl.newRecord(IMAGE, image).insert();
     return toDto(image);
@@ -144,5 +145,27 @@ public class ImageService {
       .stream()
       .map(this::toDto)
       .toList();
+  }
+
+  // TODO can we do this without database access?
+  //  we could encode the owner of the image in the path, and also
+  //  determine the extension somehow
+  @Transactional
+  public InputStream getImageBytes(UUID uuid, Long userId) throws IOException {
+    if (userId == null) {
+      return null;
+    }
+
+    var result = dsl
+      .select(IMAGE.FILE_PATH)
+      .from(IMAGE)
+      .where(IMAGE.ID.eq(uuid).and(IMAGE.OWNER_ID.eq(userId)))
+      .fetchOne();
+    // either no image with that ID, or image is owned by someone else
+    if (result == null) {
+      return null;
+    }
+    var path = result.value1();
+    return Files.newInputStream(Path.of(path));
   }
 }

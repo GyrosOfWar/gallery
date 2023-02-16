@@ -19,7 +19,8 @@ CREATE TABLE image
     width           INT              NOT NULL,
     geo_coordinates POINT,
     metadata        JSONB            NOT NULL,
-    tags            VARCHAR[]        NOT NULL
+    tags            VARCHAR[]        NOT NULL,
+    file_path       VARCHAR          NOT NULL
 );
 
 CREATE TABLE album
