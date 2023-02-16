@@ -4,9 +4,12 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.exif.GpsDirectory;
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.serde.ObjectMapper;
@@ -90,17 +93,30 @@ public class ImageService {
     }
   }
 
-  private JSONB getMetadata(Path path) throws ImageProcessingException, IOException {
-    Map<String, String> result = new HashMap<>();
+  private ParsedMetadata getMetadata(Path path) throws ImageProcessingException, IOException {
+    Map<String, Map<String, String>> result = new HashMap<>();
     var metadata = ImageMetadataReader.readMetadata(path.toFile());
     for (var directory : metadata.getDirectories()) {
+      Map<String, String> values = new HashMap<>();
       for (var tag : directory.getTags()) {
-        result.put(tag.getTagName(), tag.getDescription());
+        values.put(tag.getTagName(), tag.getDescription());
+      }
+
+      result.put(directory.getName(), values);
+    }
+    var gps = metadata.getDirectoriesOfType(GpsDirectory.class);
+    Double lat = null;
+    Double lon = null;
+
+    if (!gps.isEmpty()) {
+      var data = gps.iterator().next();
+      if (data.getGeoLocation() != null) {
+        lat = data.getGeoLocation().getLatitude();
+        lon = data.getGeoLocation().getLongitude();
       }
     }
 
-    var string = objectMapper.writeValueAsString(result);
-    return JSONB.jsonb(string);
+    return new ParsedMetadata(lat, lon, result);
   }
 
   @Transactional
@@ -119,16 +135,20 @@ public class ImageService {
 
     log.info("moved temp file {} to {}", tempFile, destinationPath);
     var metadata = getMetadata(destinationPath);
+    var metadataJson = JSONB.jsonb(objectMapper.writeValueAsString(metadata.metadata()));
     var bufferedImage = ImageIO.read(destinationPath.toFile());
     var image = new Image(
       id,
+      // TODO title
+      "",
       OffsetDateTime.now(),
       userId,
-      bufferedImage.getHeight(),
       bufferedImage.getWidth(),
+      bufferedImage.getHeight(),
       // TODO geo coordinates
-      null,
-      metadata,
+      metadata.latitude(),
+      metadata.longitude(),
+      metadataJson,
       // TODO tags
       new String[] {},
       destinationPath.toString()
@@ -137,14 +157,18 @@ public class ImageService {
     return toDto(image);
   }
 
-  public List<ImageDTO> listImages() {
-    return dsl
+  public Page<ImageDTO> listImages(Pageable pageable, long userId) {
+    var images = dsl
       .selectFrom(IMAGE)
+      .where(IMAGE.OWNER_ID.eq(userId))
       .orderBy(IMAGE.CREATED_ON.desc())
       .fetchInto(Image.class)
       .stream()
       .map(this::toDto)
       .toList();
+
+    var count = dsl.selectCount().from(IMAGE).where(IMAGE.OWNER_ID.eq(userId)).fetchOne().value1();
+    return Page.of(images, pageable, count);
   }
 
   // TODO can we do this without database access?
@@ -168,4 +192,10 @@ public class ImageService {
     var path = result.value1();
     return Files.newInputStream(Path.of(path));
   }
+
+  record ParsedMetadata(
+    Double latitude,
+    Double longitude,
+    Map<String, Map<String, String>> metadata
+  ) {}
 }

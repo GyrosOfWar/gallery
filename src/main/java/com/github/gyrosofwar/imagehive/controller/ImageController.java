@@ -1,8 +1,12 @@
 package com.github.gyrosofwar.imagehive.controller;
 
+import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
+
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.service.ImageService;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
@@ -42,8 +46,13 @@ public class ImageController {
 
   @Get(produces = MediaType.APPLICATION_JSON)
   @Transactional
-  public List<ImageDTO> getImages() {
-    return imageService.listImages();
+  public Page<ImageDTO> getImages(Pageable pageable, Authentication authentication) {
+    var userId = getUserId(authentication);
+    if (userId == null) {
+      return Page.empty();
+    } else {
+      return imageService.listImages(pageable, userId);
+    }
   }
 
   @Put(consumes = MediaType.MULTIPART_FORM_DATA)
