@@ -61,7 +61,11 @@ public class ImageService {
     );
   }
 
-  public Path getImagePath(UUID imageId, String extension) {
+  public Path getImagePath(UUID imageId, String extension) throws IOException {
+    if (!Files.isDirectory(imageBasePath)) {
+      Files.createDirectories(imageBasePath);
+    }
+
     return imageBasePath.resolve(imageId.toString() + "." + extension);
   }
 
@@ -100,19 +104,19 @@ public class ImageService {
   }
 
   @Transactional
-  public ImageDTO create(CompletedFileUpload file, long userId)
+  public ImageDTO create(StreamingFileUpload file, long userId)
     throws IOException, ImageProcessingException {
     var id = Ulid.fast().toUuid();
     log.info("generated ID {} for upload {}", id, file.getName());
     var tempFile = Files.createTempFile(id.toString(), "tmp");
-    try (var outputStream = Files.newOutputStream(tempFile)) {
-      file.getInputStream().transferTo(outputStream);
-    }
+
+    Mono.from(file.transferTo(tempFile.toFile())).block();
 
     var extension = getExtension(tempFile.toFile(), file.getContentType(), file.getFilename());
     log.info("determined extension {} for filename {}", extension, file.getFilename());
     var destinationPath = getImagePath(id, extension);
     Files.move(tempFile, destinationPath);
+
     log.info("moved temp file {} to {}", tempFile, destinationPath);
     var metadata = getMetadata(destinationPath);
     var bufferedImage = ImageIO.read(destinationPath.toFile());

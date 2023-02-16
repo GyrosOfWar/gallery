@@ -24,5 +24,5 @@ public interface AppClient {
   );
 
   @Put(value = "/api/images", produces = MediaType.MULTIPART_FORM_DATA)
-  HttpResponse<Void> uploadImages(@Body MultipartBody files, @Header String authorization);
+  HttpResponse<Void> uploadImage(@Body MultipartBody files, @Header String authorization);
 }

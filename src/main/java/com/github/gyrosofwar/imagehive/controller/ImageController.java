@@ -7,6 +7,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.multipart.CompletedFileUpload;
+import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.http.server.multipart.MultipartBody;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
@@ -46,27 +47,10 @@ public class ImageController {
   }
 
   @Put(consumes = MediaType.MULTIPART_FORM_DATA)
-  public Mono<HttpResponse<Void>> uploadImages(
-    @Body MultipartBody files,
-    Authentication authentication
-  ) throws ImageProcessingException, IOException {
-    return Flux
-      .from(files)
-      .collectList()
-      .flatMap(parts ->
-        Mono
-          .fromSupplier(() -> {
-            for (var file : parts) {
-              try {
-                imageService.create((CompletedFileUpload) file, 1L);
-              } catch (IOException | ImageProcessingException e) {
-                throw new RuntimeException(e);
-              }
-            }
-            return true;
-          })
-          .subscribeOn(Schedulers.boundedElastic())
-      )
-      .map(e -> HttpResponse.ok());
+  public HttpResponse<Void> uploadImages(StreamingFileUpload file, Authentication authentication)
+    throws ImageProcessingException, IOException {
+    log.info("authentication: {}", authentication);
+    imageService.create(file, 1L);
+    return HttpResponse.ok();
   }
 }
