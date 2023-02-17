@@ -30,7 +30,7 @@ class ImageControllerTest extends BaseTest {
 
     var uuid = response.body().id();
 
-    var imageResponse = appClient.getImageBytes(uuid, header);
+    var imageResponse = appClient.getImageBytes(uuid, ".jpg", header);
     assertEquals(200, imageResponse.code());
     assertNotNull(imageResponse.body());
 

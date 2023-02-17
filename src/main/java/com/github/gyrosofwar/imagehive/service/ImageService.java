@@ -16,13 +16,13 @@ import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -40,14 +40,20 @@ public class ImageService {
   private static final Logger log = LoggerFactory.getLogger(ImageService.class);
 
   private final DSLContext dsl;
-  private final Path imageBasePath = Path.of("images");
   private final TikaConfig tikaConfig;
   private final ObjectMapper objectMapper;
+  private final MediaService mediaService;
 
-  public ImageService(DSLContext dsl, TikaConfig tikaConfig, ObjectMapper objectMapper) {
+  public ImageService(
+    DSLContext dsl,
+    TikaConfig tikaConfig,
+    ObjectMapper objectMapper,
+    MediaService mediaService
+  ) {
     this.dsl = dsl;
     this.tikaConfig = tikaConfig;
     this.objectMapper = objectMapper;
+    this.mediaService = mediaService;
   }
 
   public Image getByUuid(UUID uuid) {
@@ -60,16 +66,9 @@ public class ImageService {
       image.height(),
       image.width(),
       image.createdOn(),
-      Arrays.asList(image.tags())
+      Arrays.asList(image.tags()),
+      FilenameUtils.getExtension(Path.of(image.filePath()).getFileName().toString())
     );
-  }
-
-  public Path getImagePath(UUID imageId, String extension) throws IOException {
-    if (!Files.isDirectory(imageBasePath)) {
-      Files.createDirectories(imageBasePath);
-    }
-
-    return imageBasePath.resolve(imageId.toString() + "." + extension);
   }
 
   private String getExtension(File tempFile, Optional<MediaType> contentTypeHint, String filename)
@@ -122,7 +121,7 @@ public class ImageService {
   @Transactional
   public ImageDTO create(StreamingFileUpload file, long userId)
     throws IOException, ImageProcessingException {
-    var id = Ulid.fast().toUuid();
+    var id = Ulid.fast();
     log.info("generated ID {} for upload {}", id, file.getName());
     var tempFile = Files.createTempFile(id.toString(), "tmp");
 
@@ -130,22 +129,20 @@ public class ImageService {
 
     var extension = getExtension(tempFile.toFile(), file.getContentType(), file.getFilename());
     log.info("determined extension {} for filename {}", extension, file.getFilename());
-    var destinationPath = getImagePath(id, extension);
-    Files.move(tempFile, destinationPath);
+    var destinationPath = mediaService.persistImage(tempFile, id, extension, userId);
 
     log.info("moved temp file {} to {}", tempFile, destinationPath);
     var metadata = getMetadata(destinationPath);
     var metadataJson = JSONB.jsonb(objectMapper.writeValueAsString(metadata.metadata()));
     var bufferedImage = ImageIO.read(destinationPath.toFile());
     var image = new Image(
-      id,
+      id.toUuid(),
       // TODO title
       "",
       OffsetDateTime.now(),
       userId,
       bufferedImage.getWidth(),
       bufferedImage.getHeight(),
-      // TODO geo coordinates
       metadata.latitude(),
       metadata.longitude(),
       metadataJson,
@@ -169,28 +166,6 @@ public class ImageService {
 
     var count = dsl.selectCount().from(IMAGE).where(IMAGE.OWNER_ID.eq(userId)).fetchOne().value1();
     return Page.of(images, pageable, count);
-  }
-
-  // TODO can we do this without database access?
-  //  we could encode the owner of the image in the path, and also
-  //  determine the extension somehow
-  @Transactional
-  public InputStream getImageBytes(UUID uuid, Long userId) throws IOException {
-    if (userId == null) {
-      return null;
-    }
-
-    var result = dsl
-      .select(IMAGE.FILE_PATH)
-      .from(IMAGE)
-      .where(IMAGE.ID.eq(uuid).and(IMAGE.OWNER_ID.eq(userId)))
-      .fetchOne();
-    // either no image with that ID, or image is owned by someone else
-    if (result == null) {
-      return null;
-    }
-    var path = result.value1();
-    return Files.newInputStream(Path.of(path));
   }
 
   record ParsedMetadata(

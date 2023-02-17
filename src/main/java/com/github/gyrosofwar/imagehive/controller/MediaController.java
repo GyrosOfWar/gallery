@@ -2,11 +2,13 @@ package com.github.gyrosofwar.imagehive.controller;
 
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 
-import com.github.gyrosofwar.imagehive.service.ImageService;
+import com.github.f4b6a3.ulid.Ulid;
+import com.github.gyrosofwar.imagehive.service.MediaService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -18,18 +20,23 @@ import java.util.UUID;
 @Secured({ SecurityRule.IS_AUTHENTICATED })
 public class MediaController {
 
-  private final ImageService imageService;
+  private final MediaService mediaService;
 
-  public MediaController(ImageService imageService) {
-    this.imageService = imageService;
+  public MediaController(MediaService mediaService) {
+    this.mediaService = mediaService;
   }
 
   @Get("{uuid}")
   public HttpResponse<InputStream> getImageBytes(
     @PathVariable UUID uuid,
+    @QueryValue String extension,
     Authentication authentication
   ) throws IOException {
-    var inputStream = imageService.getImageBytes(uuid, getUserId(authentication));
+    var inputStream = mediaService.getImageBytes(
+      Ulid.from(uuid),
+      extension,
+      getUserId(authentication)
+    );
     if (inputStream == null) {
       return HttpResponse.notFound();
     } else {

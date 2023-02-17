@@ -12,5 +12,6 @@ public record ImageDTO(
   int height,
   int width,
   OffsetDateTime createdOn,
-  @Nullable List<String> tags
+  @Nullable List<String> tags,
+  String extension
 ) {}

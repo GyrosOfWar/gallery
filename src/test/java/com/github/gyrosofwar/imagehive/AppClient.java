@@ -27,5 +27,9 @@ public interface AppClient {
   HttpResponse<ImageDTO> uploadImage(@Body MultipartBody files, @Header String authorization);
 
   @Get("/api/media/{uuid}")
-  HttpResponse<byte[]> getImageBytes(@PathVariable UUID uuid, @Header String authorization);
+  HttpResponse<byte[]> getImageBytes(
+    @PathVariable UUID uuid,
+    @QueryValue String extension,
+    @Header String authorization
+  );
 }

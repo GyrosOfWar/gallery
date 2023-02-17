@@ -13,7 +13,7 @@ CREATE TABLE "user"
 CREATE TABLE image
 (
     id            UUID PRIMARY KEY NOT NULL,
-    title         VARCHAR          NOT NULL,
+    title         VARCHAR,
     created_on    TIMESTAMPTZ      NOT NULL,
     owner_id      BIGINT REFERENCES "user" (id),
     width         INT              NOT NULL,
