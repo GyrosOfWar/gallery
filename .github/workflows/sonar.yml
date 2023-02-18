@@ -55,4 +55,4 @@ jobs:
           IMAGEHIVE_PG_JDBC_URL: jdbc:postgresql://postgres:5432/postgres
           IMAGEHIVE_PG_USER: postgres
           IMAGEHIVE_PG_PASSWORD: password
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=GyrosOfWar_imagehive_AYZL_JlCc5USfBbgAJYv
+        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=GyrosOfWar_imagehive_AYZL_JlCc5USfBbgAJYv
