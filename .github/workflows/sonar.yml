@@ -1,15 +1,23 @@
-name: Sonar
+name: Run tests & Sonar
 
 on:
-  push:
-    branches:
-      - main
-
+  push
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: password
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v2
         with:
@@ -18,6 +26,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
       - name: Cache SonarQube packages
         uses: actions/cache@v1
         with:
@@ -30,9 +42,14 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
+      - name: Generate code and build
+        run: ./build.sh postgres postgres password
+      - name: Run tests and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          IMAGEHIVE_PG_JDBC_URL: jdbc:postgresql://postgres:5432/postgres
+          IMAGEHIVE_PG_USER: postgres
+          IMAGEHIVE_PG_PASSWORD: password
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=GyrosOfWar_imagehive_AYZL_JlCc5USfBbgAJYv
