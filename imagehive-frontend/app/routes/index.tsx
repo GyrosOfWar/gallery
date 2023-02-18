@@ -1,11 +1,10 @@
 import {json} from "@remix-run/node"
 import {Link, useLoaderData} from "@remix-run/react"
 import type {LoaderFunction} from "react-router"
-import type {PageImageDTO} from "~/client"
-import {DefaultApi} from "~/client"
+import type {PageImageDTO} from "imagehive-client"
+import {DefaultApi} from "imagehive-client"
 import type {User} from "~/services/auth.server"
 import {requireUser} from "~/services/auth.server"
-
 interface Data {
   user: User
   images: PageImageDTO
