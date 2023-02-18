@@ -7,10 +7,10 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    container: ubuntu:latest
     services:
       postgres:
         image: postgres
+        ports: 5432:5432
         env:
           POSTGRES_PASSWORD: password
         options:
@@ -44,15 +44,15 @@ jobs:
       - name: Generate code and build
         run: ./build.sh postgres postgres password
         env:
-          IMAGEHIVE_PG_JDBC_URL: jdbc:postgresql://postgres:5432/postgres
+          IMAGEHIVE_PG_JDBC_URL: jdbc:postgresql://localhost:5432/postgres
           IMAGEHIVE_PG_USER: postgres
           IMAGEHIVE_PG_PASSWORD: password
       - name: Run tests and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          IMAGEHIVE_PG_JDBC_URL: jdbc:postgresql://postgres:5432/postgres
+          IMAGEHIVE_PG_JDBC_URL: jdbc:postgresql://localhost:5432/postgres
           IMAGEHIVE_PG_USER: postgres
           IMAGEHIVE_PG_PASSWORD: password
-        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=GyrosOfWar_imagehive_AYZL_JlCc5USfBbgAJYv -Dsonar.scm.provider=git
+        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=GyrosOfWar_imagehive_AYZL_JlCc5USfBbgAJYv
