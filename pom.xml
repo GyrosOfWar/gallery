@@ -111,6 +111,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.jooq</groupId>
+      <artifactId>jooq-meta-extensions</artifactId>
+      <version>${jooq.version}</version>
+    </dependency>
+    <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
       <scope>compile</scope>
@@ -318,6 +323,15 @@
             </target>
           </generator>
         </configuration>
+        <executions>
+          <execution>
+            <id>jooq-codegen</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>

@@ -1,12 +1,15 @@
 package com.github.gyrosofwar.imagehive.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.github.gyrosofwar.imagehive.BaseTest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.client.multipart.MultipartBody;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 
 class ImageControllerTest extends BaseTest {
@@ -23,5 +26,16 @@ class ImageControllerTest extends BaseTest {
     var header = String.format("Bearer %s", token.getAccessToken());
     var response = appClient.uploadImage(body, header);
     assertEquals(200, response.code());
+    assertNotNull(response.body());
+
+    var uuid = response.body().id();
+
+    var imageResponse = appClient.getImageBytes(uuid, ".jpg", header);
+    assertEquals(200, imageResponse.code());
+    assertNotNull(imageResponse.body());
+
+    var image = ImageIO.read(new ByteArrayInputStream(imageResponse.body()));
+    assertEquals(image.getWidth(), response.body().width());
+    assertEquals(image.getHeight(), response.body().height());
   }
 }

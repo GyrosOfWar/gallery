@@ -30,3 +30,6 @@ netty:
   default:
     allocator:
       max-order: 3
+
+imagehive:
+  image-base-path: "images"

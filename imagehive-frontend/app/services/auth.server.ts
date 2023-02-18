@@ -21,6 +21,7 @@ interface LoginResponse {
 export interface User {
   username: string
   roles: UserRole[]
+  accessToken: string
 }
 
 export const authenticator = new Authenticator<User>(sessionStorage)
@@ -40,6 +41,7 @@ async function login(username: string, password: string): Promise<User> {
     return {
       username: data.username,
       roles: token.roles,
+      accessToken: data.access_token,
     }
   } else {
     const text = await response.text()

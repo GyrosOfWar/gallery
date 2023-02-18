@@ -14,3 +14,5 @@ out/
 .classpath
 .factorypath
 /images
+/imagehive-client
+/test-images

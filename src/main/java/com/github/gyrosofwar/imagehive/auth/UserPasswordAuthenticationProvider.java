@@ -8,6 +8,7 @@ import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import jakarta.inject.Singleton;
 import java.util.List;
+import java.util.Map;
 import org.reactivestreams.Publisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.core.publisher.Mono;
@@ -39,7 +40,8 @@ public class UserPasswordAuthenticationProvider implements AuthenticationProvide
       .flatMap(user -> {
         if (user != null && passwordEncoder.matches(secret, user.passwordHash())) {
           var roles = List.of(user.admin() ? UserRole.ADMIN.name() : UserRole.USER.name());
-          return Mono.just(AuthenticationResponse.success(identity, roles));
+          Map<String, Object> attributes = Map.of("userId", user.id(), "email", user.email());
+          return Mono.just(AuthenticationResponse.success(identity, roles, attributes));
         } else {
           return Mono.error(AuthenticationResponse.exception());
         }

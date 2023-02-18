@@ -12,14 +12,17 @@ CREATE TABLE "user"
 
 CREATE TABLE image
 (
-    id              UUID PRIMARY KEY NOT NULL,
-    created_on      TIMESTAMPTZ      NOT NULL,
-    owner_id        BIGINT REFERENCES "user" (id),
-    height          INT              NOT NULL,
-    width           INT              NOT NULL,
-    geo_coordinates POINT,
-    metadata        JSONB            NOT NULL,
-    tags            VARCHAR[]        NOT NULL
+    id            UUID PRIMARY KEY NOT NULL,
+    title         VARCHAR,
+    created_on    TIMESTAMPTZ      NOT NULL,
+    owner_id      BIGINT REFERENCES "user" (id),
+    width         INT              NOT NULL,
+    height        INT              NOT NULL,
+    gps_latitude  DOUBLE PRECISION,
+    gps_longitude DOUBLE PRECISION,
+    metadata      JSONB            NOT NULL,
+    tags          VARCHAR[]        NOT NULL,
+    file_path     VARCHAR          NOT NULL
 );
 
 CREATE TABLE album

@@ -12,6 +12,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
 public class ImageHiveApplication {
 
   public static void main(String[] args) {
-    Micronaut.run(ImageHiveApplication.class, args);
+    Micronaut.build(args).banner(false).start();
   }
 }

@@ -4,12 +4,13 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.exif.GpsDirectory;
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.multipart.CompletedFileUpload;
-import io.micronaut.http.multipart.CompletedPart;
 import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
@@ -21,6 +22,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -38,14 +40,20 @@ public class ImageService {
   private static final Logger log = LoggerFactory.getLogger(ImageService.class);
 
   private final DSLContext dsl;
-  private final Path imageBasePath = Path.of("images");
   private final TikaConfig tikaConfig;
   private final ObjectMapper objectMapper;
+  private final MediaService mediaService;
 
-  public ImageService(DSLContext dsl, TikaConfig tikaConfig, ObjectMapper objectMapper) {
+  public ImageService(
+    DSLContext dsl,
+    TikaConfig tikaConfig,
+    ObjectMapper objectMapper,
+    MediaService mediaService
+  ) {
     this.dsl = dsl;
     this.tikaConfig = tikaConfig;
     this.objectMapper = objectMapper;
+    this.mediaService = mediaService;
   }
 
   public Image getByUuid(UUID uuid) {
@@ -54,19 +62,13 @@ public class ImageService {
 
   public ImageDTO toDto(Image image) {
     return new ImageDTO(
+      image.id(),
       image.height(),
       image.width(),
       image.createdOn(),
-      Arrays.asList(image.tags())
+      Arrays.asList(image.tags()),
+      FilenameUtils.getExtension(Path.of(image.filePath()).getFileName().toString())
     );
-  }
-
-  public Path getImagePath(UUID imageId, String extension) throws IOException {
-    if (!Files.isDirectory(imageBasePath)) {
-      Files.createDirectories(imageBasePath);
-    }
-
-    return imageBasePath.resolve(imageId.toString() + "." + extension);
   }
 
   private String getExtension(File tempFile, Optional<MediaType> contentTypeHint, String filename)
@@ -90,23 +92,36 @@ public class ImageService {
     }
   }
 
-  private JSONB getMetadata(Path path) throws ImageProcessingException, IOException {
-    Map<String, String> result = new HashMap<>();
+  private ParsedMetadata getMetadata(Path path) throws ImageProcessingException, IOException {
+    Map<String, Map<String, String>> result = new HashMap<>();
     var metadata = ImageMetadataReader.readMetadata(path.toFile());
     for (var directory : metadata.getDirectories()) {
+      Map<String, String> values = new HashMap<>();
       for (var tag : directory.getTags()) {
-        result.put(tag.getTagName(), tag.getDescription());
+        values.put(tag.getTagName(), tag.getDescription());
+      }
+
+      result.put(directory.getName(), values);
+    }
+    var gps = metadata.getDirectoriesOfType(GpsDirectory.class);
+    Double lat = null;
+    Double lon = null;
+
+    if (!gps.isEmpty()) {
+      var data = gps.iterator().next();
+      if (data.getGeoLocation() != null) {
+        lat = data.getGeoLocation().getLatitude();
+        lon = data.getGeoLocation().getLongitude();
       }
     }
 
-    var string = objectMapper.writeValueAsString(result);
-    return JSONB.jsonb(string);
+    return new ParsedMetadata(lat, lon, result);
   }
 
   @Transactional
   public ImageDTO create(StreamingFileUpload file, long userId)
     throws IOException, ImageProcessingException {
-    var id = Ulid.fast().toUuid();
+    var id = Ulid.fast();
     log.info("generated ID {} for upload {}", id, file.getName());
     var tempFile = Files.createTempFile(id.toString(), "tmp");
 
@@ -114,35 +129,48 @@ public class ImageService {
 
     var extension = getExtension(tempFile.toFile(), file.getContentType(), file.getFilename());
     log.info("determined extension {} for filename {}", extension, file.getFilename());
-    var destinationPath = getImagePath(id, extension);
-    Files.move(tempFile, destinationPath);
+    var destinationPath = mediaService.persistImage(tempFile, id, extension, userId);
 
     log.info("moved temp file {} to {}", tempFile, destinationPath);
     var metadata = getMetadata(destinationPath);
+    var metadataJson = JSONB.jsonb(objectMapper.writeValueAsString(metadata.metadata()));
     var bufferedImage = ImageIO.read(destinationPath.toFile());
     var image = new Image(
-      id,
+      id.toUuid(),
+      // TODO title
+      "",
       OffsetDateTime.now(),
       userId,
-      bufferedImage.getHeight(),
       bufferedImage.getWidth(),
-      // TODO
-      null,
-      metadata,
-      // TODO
-      new String[] {}
+      bufferedImage.getHeight(),
+      metadata.latitude(),
+      metadata.longitude(),
+      metadataJson,
+      // TODO tags
+      new String[] {},
+      destinationPath.toString()
     );
     dsl.newRecord(IMAGE, image).insert();
     return toDto(image);
   }
 
-  public List<ImageDTO> listImages() {
-    return dsl
+  public Page<ImageDTO> listImages(Pageable pageable, long userId) {
+    var images = dsl
       .selectFrom(IMAGE)
+      .where(IMAGE.OWNER_ID.eq(userId))
       .orderBy(IMAGE.CREATED_ON.desc())
       .fetchInto(Image.class)
       .stream()
       .map(this::toDto)
       .toList();
+
+    var count = dsl.selectCount().from(IMAGE).where(IMAGE.OWNER_ID.eq(userId)).fetchOne().value1();
+    return Page.of(images, pageable, count);
   }
+
+  record ParsedMetadata(
+    Double latitude,
+    Double longitude,
+    Map<String, Map<String, String>> metadata
+  ) {}
 }
