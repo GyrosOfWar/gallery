@@ -9,6 +9,7 @@ import java.util.UUID;
 @Serdeable
 public record ImageDTO(
   UUID id,
+  @Nullable String title,
   int height,
   int width,
   OffsetDateTime createdOn,

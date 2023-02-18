@@ -63,6 +63,7 @@ public class ImageService {
   public ImageDTO toDto(Image image) {
     return new ImageDTO(
       image.id(),
+      image.title(),
       image.height(),
       image.width(),
       image.createdOn(),
