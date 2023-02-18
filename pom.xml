@@ -344,29 +344,6 @@
           <endOfLine>auto</endOfLine>
         </configuration>
       </plugin>
-
-<!--      <plugin>-->
-<!--        <groupId>org.openapitools</groupId>-->
-<!--        <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--        &lt;!&ndash; RELEASE_VERSION &ndash;&gt;-->
-<!--        <version>6.0.0</version>-->
-<!--        &lt;!&ndash; /RELEASE_VERSION &ndash;&gt;-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <goals>-->
-<!--              <goal>generate</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <inputSpec>${project.basedir}/target/classes/META-INF/swagger/swagger.yml</inputSpec>-->
-<!--              <generatorName>typescript-fetch</generatorName>-->
-<!--              <configOptions>-->
-<!--                <sourceFolder>imagehive-client</sourceFolder>-->
-<!--                <npmName>imagehive-client</npmName> -->
-<!--              </configOptions>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
     </plugins>
   </build>
 
