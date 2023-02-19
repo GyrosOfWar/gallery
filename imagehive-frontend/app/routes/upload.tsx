@@ -3,6 +3,7 @@ import type {ActionFunction} from "@remix-run/node"
 import {Form, useSubmit} from "@remix-run/react"
 import clsx from "clsx"
 import {Button, TextInput} from "flowbite-react"
+import produce from "immer"
 import {useCallback, useEffect, useRef, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
@@ -14,9 +15,7 @@ interface FileWithUrl {
   url: string
 }
 
-export const action: ActionFunction = async ({context, request}) => {
-
-}
+export const action: ActionFunction = async ({context, request}) => {}
 
 const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
   onDrop,
@@ -43,16 +42,64 @@ const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
   )
 }
 
-const PreviewStep: React.FC<{files?: FileWithUrl[]}> = ({files}) => {
-  const size = files?.reduce((total, {file}) => total + file.size, 0) || 0
+interface FieldData {
+  tags: string
+  title: string
+}
+
+const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
+  const size = files.reduce((total, {file}) => total + file.size, 0) || 0
   const formattedSize = (size / MEGABYTES).toFixed(2)
+  const [formState, setFormState] = useState<FieldData[]>(
+    files!.map(() => ({tags: "", title: ""}))
+  )
+  const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [error, setError] = useState<string>()
+
+  const onChange = (index: number, field: keyof FieldData, value: string) => {
+    setFormState((state) =>
+      produce(state, (draft) => {
+        draft[index][field] = value
+      })
+    )
+  }
+
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
+    setUploading(true)
+
+    const formData = new FormData()
+    formState.forEach((info, index) => {
+      const file = files[index].file
+      formData.append(file.name, file)
+      formData.append(`${file.name}-title`, info.title)
+      formData.append(`${file.name}-tags`, info.tags)
+    })
+    // fetch doesn't support upload progress..
+    const req = new XMLHttpRequest()
+    req.upload.onprogress = (event) => {
+      let percent = Math.round((100 * event.loaded) / event.total)
+      setProgress(percent)
+      console.log(percent)
+    }
+    req.upload.onerror = () => {
+      setError(`Upload failed: ${req.statusText}`)
+    }
+    req.upload.onload = (event) => {
+      console.log('upload finished', req)
+    }
+
+    req.open("POST", "/upload")
+    req.send(formData)
+  }
 
   return (
-    <Form method="post">
+    <form onSubmit={onSubmit}>
       <aside className="fixed left-0 bottom-0 w-full py-2 z-10 border-t bg-white border-t-black border-opacity-50">
         <div className="container grid grid-cols-2 items-center ml-auto mr-auto px-2">
           <div>
-            <strong>{files?.length}</strong> files selected for upload (total
+            <strong>{files.length}</strong> files selected for upload (total
             size: {formattedSize} MB)
           </div>
           <Button
@@ -60,6 +107,7 @@ const PreviewStep: React.FC<{files?: FileWithUrl[]}> = ({files}) => {
             color="success"
             size="lg"
             type="submit"
+            disabled={uploading}
           >
             <ArrowUpTrayIcon className="w-6 h-6 mr-2" />
             Upload
@@ -68,7 +116,7 @@ const PreviewStep: React.FC<{files?: FileWithUrl[]}> = ({files}) => {
       </aside>
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-2 pb-20">
-        {files?.map(({file, url}) => (
+        {files.map(({file, url}, index) => (
           <figure key={file.name} className="flex flex-col justify-between">
             <img loading="lazy" src={url} alt={file.name} />
             <div className="flex flex-col gap-2">
@@ -76,16 +124,26 @@ const PreviewStep: React.FC<{files?: FileWithUrl[]}> = ({files}) => {
               <TextInput
                 name={`${file.name}-title`}
                 placeholder="Enter title (optional)"
+                onChange={(event) =>
+                  onChange(index, "title", event.target.value)
+                }
+                value={formState[index].title}
+                disabled={uploading}
               />
               <TextInput
                 name={`${file.name}-tags`}
                 placeholder="Enter tags (optional)"
+                onChange={(event) =>
+                  onChange(index, "tags", event.target.value)
+                }
+                value={formState[index].tags}
+                disabled={uploading}
               />
             </div>
           </figure>
         ))}
       </section>
-    </Form>
+    </form>
   )
 }
 
@@ -107,7 +165,7 @@ const UploadPage: React.FC = () => {
     <>
       <h1 className="text-3xl font-bold mb-4">Upload</h1>
       {!previewImages && <UploadStep onDrop={onDrop} />}
-      {previewImages && <PreviewStep files={files} />}
+      {previewImages && <PreviewStep files={files || []} />}
     </>
   )
 }

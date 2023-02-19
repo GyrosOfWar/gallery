@@ -19,6 +19,7 @@
     "flowbite": "^1.6.3",
     "flowbite-react": "^0.3.8",
     "imagehive-client": "file:../imagehive-client",
+    "immer": "^9.0.19",
     "isbot": "^3.6.5",
     "jsonwebtoken": "^9.0.0",
     "react": "^18.2.0",
