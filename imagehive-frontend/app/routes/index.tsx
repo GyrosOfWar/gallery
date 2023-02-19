@@ -54,7 +54,7 @@ export default function Index() {
           images.content.map((image) => (
             <article key={image.id}>
               <Link to={`/image/${image.id}`}>
-                <img alt={image.title} src={`/api/media/${image.id}`} />
+                <img alt={image.title || "<no title>"} src={`/api/media/${image.id}`} />
               </Link>
             </article>
           ))}
