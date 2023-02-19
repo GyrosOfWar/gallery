@@ -45,11 +45,16 @@ export default function Index() {
   const {images, user} = useLoaderData<Data>()
 
   return (
-    <>
-      <p>Welcome, {user.username}</p>
-
+    <div className="relative flex grow">
+      {Array.isArray(images) && (
+        <div className="grow flex justify-center items-center text-xl">
+          <div className="text-center">
+            <p>No photos yet!</p>
+            <p>Upload some <Link className="text-blue-600 underline hover:text-blue-500" to="/upload">here!</Link> </p>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-3">
-        {Array.isArray(images) && <div>No photos yet!</div>}
         {!Array.isArray(images) &&
           images.content.map((image) => (
             <article key={image.id}>
@@ -65,11 +70,11 @@ export default function Index() {
         <Link
           to="/upload"
           title="Upload new photos"
-          className="fixed bottom-8 right-8 bg-gray-100 rounded-full shadow-xl hover:bg-gray-200 transition p-2"
+          className="fixed bottom-8 right-8 bg-gray-100 rounded-full shadow-xl hover:bg-gray-200 transition p-4"
         >
-          <PlusIcon className="w-8 h-8" />
+          <PlusIcon className="w-10 h-10" />
         </Link>
       </div>
-    </>
+    </div>
   )
 }

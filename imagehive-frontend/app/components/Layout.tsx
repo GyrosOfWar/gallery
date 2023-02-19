@@ -31,7 +31,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
           </Navbar.Link>
         </Navbar.Collapse>
       </Navbar>
-      <main className="flex flex-col container ml-auto mr-auto px-2">
+      <main className="flex flex-col container ml-auto mr-auto px-2 relative" style={{minHeight: "calc(100vh - 68px)"}}>
         {children}
       </main>
     </>

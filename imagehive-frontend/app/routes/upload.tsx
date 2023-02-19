@@ -1,11 +1,13 @@
 import {ArrowUpTrayIcon} from "@heroicons/react/24/outline"
 import type {ActionFunction} from "@remix-run/node"
-import {Form} from "@remix-run/react"
+import {Form, useSubmit} from "@remix-run/react"
 import clsx from "clsx"
 import {Button, TextInput} from "flowbite-react"
-import {useCallback, useState} from "react"
+import {useCallback, useEffect, useRef, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
+
+const MEGABYTES = 1000 * 1000
 
 interface FileWithUrl {
   file: File
@@ -13,9 +15,7 @@ interface FileWithUrl {
 }
 
 export const action: ActionFunction = async ({context, request}) => {
-  const data = await request.formData()
-  console.log(Array.from(data.entries()))
-  return 1
+
 }
 
 const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
@@ -44,28 +44,30 @@ const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
 }
 
 const PreviewStep: React.FC<{files?: FileWithUrl[]}> = ({files}) => {
-  const size = files?.reduce((total, {file}) => total + file.size, 0)
+  const size = files?.reduce((total, {file}) => total + file.size, 0) || 0
+  const formattedSize = (size / MEGABYTES).toFixed(2)
 
   return (
     <Form method="post">
-      <div className="fixed left-0 bottom-0 w-full py-2 z-10 border-t bg-white border-t-black border-opacity-50 grid grid-cols-3 items-center">
-        <div></div>
-        <div className="text-center">
-          <strong>{files?.length}</strong> files selected for upload (total
-          size: {size})
+      <aside className="fixed left-0 bottom-0 w-full py-2 z-10 border-t bg-white border-t-black border-opacity-50">
+        <div className="container grid grid-cols-2 items-center ml-auto mr-auto px-2">
+          <div>
+            <strong>{files?.length}</strong> files selected for upload (total
+            size: {formattedSize} MB)
+          </div>
+          <Button
+            className="place-self-end"
+            color="success"
+            size="lg"
+            type="submit"
+          >
+            <ArrowUpTrayIcon className="w-6 h-6 mr-2" />
+            Upload
+          </Button>
         </div>
-        <Button
-          className="place-self-end"
-          color="success"
-          size="lg"
-          type="submit"
-        >
-          <ArrowUpTrayIcon className="w-4 h-4 mr-2" />
-          Upload
-        </Button>
-      </div>
+      </aside>
 
-      <section className="grid grid-cols-4 gap-2 pb-16">
+      <section className="grid grid-cols-1 lg:grid-cols-4 gap-2 pb-20">
         {files?.map(({file, url}) => (
           <figure key={file.name} className="flex flex-col justify-between">
             <img loading="lazy" src={url} alt={file.name} />
@@ -100,10 +102,6 @@ const UploadPage: React.FC = () => {
 
     setPreviewImages(true)
   }, [])
-
-  // useEffect(() => {
-  //   return () => files?.forEach((file) => URL.revokeObjectURL(file.url))
-  // }, [files])
 
   return (
     <>
