@@ -50,7 +50,15 @@ export default function Index() {
         <div className="grow flex justify-center items-center text-xl">
           <div className="text-center">
             <p>No photos yet!</p>
-            <p>Upload some <Link className="text-blue-600 underline hover:text-blue-500" to="/upload">here!</Link> </p>
+            <p>
+              Upload some{" "}
+              <Link
+                className="text-blue-600 underline hover:text-blue-500"
+                to="/upload"
+              >
+                here!
+              </Link>{" "}
+            </p>
           </div>
         </div>
       )}

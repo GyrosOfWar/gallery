@@ -7,6 +7,7 @@ import produce from "immer"
 import {useCallback, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
+import {BACKEND} from "~/services/auth.server"
 
 const MEGABYTES = 1000 * 1000
 
@@ -80,7 +81,6 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
   )
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [error, setError] = useState<string>()
   const navigate = useNavigate()
 
   const onChange = (index: number, field: keyof FieldData, value: string) => {
@@ -94,31 +94,6 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
   const onSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault()
     setUploading(true)
-
-    const formData = new FormData()
-    formState.forEach((info, index) => {
-      const file = files[index].file
-      formData.append(file.name, file)
-      formData.append(`${file.name}-title`, info.title)
-      formData.append(`${file.name}-tags`, info.tags)
-    })
-    // fetch doesn't support upload progress..
-    const req = new XMLHttpRequest()
-    req.upload.onprogress = (event) => {
-      let percent = Math.round((100 * event.loaded) / event.total)
-      setProgress(percent)
-      console.log(percent)
-    }
-    req.upload.onerror = (event) => {
-      setError(`Upload failed: ${req.statusText}`)
-      console.error(req, event)
-    }
-    req.upload.onload = () => {
-      navigate("/")
-    }
-
-    req.open("POST", "/upload")
-    req.send(formData)
   }
 
   return (

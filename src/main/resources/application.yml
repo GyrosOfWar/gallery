@@ -1,10 +1,18 @@
 micronaut:
   server:
-    
     multipart:
       max-file-size: '100MB'
       enabled: true
       disk: true
+    # for tus file uploads
+    cors:
+      enabled: true
+      configurations:
+        ui:
+          allowed-origins:
+            - http://localhost:3000
+            - http://127.0.0.1:3000
+
   application:
     name: imagehive
   security:
