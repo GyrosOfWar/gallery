@@ -19,7 +19,7 @@
     <release.version>17</release.version>
     <micronaut.version>3.8.4</micronaut.version>
     <micronaut.data.version>3.9.6</micronaut.data.version>
-    <micronaut.runtime>tomcat</micronaut.runtime>
+    <micronaut.runtime>jetty</micronaut.runtime>
     <jooq.version>3.15.11</jooq.version>
     <jib.docker.image>${project.artifactId}</jib.docker.image>
     <jib.docker.tag>${project.version}</jib.docker.tag>
@@ -110,7 +110,7 @@
 
     <dependency>
       <groupId>io.micronaut.servlet</groupId>
-      <artifactId>micronaut-http-server-tomcat</artifactId>
+      <artifactId>micronaut-http-server-jetty</artifactId>
       <version>3.3.5</version>
     </dependency>
 

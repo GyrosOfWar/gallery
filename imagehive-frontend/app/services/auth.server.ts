@@ -2,14 +2,9 @@ import {Authenticator} from "remix-auth"
 import {sessionStorage} from "~/services/session.server"
 import {FormStrategy} from "remix-auth-form"
 import * as jwt from "jsonwebtoken"
-
-export const BACKEND = "http://localhost:8080"
+import {backendUrl} from "~/util/consts"
 
 export type UserRole = "ADMIN" | "USER"
-
-export function url(url: string): string {
-  return `${BACKEND}${url}`
-}
 
 interface LoginResponse {
   username: string
@@ -27,30 +22,36 @@ export interface User {
 export const authenticator = new Authenticator<User>(sessionStorage)
 
 async function login(username: string, password: string): Promise<User> {
-  const response = await fetch(url("/login"), {
-    method: "POST",
-    body: new URLSearchParams([
-      ["username", username],
-      ["password", password],
-    ]),
-  })
+  const loginUrl = backendUrl("/login")
+  try {
+    const response = await fetch(loginUrl, {
+      method: "POST",
+      body: new URLSearchParams([
+        ["username", username],
+        ["password", password],
+      ]),
+    })
 
-  if (response.ok) {
-    const data: LoginResponse = await response.json()
-    const token = jwt.decode(data.access_token) as jwt.JwtPayload
-    return {
-      username: data.username,
-      roles: token.roles,
-      accessToken: data.access_token,
+    if (response.ok) {
+      const data: LoginResponse = await response.json()
+      const token = jwt.decode(data.access_token) as jwt.JwtPayload
+      return {
+        username: data.username,
+        roles: token.roles,
+        accessToken: data.access_token,
+      }
+    } else {
+      const text = await response.text()
+      throw new Error(
+        "request failed with status code " +
+          response.status +
+          ", response: " +
+          text
+      )
     }
-  } else {
-    const text = await response.text()
-    throw new Error(
-      "request failed with status code " +
-        response.status +
-        ", response: " +
-        text
-    )
+  } catch (err) {
+    console.error(err)
+    return Promise.reject(err)
   }
 }
 

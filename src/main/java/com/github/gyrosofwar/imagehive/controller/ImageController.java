@@ -1,29 +1,28 @@
 package com.github.gyrosofwar.imagehive.controller;
 
-import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
-
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.service.ImageService;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
-import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
-import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
-import java.io.IOException;
-import java.util.UUID;
+import me.desair.tus.server.TusFileUploadService;
+import me.desair.tus.server.exception.TusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import me.desair.tus.server.TusFileUploadService;
-import me.desair.tus.server.exception.TusException;
-import me.desair.tus.server.upload.UploadInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.UUID;
+
+import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 
 @Controller("/api/images")
 @Secured({ SecurityRule.IS_AUTHENTICATED })
@@ -85,7 +84,7 @@ public class ImageController {
     }
   }
 
-  @Post(uris = { "/upload", "/upload/**" })
+  @Post("upload")
   public void postUpload(
     HttpServletRequest request,
     HttpServletResponse response,
@@ -94,39 +93,34 @@ public class ImageController {
     handleTusUpload(request, response, authentication);
   }
 
-  @Patch(uris = { "/upload", "/upload/**" })
+  @Patch("upload/{id}")
   public void patchUpload(
     HttpServletRequest request,
     HttpServletResponse response,
-    Authentication authentication
+    Authentication authentication,
+    @Nullable @PathVariable String id
   ) throws IOException, TusException {
     handleTusUpload(request, response, authentication);
   }
 
-  @Head(uris = { "/upload", "/upload/**" })
+  @Head("/upload/{id}")
   public void headUpload(
     HttpServletRequest request,
     HttpServletResponse response,
-    Authentication authentication
+    Authentication authentication,
+    @Nullable @PathVariable String id
   ) throws IOException, TusException {
     handleTusUpload(request, response, authentication);
   }
 
-  @Delete(uris = { "/upload", "/upload/**" })
+  @Delete("upload/{id}")
   public void deleteUpload(
     HttpServletRequest request,
     HttpServletResponse response,
-    Authentication authentication
+    Authentication authentication,
+    @Nullable @PathVariable String id
   ) throws IOException, TusException {
     handleTusUpload(request, response, authentication);
   }
 
-  @Get(uris = { "/upload", "/upload/**" })
-  public void getUpload(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    Authentication authentication
-  ) throws IOException, TusException {
-    handleTusUpload(request, response, authentication);
-  }
 }

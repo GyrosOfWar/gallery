@@ -1,22 +1,28 @@
 import {ArrowUpTrayIcon} from "@heroicons/react/24/outline"
-import type {ActionFunction} from "@remix-run/node"
-import {useNavigate} from "@remix-run/react"
+import {json, LoaderFunction} from "@remix-run/node"
+import {useLoaderData, useNavigate} from "@remix-run/react"
 import clsx from "clsx"
 import {Button, TextInput} from "flowbite-react"
 import produce from "immer"
 import {useCallback, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
-import {BACKEND} from "~/services/auth.server"
+import {Upload} from "tus-js-client"
+import {requireUser, User} from "~/services/auth.server"
+import {backendUrl} from "~/util/consts"
 
 const MEGABYTES = 1000 * 1000
+
+export const loader: LoaderFunction = async ({request}) => {
+  const user = await requireUser(request)
+
+  return json({user})
+}
 
 interface FileWithUrl {
   file: File
   url: string
 }
-
-export const action: ActionFunction = async ({context, request}) => {}
 
 const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
   onDrop,
@@ -73,7 +79,10 @@ const InfoBar: React.FC<InfoBarProps> = ({count, formattedSize, uploading}) => (
   </div>
 )
 
-const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
+const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
+  files,
+  user,
+}) => {
   const size = files.reduce((total, {file}) => total + file.size, 0) || 0
   const formattedSize = (size / MEGABYTES).toFixed(2)
   const [formState, setFormState] = useState<FieldData[]>(
@@ -91,10 +100,46 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
     )
   }
 
-  const onSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault()
-    setUploading(true)
-  }
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
+    (event) => {
+      event.preventDefault()
+      setUploading(true)
+      const endpoint = backendUrl("/api/images/upload")
+
+      files.forEach(async ({file}, index) => {
+        const info = formState[index]
+        console.log('uploading file', file.name)
+
+        const upload = new Upload(file, {
+          // send directly to the backend with CORS
+          endpoint,
+          metadata: {
+            filename: file.name,
+            filetype: file.type,
+            tags: info.tags,
+            title: info.title,
+          },
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+          onProgress(bytesUploaded, bytesTotal) {
+            console.log(bytesUploaded, bytesTotal)
+          },
+          onBeforeRequest(req) {
+            const xhr = req.getUnderlyingObject() as XMLHttpRequest
+            xhr.withCredentials = true
+          },
+        })
+
+        const previousUploads = await upload.findPreviousUploads()
+        if (previousUploads.length) {
+          upload.resumeFromPreviousUpload(previousUploads[0])
+        }
+        upload.start()
+      })
+    },
+    [files, formState, user.accessToken]
+  )
 
   return (
     <form onSubmit={onSubmit}>
@@ -152,6 +197,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
 const UploadPage: React.FC = () => {
   const [previewImages, setPreviewImages] = useState(false)
   const [files, setFiles] = useState<FileWithUrl[]>()
+  const {user} = useLoaderData<{user: User}>()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const filesWithUrls = acceptedFiles.map((file) => ({
@@ -167,7 +213,7 @@ const UploadPage: React.FC = () => {
     <>
       <h1 className="text-3xl font-bold mb-4">Upload</h1>
       {!previewImages && <UploadStep onDrop={onDrop} />}
-      {previewImages && <PreviewStep files={files || []} />}
+      {previewImages && <PreviewStep user={user} files={files || []} />}
     </>
   )
 }

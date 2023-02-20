@@ -9,9 +9,20 @@ micronaut:
       enabled: true
       configurations:
         ui:
+          allowed-methods:
+            - POST
+            - DELETE
+            - PATCH
+            - HEAD
+          exposed-headers:
+            - Location
+            - Upload-Offset
+            - Upload-Length
           allowed-origins:
             - http://localhost:3000
             - http://127.0.0.1:3000
+
+    host: 0.0.0.0
 
   application:
     name: imagehive
