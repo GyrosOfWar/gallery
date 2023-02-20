@@ -1,7 +1,10 @@
 micronaut:
   server:
+    
     multipart:
       max-file-size: '100MB'
+      enabled: true
+      disk: true
   application:
     name: imagehive
   security:

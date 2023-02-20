@@ -16,7 +16,9 @@ import org.slf4j.LoggerFactory;
 @Controller("/api/admin/user")
 public class AdminUserController {
 
-  private static final Logger log = LoggerFactory.getLogger(AdminUserController.class);
+  private static final Logger log = LoggerFactory.getLogger(
+    AdminUserController.class
+  );
   private final UserService userService;
 
   public AdminUserController(UserService userService) {

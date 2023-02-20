@@ -32,7 +32,15 @@ public abstract class BaseTest {
   @BeforeEach
   void beforeEach() {
     if (userService.getUserCount() == 0) {
-      userService.create(new UserCreateDTO(username, "example@example.com", password, true, false));
+      userService.create(
+        new UserCreateDTO(
+          username,
+          "example@example.com",
+          password,
+          true,
+          false
+        )
+      );
     }
     // var token = login().getAccessToken();
     // authHeader = String.format("Bearer %s", token);

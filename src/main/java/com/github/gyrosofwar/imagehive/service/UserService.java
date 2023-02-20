@@ -27,7 +27,11 @@ public class UserService {
   private final PasswordEncoder passwordEncoder;
   private final EmailService emailService;
 
-  public UserService(DSLContext dsl, PasswordEncoder passwordEncoder, EmailService emailService) {
+  public UserService(
+    DSLContext dsl,
+    PasswordEncoder passwordEncoder,
+    EmailService emailService
+  ) {
     this.dsl = dsl;
     this.passwordEncoder = passwordEncoder;
     this.emailService = emailService;
@@ -50,7 +54,9 @@ public class UserService {
       getByNameOrEmail(userCreate.username()) != null ||
       getByNameOrEmail(userCreate.email()) != null
     ) {
-      throw new IllegalArgumentException("User with the given information already exists");
+      throw new IllegalArgumentException(
+        "User with the given information already exists"
+      );
     }
     // Prepare the password hash either by generating a random password or using the given password
     String password;

@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 @Requires(notEnv = "test")
 public class StartupService implements ApplicationEventListener<StartupEvent> {
 
-  private static final Logger log = LoggerFactory.getLogger(StartupService.class);
+  private static final Logger log = LoggerFactory.getLogger(
+    StartupService.class
+  );
   private final UserService userService;
 
   public StartupService(UserService userService) {
@@ -28,9 +30,18 @@ public class StartupService implements ApplicationEventListener<StartupEvent> {
   private void createAdminUserOnNewInstall() {
     if (userService.getUserCount() == 0) {
       String random = RandomStringUtils.randomAlphanumeric(12);
-      UserCreateDTO newAdmin = new UserCreateDTO("admin", "", random, true, false);
+      UserCreateDTO newAdmin = new UserCreateDTO(
+        "admin",
+        "",
+        random,
+        true,
+        false
+      );
       userService.create(newAdmin);
-      log.info("User \"admin\" with password \"{}\" has been created for an initial login", random);
+      log.info(
+        "User \"admin\" with password \"{}\" has been created for an initial login",
+        random
+      );
     }
   }
 

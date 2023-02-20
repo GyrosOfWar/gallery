@@ -19,11 +19,11 @@
     <release.version>17</release.version>
     <micronaut.version>3.8.4</micronaut.version>
     <micronaut.data.version>3.9.6</micronaut.data.version>
-    <micronaut.runtime>netty</micronaut.runtime>
+    <micronaut.runtime>tomcat</micronaut.runtime>
     <jooq.version>3.15.11</jooq.version>
     <jib.docker.image>${project.artifactId}</jib.docker.image>
     <jib.docker.tag>${project.version}</jib.docker.tag>
-    <exec.mainClass>com.github.gyrosofwar.imagehive.Application</exec.mainClass>
+    <exec.mainClass>com.github.gyrosofwar.imagehive.ImageHiveApplication</exec.mainClass>
   </properties>
 
   <repositories>
@@ -49,11 +49,7 @@
       <artifactId>micronaut-http-client</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-http-server-netty</artifactId>
-      <scope>compile</scope>
-    </dependency>
+
     <dependency>
       <groupId>io.micronaut</groupId>
       <artifactId>micronaut-runtime</artifactId>
@@ -110,6 +106,14 @@
       <artifactId>micronaut-jooq</artifactId>
       <scope>compile</scope>
     </dependency>
+
+
+    <dependency>
+      <groupId>io.micronaut.servlet</groupId>
+      <artifactId>micronaut-http-server-tomcat</artifactId>
+      <version>3.3.5</version>
+    </dependency>
+
     <dependency>
       <groupId>org.jooq</groupId>
       <artifactId>jooq-meta-extensions</artifactId>
@@ -163,6 +167,12 @@
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>me.desair.tus</groupId>
+      <artifactId>tus-java-server</artifactId>
+      <version>1.0.0-2.0</version>
     </dependency>
 
     <dependency>

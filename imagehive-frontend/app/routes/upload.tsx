@@ -1,10 +1,10 @@
 import {ArrowUpTrayIcon} from "@heroicons/react/24/outline"
 import type {ActionFunction} from "@remix-run/node"
-import {Form, useSubmit} from "@remix-run/react"
+import {useNavigate} from "@remix-run/react"
 import clsx from "clsx"
 import {Button, TextInput} from "flowbite-react"
 import produce from "immer"
-import {useCallback, useEffect, useRef, useState} from "react"
+import {useCallback, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
 
@@ -47,6 +47,31 @@ interface FieldData {
   title: string
 }
 
+interface InfoBarProps {
+  count: number
+  formattedSize: string
+  uploading: boolean
+}
+
+const InfoBar: React.FC<InfoBarProps> = ({count, formattedSize, uploading}) => (
+  <div className="container grid grid-cols-2 items-center ml-auto mr-auto px-2">
+    <div>
+      <strong>{count}</strong> files selected for upload (total size:{" "}
+      {formattedSize} MB)
+    </div>
+    <Button
+      className="place-self-end"
+      color="success"
+      size="lg"
+      type="submit"
+      disabled={uploading}
+    >
+      <ArrowUpTrayIcon className="w-6 h-6 mr-2" />
+      Upload
+    </Button>
+  </div>
+)
+
 const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
   const size = files.reduce((total, {file}) => total + file.size, 0) || 0
   const formattedSize = (size / MEGABYTES).toFixed(2)
@@ -56,6 +81,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string>()
+  const navigate = useNavigate()
 
   const onChange = (index: number, field: keyof FieldData, value: string) => {
     setFormState((state) =>
@@ -83,11 +109,12 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
       setProgress(percent)
       console.log(percent)
     }
-    req.upload.onerror = () => {
+    req.upload.onerror = (event) => {
       setError(`Upload failed: ${req.statusText}`)
+      console.error(req, event)
     }
-    req.upload.onload = (event) => {
-      console.log('upload finished', req)
+    req.upload.onload = () => {
+      navigate("/")
     }
 
     req.open("POST", "/upload")
@@ -97,22 +124,22 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
   return (
     <form onSubmit={onSubmit}>
       <aside className="fixed left-0 bottom-0 w-full py-2 z-10 border-t bg-white border-t-black border-opacity-50">
-        <div className="container grid grid-cols-2 items-center ml-auto mr-auto px-2">
-          <div>
-            <strong>{files.length}</strong> files selected for upload (total
-            size: {formattedSize} MB)
+        {uploading ? (
+          <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+            <div
+              className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+              style={{width: `${progress}%`}}
+            >
+              {progress}%
+            </div>
           </div>
-          <Button
-            className="place-self-end"
-            color="success"
-            size="lg"
-            type="submit"
-            disabled={uploading}
-          >
-            <ArrowUpTrayIcon className="w-6 h-6 mr-2" />
-            Upload
-          </Button>
-        </div>
+        ) : (
+          <InfoBar
+            count={files.length}
+            uploading={uploading}
+            formattedSize={formattedSize}
+          />
+        )}
       </aside>
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-2 pb-20">
