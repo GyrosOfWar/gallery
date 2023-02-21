@@ -30,11 +30,9 @@ public class ImageController {
   private static final Logger log = LoggerFactory.getLogger(ImageController.class);
 
   private final ImageService imageService;
-  private final TusFileUploadService fileUploadService;
 
-  public ImageController(ImageService imageService, TusFileUploadService fileUploadService) {
+  public ImageController(ImageService imageService) {
     this.imageService = imageService;
-    this.fileUploadService = fileUploadService;
   }
 
   @Get(produces = MediaType.APPLICATION_JSON, uri = "/{uuid}")
@@ -54,63 +52,4 @@ public class ImageController {
     }
   }
 
-  private void handleTusUpload(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    Authentication authentication
-  ) throws IOException, TusException {
-    fileUploadService.process(request, response);
-
-    var uploadUri = request.getRequestURI();
-    try {
-      var uploadInfo = fileUploadService.getUploadInfo(uploadUri);
-      if (uploadInfo != null && !uploadInfo.isUploadInProgress()) {
-        var inputStream = fileUploadService.getUploadedBytes(uploadUri);
-        imageService.create(inputStream, uploadInfo, getUserId(authentication));
-      }
-    } catch (IOException | TusException | ImageProcessingException e) {
-      log.error("encountered upload error", e);
-    } finally {
-      fileUploadService.deleteUpload(uploadUri);
-    }
-  }
-
-  @Post("upload")
-  public void postUpload(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    Authentication authentication
-  ) throws IOException, TusException {
-    handleTusUpload(request, response, authentication);
-  }
-
-  @Patch("upload/{id}")
-  public void patchUpload(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    Authentication authentication,
-    @Nullable @PathVariable String id
-  ) throws IOException, TusException {
-    handleTusUpload(request, response, authentication);
-  }
-
-  @Head("/upload/{id}")
-  public void headUpload(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    Authentication authentication,
-    @Nullable @PathVariable String id
-  ) throws IOException, TusException {
-    handleTusUpload(request, response, authentication);
-  }
-
-  @Delete("upload/{id}")
-  public void deleteUpload(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    Authentication authentication,
-    @Nullable @PathVariable String id
-  ) throws IOException, TusException {
-    handleTusUpload(request, response, authentication);
-  }
 }

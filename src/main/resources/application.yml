@@ -9,37 +9,23 @@ micronaut:
       enabled: true
       configurations:
         ui:
+          single-header: true
           allowed-methods:
             - POST
             - DELETE
             - PATCH
             - HEAD
           exposed-headers:
-            - Authorization
             - Location
             - Upload-Offset
             - Upload-Length
-            - Tus-Resumable
-            - Upload-Metadata
-            - Upload-Defer-Length
-            - Upload-Concat
-            - Origin
-            - X-Requested-With
-            - X-Request-ID
-            - X-HTTP-Method-Override
           allowed-headers:
             - Authorization
-            - Location
+            - Content-Type
+            - Tus-Resumable
             - Upload-Offset
             - Upload-Length
-            - Tus-Resumable
             - Upload-Metadata
-            - Upload-Defer-Length
-            - Upload-Concat
-            - Origin
-            - X-Requested-With
-            - X-Request-ID
-            - X-HTTP-Method-Override
           allowed-origins:
             - http://localhost:3000
             - http://127.0.0.1:3000
@@ -56,6 +42,10 @@ micronaut:
           secret:
             generator:
               secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
+        generator:
+          refresh-token:
+            enabled: true
+            secret: ${JWT_GENERATOR_REFRESH_TOKEN_SECRET:pleaseChangeThisSecretForANewOne}
 datasources:
   default:
     # e.g. jdbc:postgresql://localhost:5432/imagehive
