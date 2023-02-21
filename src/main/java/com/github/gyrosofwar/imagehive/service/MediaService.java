@@ -3,13 +3,19 @@ package com.github.gyrosofwar.imagehive.service;
 import com.github.f4b6a3.ulid.Ulid;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.http.MediaType;
 import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.config.TikaConfig;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +26,12 @@ public class MediaService {
 
   @Value("${imagehive.image-base-path}")
   private String basePath;
+
+  private final TikaConfig tikaConfig;
+
+  public MediaService(TikaConfig tikaConfig) {
+    this.tikaConfig = tikaConfig;
+  }
 
   // exposed for testing
   // builds a path like <base-path/<user-id>/<two-hex-chars>/uuid.jpg
@@ -52,7 +64,7 @@ public class MediaService {
     return path;
   }
 
-  public @Nullable InputStream getImageBytes(Ulid ulid, @Nullable String extension, Long userId)
+  public @Nullable ImageData getImageBytes(Ulid ulid, @Nullable String extension, Long userId)
     throws IOException {
     if (userId == null) {
       return null;
@@ -67,7 +79,13 @@ public class MediaService {
       return null;
     }
 
-    return Files.newInputStream(path);
+    var inputStream = Files.newInputStream(path);
+    var attributes = Files.readAttributes(path, BasicFileAttributes.class);
+    var contentLength = attributes.size();
+    var lastModified = attributes.lastModifiedTime();
+    var contentType = MediaType.forFilename(path.getFileName().toString());
+
+    return new ImageData(inputStream, contentType, lastModified, contentLength);
   }
 
   private Path findFileInFolder(Path prefix) throws IOException {
@@ -78,4 +96,11 @@ public class MediaService {
         .orElse(null);
     }
   }
+
+  public record ImageData(
+    InputStream inputStream,
+    MediaType contentType,
+    FileTime lastModified,
+    long contentLength
+  ) {}
 }

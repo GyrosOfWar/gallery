@@ -13,7 +13,6 @@ import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
-
 import java.util.List;
 import java.util.UUID;
 import javax.transaction.Transactional;

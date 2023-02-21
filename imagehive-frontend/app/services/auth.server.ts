@@ -42,7 +42,7 @@ async function login(username: string, password: string): Promise<User> {
         roles: token.roles,
         accessToken: data.access_token,
         userId: token.userId,
-        email: token.email
+        email: token.email,
       }
     } else {
       const text = await response.text()

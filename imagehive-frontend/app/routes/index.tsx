@@ -63,7 +63,9 @@ export default function Index() {
             <Link to={`/image/${image.id}`}>
               <img
                 alt={image.title || "<no title>"}
-                src={backendUrl(`/api/media/${user.userId}/${image.id}`)}
+                src={`/api/media/${image.id}?extension=${encodeURIComponent(
+                  image.extension
+                )}`}
               />
             </Link>
           </article>
