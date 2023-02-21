@@ -108,7 +108,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
 
       files.forEach(async ({file}, index) => {
         const info = formState[index]
-        console.log('uploading file', file.name)
+        console.log("uploading file", file.name)
 
         const upload = new Upload(file, {
           // send directly to the backend with CORS
@@ -129,12 +129,15 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
             const xhr = req.getUnderlyingObject() as XMLHttpRequest
             xhr.withCredentials = true
           },
+          onSuccess() {
+            console.log("successfully upladed file")
+          },
         })
 
-        const previousUploads = await upload.findPreviousUploads()
-        if (previousUploads.length) {
-          upload.resumeFromPreviousUpload(previousUploads[0])
-        }
+        // const previousUploads = await upload.findPreviousUploads()
+        // if (previousUploads.length) {
+        //   upload.resumeFromPreviousUpload(previousUploads[0])
+        // }
         upload.start()
       })
     },

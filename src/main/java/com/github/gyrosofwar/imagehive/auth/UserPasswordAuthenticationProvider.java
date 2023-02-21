@@ -15,8 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 @Singleton
-public class UserPasswordAuthenticationProvider
-  implements AuthenticationProvider {
+public class UserPasswordAuthenticationProvider implements AuthenticationProvider {
 
   private final UserService userService;
   private final PasswordEncoder passwordEncoder;
@@ -39,21 +38,10 @@ public class UserPasswordAuthenticationProvider
     return Mono
       .fromSupplier(() -> userService.getByNameOrEmail(identity))
       .flatMap(user -> {
-        if (
-          user != null && passwordEncoder.matches(secret, user.passwordHash())
-        ) {
-          var roles = List.of(
-            user.admin() ? UserRole.ADMIN.name() : UserRole.USER.name()
-          );
-          Map<String, Object> attributes = Map.of(
-            "userId",
-            user.id(),
-            "email",
-            user.email()
-          );
-          return Mono.just(
-            AuthenticationResponse.success(identity, roles, attributes)
-          );
+        if (user != null && passwordEncoder.matches(secret, user.passwordHash())) {
+          var roles = List.of(user.admin() ? UserRole.ADMIN.name() : UserRole.USER.name());
+          Map<String, Object> attributes = Map.of("userId", user.id(), "email", user.email());
+          return Mono.just(AuthenticationResponse.success(identity, roles, attributes));
         } else {
           return Mono.error(AuthenticationResponse.exception());
         }

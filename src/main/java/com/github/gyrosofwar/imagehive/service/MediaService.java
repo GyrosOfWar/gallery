@@ -25,9 +25,7 @@ public class MediaService {
   // builds a path like <base-path/<user-id>/<two-hex-chars>/uuid.jpg
   Path getImagePath(Ulid ulid, @Nullable String extension, long userId) {
     var randomPart = ulid.getRandom();
-    var subFolder = DatatypeConverter
-      .printHexBinary(randomPart)
-      .substring(0, 2);
+    var subFolder = DatatypeConverter.printHexBinary(randomPart).substring(0, 2);
     var folder = Path.of(basePath, String.valueOf(userId), subFolder);
 
     var fileName = ulid.toString();
@@ -41,12 +39,8 @@ public class MediaService {
     return folder.resolve(fileName);
   }
 
-  public Path persistImage(
-    Path tempFilePath,
-    Ulid ulid,
-    String extension,
-    long userId
-  ) throws IOException {
+  public Path persistImage(Path tempFilePath, Ulid ulid, String extension, long userId)
+    throws IOException {
     var path = getImagePath(ulid, extension, userId);
     log.info("moving file {} -> {}", tempFilePath, path);
     if (!Files.isDirectory(path.getParent())) {
@@ -58,11 +52,8 @@ public class MediaService {
     return path;
   }
 
-  public @Nullable InputStream getImageBytes(
-    Ulid ulid,
-    @Nullable String extension,
-    Long userId
-  ) throws IOException {
+  public @Nullable InputStream getImageBytes(Ulid ulid, @Nullable String extension, Long userId)
+    throws IOException {
     if (userId == null) {
       return null;
     }

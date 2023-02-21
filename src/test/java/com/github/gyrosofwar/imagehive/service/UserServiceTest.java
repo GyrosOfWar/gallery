@@ -20,25 +20,13 @@ class UserServiceTest extends BaseTest {
     final var username2 = "new-user2";
 
     userService.create(
-      new UserCreateDTO(
-        username1,
-        "test@example.com",
-        "cool-password",
-        false,
-        false
-      )
+      new UserCreateDTO(username1, "test@example.com", "cool-password", false, false)
     );
 
     assertEquals(2, userService.getUserCount());
 
     userService.create(
-      new UserCreateDTO(
-        username2,
-        "test2@example.com",
-        "cool-password",
-        false,
-        false
-      )
+      new UserCreateDTO(username2, "test2@example.com", "cool-password", false, false)
     );
 
     assertEquals(3, userService.getUserCount());
@@ -51,13 +39,7 @@ class UserServiceTest extends BaseTest {
     assertNotEquals(
       0,
       userService.create(
-        new UserCreateDTO(
-          username,
-          "test@example.com",
-          "cool-password",
-          true,
-          false
-        )
+        new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
       )
     );
   }
@@ -69,13 +51,7 @@ class UserServiceTest extends BaseTest {
     assertEquals(1, userService.getUserCount());
 
     long id = userService.create(
-      new UserCreateDTO(
-        username,
-        "test@example.com",
-        "cool-password",
-        true,
-        false
-      )
+      new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
     );
 
     assertEquals(2, userService.getUserCount());
@@ -88,17 +64,13 @@ class UserServiceTest extends BaseTest {
     final var username = "new-admin";
     final var email = "test@example.com";
 
-    userService.create(
-      new UserCreateDTO(username, email, "cool-password", true, false)
-    );
+    userService.create(new UserCreateDTO(username, email, "cool-password", true, false));
 
     assertEquals(2, userService.getUserCount());
     assertEquals(1, userService.deleteByNameOrEmail(username));
     assertEquals(1, userService.getUserCount());
 
-    userService.create(
-      new UserCreateDTO(username, email, "cool-password", true, false)
-    );
+    userService.create(new UserCreateDTO(username, email, "cool-password", true, false));
 
     assertEquals(2, userService.getUserCount());
     assertEquals(1, userService.deleteByNameOrEmail(email));
@@ -110,13 +82,7 @@ class UserServiceTest extends BaseTest {
     final var username = "new-admin";
 
     long id = userService.create(
-      new UserCreateDTO(
-        username,
-        "test@example.com",
-        "cool-password",
-        true,
-        false
-      )
+      new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
     );
 
     var user = userService.getById(id);
@@ -132,13 +98,7 @@ class UserServiceTest extends BaseTest {
     final var username = "new-admin";
 
     userService.create(
-      new UserCreateDTO(
-        username,
-        "test@example.com",
-        "cool-password",
-        true,
-        false
-      )
+      new UserCreateDTO(username, "test@example.com", "cool-password", true, false)
     );
 
     var user = userService.getByNameOrEmail(username);

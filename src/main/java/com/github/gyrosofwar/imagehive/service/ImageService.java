@@ -60,10 +60,7 @@ public class ImageService {
   }
 
   public Image getByUuid(UUID uuid) {
-    return dsl
-      .selectFrom(IMAGE)
-      .where(IMAGE.ID.eq(uuid))
-      .fetchOneInto(Image.class);
+    return dsl.selectFrom(IMAGE).where(IMAGE.ID.eq(uuid)).fetchOneInto(Image.class);
   }
 
   public ImageDTO toDto(Image image) {
@@ -74,17 +71,12 @@ public class ImageService {
       image.width(),
       image.createdOn(),
       Arrays.asList(image.tags()),
-      FilenameUtils.getExtension(
-        Path.of(image.filePath()).getFileName().toString()
-      )
+      FilenameUtils.getExtension(Path.of(image.filePath()).getFileName().toString())
     );
   }
 
-  private String getExtension(
-    File tempFile,
-    @Nullable String contentTypeHint,
-    String filename
-  ) throws ImageProcessingException {
+  private String getExtension(File tempFile, @Nullable String contentTypeHint, String filename)
+    throws ImageProcessingException {
     try (var inputStream = TikaInputStream.get(tempFile.toPath())) {
       var meta = new Metadata();
       meta.add(TikaCoreProperties.ORIGINAL_RESOURCE_NAME, filename);
@@ -99,17 +91,13 @@ public class ImageService {
         contentTypeHint,
         filename
       );
-      return tikaConfig
-        .getMimeRepository()
-        .forName(detectedMime.toString())
-        .getExtension();
+      return tikaConfig.getMimeRepository().forName(detectedMime.toString()).getExtension();
     } catch (IOException | MimeTypeException e) {
       throw new ImageProcessingException("Error determining extension", e);
     }
   }
 
-  private ParsedMetadata getMetadata(Path path)
-    throws ImageProcessingException, IOException {
+  private ParsedMetadata getMetadata(Path path) throws ImageProcessingException, IOException {
     Map<String, Map<String, String>> result = new HashMap<>();
     var metadata = ImageMetadataReader.readMetadata(path.toFile());
     for (var directory : metadata.getDirectories()) {
@@ -146,28 +134,13 @@ public class ImageService {
       inputStream.transferTo(outputStream);
     }
 
-    var extension = getExtension(
-      tempFile.toFile(),
-      file.getFileMimeType(),
-      file.getFileName()
-    );
-    log.info(
-      "determined extension {} for filename {}",
-      extension,
-      file.getFileName()
-    );
-    var destinationPath = mediaService.persistImage(
-      tempFile,
-      id,
-      extension,
-      userId
-    );
+    var extension = getExtension(tempFile.toFile(), file.getFileMimeType(), file.getFileName());
+    log.info("determined extension {} for filename {}", extension, file.getFileName());
+    var destinationPath = mediaService.persistImage(tempFile, id, extension, userId);
 
     log.info("moved temp file {} to {}", tempFile, destinationPath);
     var metadata = getMetadata(destinationPath);
-    var metadataJson = JSONB.jsonb(
-      objectMapper.writeValueAsString(metadata.metadata())
-    );
+    var metadataJson = JSONB.jsonb(objectMapper.writeValueAsString(metadata.metadata()));
     var bufferedImage = ImageIO.read(destinationPath.toFile());
     var image = new Image(
       id.toUuid(),
@@ -198,12 +171,7 @@ public class ImageService {
       .map(this::toDto)
       .toList();
 
-    var count = dsl
-      .selectCount()
-      .from(IMAGE)
-      .where(IMAGE.OWNER_ID.eq(userId))
-      .fetchOne()
-      .value1();
+    var count = dsl.selectCount().from(IMAGE).where(IMAGE.OWNER_ID.eq(userId)).fetchOne().value1();
     return Page.of(images, pageable, count);
   }
 

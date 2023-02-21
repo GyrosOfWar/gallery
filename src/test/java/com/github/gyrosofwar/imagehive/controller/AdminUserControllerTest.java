@@ -13,17 +13,9 @@ class AdminUserControllerTest extends BaseTest {
 
   @Test
   void testCreateUser() {
-    var body = new UserCreateDTO(
-      "cool-user",
-      "example@email.com",
-      "random",
-      false,
-      false
-    );
+    var body = new UserCreateDTO("cool-user", "example@email.com", "random", false, false);
 
-    var token = appClient.login(
-      new UsernamePasswordCredentials(username, password)
-    );
+    var token = appClient.login(new UsernamePasswordCredentials(username, password));
     var header = String.format("Bearer %s", token.getAccessToken());
     var response = appClient.adminCreateUser(body, header);
     assertEquals(200, response.code());

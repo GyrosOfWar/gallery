@@ -15,9 +15,31 @@ micronaut:
             - PATCH
             - HEAD
           exposed-headers:
+            - Authorization
             - Location
             - Upload-Offset
             - Upload-Length
+            - Tus-Resumable
+            - Upload-Metadata
+            - Upload-Defer-Length
+            - Upload-Concat
+            - Origin
+            - X-Requested-With
+            - X-Request-ID
+            - X-HTTP-Method-Override
+          allowed-headers:
+            - Authorization
+            - Location
+            - Upload-Offset
+            - Upload-Length
+            - Tus-Resumable
+            - Upload-Metadata
+            - Upload-Defer-Length
+            - Upload-Concat
+            - Origin
+            - X-Requested-With
+            - X-Request-ID
+            - X-HTTP-Method-Override
           allowed-origins:
             - http://localhost:3000
             - http://127.0.0.1:3000

@@ -1,5 +1,7 @@
 package com.github.gyrosofwar.imagehive.controller;
 
+import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
+
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.service.ImageService;
@@ -11,34 +13,26 @@ import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
+import java.io.IOException;
+import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.exception.TusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
-import java.io.IOException;
-import java.util.UUID;
-
-import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
-
 @Controller("/api/images")
 @Secured({ SecurityRule.IS_AUTHENTICATED })
 public class ImageController {
 
-  private static final Logger log = LoggerFactory.getLogger(
-    ImageController.class
-  );
+  private static final Logger log = LoggerFactory.getLogger(ImageController.class);
 
   private final ImageService imageService;
   private final TusFileUploadService fileUploadService;
 
-  public ImageController(
-    ImageService imageService,
-    TusFileUploadService fileUploadService
-  ) {
+  public ImageController(ImageService imageService, TusFileUploadService fileUploadService) {
     this.imageService = imageService;
     this.fileUploadService = fileUploadService;
   }
@@ -51,10 +45,7 @@ public class ImageController {
 
   @Get(produces = MediaType.APPLICATION_JSON)
   @Transactional
-  public Page<ImageDTO> getImages(
-    Pageable pageable,
-    Authentication authentication
-  ) {
+  public Page<ImageDTO> getImages(Pageable pageable, Authentication authentication) {
     var userId = getUserId(authentication);
     if (userId == null) {
       return Page.empty();
@@ -122,5 +113,4 @@ public class ImageController {
   ) throws IOException, TusException {
     handleTusUpload(request, response, authentication);
   }
-
 }

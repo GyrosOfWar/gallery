@@ -5,12 +5,8 @@ import org.slf4j.LoggerFactory;
 
 public class LoggingEmailService implements EmailService {
 
-  private static final Logger log = LoggerFactory.getLogger(
-    LoggingEmailService.class
-  );
-  private static final String LINE_SEPARATOR = System.getProperty(
-    "line.separator"
-  );
+  private static final Logger log = LoggerFactory.getLogger(LoggingEmailService.class);
+  private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
   @Override
   public void send(Email email) {

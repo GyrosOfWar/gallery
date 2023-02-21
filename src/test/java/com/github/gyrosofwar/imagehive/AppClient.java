@@ -24,10 +24,7 @@ public interface AppClient {
   );
 
   @Put(value = "/api/images", produces = MediaType.MULTIPART_FORM_DATA)
-  HttpResponse<ImageDTO> uploadImage(
-    @Body MultipartBody files,
-    @Header String authorization
-  );
+  HttpResponse<ImageDTO> uploadImage(@Body MultipartBody files, @Header String authorization);
 
   @Get("/api/media/{uuid}")
   HttpResponse<byte[]> getImageBytes(
