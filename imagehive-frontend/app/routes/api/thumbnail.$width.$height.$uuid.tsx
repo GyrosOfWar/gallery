@@ -4,12 +4,12 @@ import {backendUrl} from "~/util/consts"
 
 export const loader: LoaderFunction = async ({request, params}) => {
   const user = await requireUser(request)
-  const {uuid} = params
+  const {uuid, width, height} = params
   const queryParams = new URL(request.url).searchParams
   const extension = queryParams.get("extension")
 
   const response = await fetch(
-    backendUrl(`/api/media/${uuid}?extension=${extension}`),
+    backendUrl(`/api/media/thumbnail/${width}/${height}/${uuid}?extension=${extension}`),
     {headers: {authorization: `Bearer ${user.accessToken}`}}
   )
   return response

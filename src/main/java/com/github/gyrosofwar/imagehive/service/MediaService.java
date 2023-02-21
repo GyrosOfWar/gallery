@@ -5,7 +5,6 @@ import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
 import jakarta.inject.Singleton;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -14,7 +13,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import javax.xml.bind.DatatypeConverter;
 import net.coobird.thumbnailator.ThumbnailParameter;
-import net.coobird.thumbnailator.Thumbnailator;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +40,7 @@ public class MediaService {
   }
 
   // exposed for testing
-  // builds a path like <base-path/<user-id>/<two-hex-chars>/uuid.jpg
+  // builds a path like <base-path/<user-id>/<two-hex-chars>/<uuid>.jpg
   Path getImagePath(Ulid ulid, @Nullable String extension, long userId) {
     var randomPart = ulid.getRandom();
     var subFolder = DatatypeConverter.printHexBinary(randomPart).substring(0, 2);

@@ -58,12 +58,13 @@ public class MediaController {
     @PathVariable int width,
     @PathVariable int height,
     @PathVariable UUID uuid,
+    @QueryValue String extension,
     Authentication authentication
   ) throws IOException {
     log.info("getting image thumbnail {}, ({}x{} px)", uuid, width, height);
     var userId = getUserId(authentication);
 
-    var imageData = mediaService.getImageThumbnail(Ulid.from(uuid), null, width, height, userId);
+    var imageData = mediaService.getImageThumbnail(Ulid.from(uuid), extension, width, height, userId);
     if (imageData == null) {
       log.info("no image found for uuid {}", uuid);
       return null;

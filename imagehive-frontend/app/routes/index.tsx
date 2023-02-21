@@ -7,6 +7,7 @@ import type {User} from "~/services/auth.server"
 import {requireUser} from "~/services/auth.server"
 import {PlusIcon} from "@heroicons/react/24/outline"
 import {Masonry} from "masonic"
+import { thumbnailUrl } from "~/util/consts"
 
 interface Data {
   user: User
@@ -64,9 +65,7 @@ export default function Index() {
         render={(image) => (
           <img
             alt={image.data.title || "<no title>"}
-            src={`/api/media/${image.data.id}?extension=${encodeURIComponent(
-              image.data.extension
-            )}`}
+            src={thumbnailUrl(image.data.id, 600, 600, image.data.extension)}
           />
         )}
       />
