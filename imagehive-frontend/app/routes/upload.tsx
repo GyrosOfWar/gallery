@@ -1,5 +1,6 @@
 import {ArrowUpTrayIcon} from "@heroicons/react/24/outline"
-import {json, LoaderFunction} from "@remix-run/node"
+import type {LoaderFunction} from "@remix-run/node"
+import {json} from "@remix-run/node"
 import {useLoaderData, useNavigate} from "@remix-run/react"
 import clsx from "clsx"
 import {Button, TextInput} from "flowbite-react"
@@ -8,7 +9,8 @@ import {useCallback, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
 import {Upload} from "tus-js-client"
-import {requireUser, User} from "~/services/auth.server"
+import type {User} from "~/services/auth.server"
+import {requireUser} from "~/services/auth.server"
 import {backendUrl} from "~/util/consts"
 
 const MEGABYTES = 1000 * 1000
@@ -134,10 +136,10 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
           },
         })
 
-        // const previousUploads = await upload.findPreviousUploads()
-        // if (previousUploads.length) {
-        //   upload.resumeFromPreviousUpload(previousUploads[0])
-        // }
+        const previousUploads = await upload.findPreviousUploads()
+        if (previousUploads.length) {
+          upload.resumeFromPreviousUpload(previousUploads[0])
+        }
         upload.start()
       })
     },

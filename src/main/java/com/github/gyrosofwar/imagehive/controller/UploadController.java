@@ -1,5 +1,7 @@
 package com.github.gyrosofwar.imagehive.controller;
 
+import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
+
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.service.ImageService;
 import io.micronaut.core.annotation.Nullable;
@@ -7,16 +9,13 @@ import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.exception.TusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 
 @Controller("/api/images/upload")
 @Secured({ SecurityRule.IS_AUTHENTICATED })
@@ -31,7 +30,6 @@ public class UploadController {
     this.fileUploadService = fileUploadService;
     this.imageService = imageService;
   }
-
 
   private void handleTusUpload(
     HttpServletRequest request,
@@ -63,7 +61,7 @@ public class UploadController {
     handleTusUpload(request, response, authentication);
   }
 
-  @Patch("{id}")
+  @Patch(value = "{id}", consumes = "application/offset+octet-stream")
   public void patchUpload(
     HttpServletRequest request,
     HttpServletResponse response,

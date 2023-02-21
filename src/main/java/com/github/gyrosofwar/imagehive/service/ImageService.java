@@ -158,21 +158,21 @@ public class ImageService {
       destinationPath.toString()
     );
     dsl.newRecord(IMAGE, image).insert();
+    log.info("inserted new image {}", image);
     return toDto(image);
   }
 
-  public Page<ImageDTO> listImages(Pageable pageable, long userId) {
-    var images = dsl
+  public List<ImageDTO> listImages(Pageable pageable, long userId) {
+    return dsl
       .selectFrom(IMAGE)
       .where(IMAGE.OWNER_ID.eq(userId))
       .orderBy(IMAGE.CREATED_ON.desc())
+      .offset(pageable.getOffset())
+      .limit(pageable.getSize())
       .fetchInto(Image.class)
       .stream()
       .map(this::toDto)
       .toList();
-
-    var count = dsl.selectCount().from(IMAGE).where(IMAGE.OWNER_ID.eq(userId)).fetchOne().value1();
-    return Page.of(images, pageable, count);
   }
 
   record ParsedMetadata(

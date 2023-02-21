@@ -2,24 +2,21 @@ package com.github.gyrosofwar.imagehive.controller;
 
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 
-import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.service.ImageService;
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
-import java.io.IOException;
+
+import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import me.desair.tus.server.TusFileUploadService;
-import me.desair.tus.server.exception.TusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +40,10 @@ public class ImageController {
 
   @Get(produces = MediaType.APPLICATION_JSON)
   @Transactional
-  public Page<ImageDTO> getImages(Pageable pageable, Authentication authentication) {
+  public List<ImageDTO> getImages(Pageable pageable, Authentication authentication) {
     var userId = getUserId(authentication);
     if (userId == null) {
-      return Page.empty();
+      return List.of();
     } else {
       return imageService.listImages(pageable, userId);
     }
