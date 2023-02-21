@@ -32,4 +32,12 @@ netty:
       max-order: 3
 
 imagehive:
-  image-base-path: "images"
+  application:
+    image-base-path: "images"
+  smtpmail:
+    host: "localhost"
+    port: "25"
+    auth: true
+    username: "dummy"
+    password: "dummy"
+

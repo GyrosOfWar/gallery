@@ -1,4 +1,4 @@
-package com.github.gyrosofwar.imagehive.configuration;
+package com.github.gyrosofwar.imagehive.factory;
 
 import com.github.gyrosofwar.imagehive.service.mail.EmailService;
 import com.github.gyrosofwar.imagehive.service.mail.LoggingEmailService;
