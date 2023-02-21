@@ -51,5 +51,4 @@ public class ImageController {
       return imageService.listImages(pageable, userId);
     }
   }
-
 }

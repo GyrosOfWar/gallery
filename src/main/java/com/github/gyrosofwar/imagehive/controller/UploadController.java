@@ -4,7 +4,9 @@ import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.service.ImageService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
+import io.micronaut.security.rules.SecurityRule;
 import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.exception.TusException;
 import org.slf4j.Logger;
@@ -16,11 +18,11 @@ import java.io.IOException;
 
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 
-@Controller
+@Controller("/api/images/upload")
+@Secured({ SecurityRule.IS_AUTHENTICATED })
 public class UploadController {
 
   private static final Logger log = LoggerFactory.getLogger(UploadController.class);
-
 
   private final TusFileUploadService fileUploadService;
   private final ImageService imageService;
@@ -52,7 +54,7 @@ public class UploadController {
     }
   }
 
-  @Post("/api/images/upload")
+  @Post
   public void postUpload(
     HttpServletRequest request,
     HttpServletResponse response,
@@ -61,17 +63,17 @@ public class UploadController {
     handleTusUpload(request, response, authentication);
   }
 
-  @Patch("/api/images/upload/{id}")
+  @Patch("{id}")
   public void patchUpload(
     HttpServletRequest request,
     HttpServletResponse response,
     Authentication authentication,
-    @Nullable @PathVariable String id
+    @PathVariable String id
   ) throws IOException, TusException {
     handleTusUpload(request, response, authentication);
   }
 
-  @Head("/api/images/upload/{id}")
+  @Head("{id}")
   public void headUpload(
     HttpServletRequest request,
     HttpServletResponse response,
@@ -81,7 +83,7 @@ public class UploadController {
     handleTusUpload(request, response, authentication);
   }
 
-  @Delete("/api/images/upload/{id}")
+  @Delete("{id}")
   public void deleteUpload(
     HttpServletRequest request,
     HttpServletResponse response,
