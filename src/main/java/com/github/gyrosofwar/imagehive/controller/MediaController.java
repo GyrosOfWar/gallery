@@ -52,4 +52,28 @@ public class MediaController {
       );
     }
   }
+
+  @Get("/thumbnail/{width}/{height}/{uuid}")
+  public StreamedFile getThumbnail(
+    @PathVariable int width,
+    @PathVariable int height,
+    @PathVariable UUID uuid,
+    Authentication authentication
+  ) throws IOException {
+    log.info("getting image thumbnail {}, ({}x{} px)", uuid, width, height);
+    var userId = getUserId(authentication);
+
+    var imageData = mediaService.getImageThumbnail(Ulid.from(uuid), null, width, height, userId);
+    if (imageData == null) {
+      log.info("no image found for uuid {}", uuid);
+      return null;
+    } else {
+      return new StreamedFile(
+        imageData.inputStream(),
+        imageData.contentType(),
+        imageData.lastModified().toMillis(),
+        imageData.contentLength()
+      );
+    }
+  }
 }

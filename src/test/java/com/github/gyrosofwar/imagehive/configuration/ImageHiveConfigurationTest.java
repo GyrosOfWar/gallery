@@ -1,17 +1,17 @@
 package com.github.gyrosofwar.imagehive.configuration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.github.gyrosofwar.imagehive.BaseTest;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.Test;
 
 @MicronautTest
 public class ImageHiveConfigurationTest extends BaseTest {
+
   @Test
   public void testImageHiveConfiguration() {
     Map<String, Object> config = new HashMap<>();

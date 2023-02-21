@@ -6,7 +6,7 @@ import {DefaultApi} from "imagehive-client"
 import type {User} from "~/services/auth.server"
 import {requireUser} from "~/services/auth.server"
 import {PlusIcon} from "@heroicons/react/24/outline"
-import {backendUrl} from "~/util/consts"
+import {Masonry} from "masonic"
 
 interface Data {
   user: User
@@ -57,28 +57,27 @@ export default function Index() {
           </div>
         </div>
       )}
-      <div className="grid grid-cols-3">
-        {images.map((image) => (
-          <article key={image.id}>
-            <Link to={`/image/${image.id}`}>
-              <img
-                alt={image.title || "<no title>"}
-                src={`/api/media/${image.id}?extension=${encodeURIComponent(
-                  image.extension
-                )}`}
-              />
-            </Link>
-          </article>
-        ))}
+      <Masonry
+        columnCount={3}
+        columnGutter={4}
+        items={images}
+        render={(image) => (
+          <img
+            alt={image.data.title || "<no title>"}
+            src={`/api/media/${image.data.id}?extension=${encodeURIComponent(
+              image.data.extension
+            )}`}
+          />
+        )}
+      />
 
-        <Link
-          to="/upload"
-          title="Upload new photos"
-          className="fixed bottom-8 right-8 bg-gray-100 rounded-full shadow-xl hover:bg-gray-200 transition p-4"
-        >
-          <PlusIcon className="w-10 h-10" />
-        </Link>
-      </div>
+      <Link
+        to="/upload"
+        title="Upload new photos"
+        className="fixed bottom-8 right-8 bg-gray-100 rounded-full shadow-xl hover:bg-gray-200 transition p-4"
+      >
+        <PlusIcon className="w-10 h-10" />
+      </Link>
     </div>
   )
 }
