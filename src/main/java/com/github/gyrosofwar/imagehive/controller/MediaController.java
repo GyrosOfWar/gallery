@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.util.UUID;
 
 @Controller("/api/media")
-@Secured({ SecurityRule.IS_AUTHENTICATED })
+@Secured({ SecurityRule.IS_ANONYMOUS })
 public class MediaController {
 
   private static final Logger log = LoggerFactory.getLogger(MediaController.class);
@@ -30,17 +30,17 @@ public class MediaController {
     this.mediaService = mediaService;
   }
 
-  @Get("{uuid}")
+  @Get("/{userId}/{uuid}")
   public HttpResponse<InputStream> getImageBytes(
+    @PathVariable long userId,
     @PathVariable UUID uuid,
-    @QueryValue String extension,
-    Authentication authentication
+    @QueryValue String extension
   ) throws IOException {
     log.info("getting image {}", uuid);
     var inputStream = mediaService.getImageBytes(
       Ulid.from(uuid),
       extension,
-      getUserId(authentication)
+      userId
     );
     if (inputStream == null) {
       log.info("no image found for uuid {}", uuid);

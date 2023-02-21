@@ -6,6 +6,7 @@ import {DefaultApi} from "imagehive-client"
 import type {User} from "~/services/auth.server"
 import {requireUser} from "~/services/auth.server"
 import {PlusIcon} from "@heroicons/react/24/outline"
+import {backendUrl} from "~/util/consts"
 
 interface Data {
   user: User
@@ -62,7 +63,7 @@ export default function Index() {
             <Link to={`/image/${image.id}`}>
               <img
                 alt={image.title || "<no title>"}
-                src={`/api/media/${image.id}`}
+                src={backendUrl(`/api/media/${user.userId}/${image.id}`)}
               />
             </Link>
           </article>
