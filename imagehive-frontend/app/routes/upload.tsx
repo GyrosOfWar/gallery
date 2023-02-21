@@ -81,6 +81,49 @@ const InfoBar: React.FC<InfoBarProps> = ({count, formattedSize, uploading}) => (
   </div>
 )
 
+function uploadFile(
+  file: File,
+  info: FieldData,
+  accessToken: string,
+  endpoint: string
+) : Promise<void> {
+  return new Promise((resolve, reject) => {
+    const upload = new Upload(file, {
+      // send directly to the backend with CORS
+      endpoint,
+      metadata: {
+        filename: file.name,
+        filetype: file.type,
+        tags: info.tags,
+        title: info.title,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      onProgress(bytesUploaded, bytesTotal) {
+        console.log(bytesUploaded, bytesTotal)
+      },
+      onBeforeRequest(req) {
+        const xhr = req.getUnderlyingObject() as XMLHttpRequest
+        xhr.withCredentials = true
+      },
+      onSuccess() {
+        resolve()
+      },
+      onError(error) {
+        reject(error)
+      },
+    })
+
+    upload.findPreviousUploads().then((uploads) => {
+      if (uploads.length) {
+        upload.resumeFromPreviousUpload(uploads[0])
+      }
+      upload.start()
+    })
+  })
+}
+
 const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
   files,
   user,
@@ -110,40 +153,12 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
 
       files.forEach(async ({file}, index) => {
         const info = formState[index]
-        console.log("uploading file", file.name)
-
-        const upload = new Upload(file, {
-          // send directly to the backend with CORS
-          endpoint,
-          metadata: {
-            filename: file.name,
-            filetype: file.type,
-            tags: info.tags,
-            title: info.title,
-          },
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-          onProgress(bytesUploaded, bytesTotal) {
-            console.log(bytesUploaded, bytesTotal)
-          },
-          onBeforeRequest(req) {
-            const xhr = req.getUnderlyingObject() as XMLHttpRequest
-            xhr.withCredentials = true
-          },
-          onSuccess() {
-            console.log("successfully upladed file")
-          },
-        })
-
-        const previousUploads = await upload.findPreviousUploads()
-        if (previousUploads.length) {
-          upload.resumeFromPreviousUpload(previousUploads[0])
-        }
-        upload.start()
+        await uploadFile(file, info, user.accessToken, endpoint)
       })
+
+      navigate("/")
     },
-    [files, formState, user.accessToken]
+    [files, formState, user.accessToken, navigate]
   )
 
   return (
