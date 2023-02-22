@@ -1,7 +1,6 @@
 package com.github.gyrosofwar.imagehive.dto;
 
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Album;
-
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
