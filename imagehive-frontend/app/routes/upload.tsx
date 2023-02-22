@@ -1,21 +1,30 @@
 import {ArrowUpTrayIcon} from "@heroicons/react/24/outline"
-import type {ActionFunction} from "@remix-run/node"
-import {Form, useSubmit} from "@remix-run/react"
+import type {LoaderFunction} from "@remix-run/node"
+import {json} from "@remix-run/node"
+import {useLoaderData, useNavigate} from "@remix-run/react"
 import clsx from "clsx"
 import {Button, TextInput} from "flowbite-react"
 import produce from "immer"
-import {useCallback, useEffect, useRef, useState} from "react"
+import {useCallback, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
+import {Upload} from "tus-js-client"
+import type {User} from "~/services/auth.server"
+import {requireUser} from "~/services/auth.server"
+import {backendUrl} from "~/util/consts"
 
 const MEGABYTES = 1000 * 1000
+
+export const loader: LoaderFunction = async ({request}) => {
+  const user = await requireUser(request)
+
+  return json({user})
+}
 
 interface FileWithUrl {
   file: File
   url: string
 }
-
-export const action: ActionFunction = async ({context, request}) => {}
 
 const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
   onDrop,
@@ -47,7 +56,78 @@ interface FieldData {
   title: string
 }
 
-const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
+interface InfoBarProps {
+  count: number
+  formattedSize: string
+  uploading: boolean
+}
+
+const InfoBar: React.FC<InfoBarProps> = ({count, formattedSize, uploading}) => (
+  <div className="container grid grid-cols-2 items-center ml-auto mr-auto px-2">
+    <div>
+      <strong>{count}</strong> files selected for upload (total size:{" "}
+      {formattedSize} MB)
+    </div>
+    <Button
+      className="place-self-end"
+      color="success"
+      size="lg"
+      type="submit"
+      disabled={uploading}
+    >
+      <ArrowUpTrayIcon className="w-6 h-6 mr-2" />
+      Upload
+    </Button>
+  </div>
+)
+
+function uploadFile(
+  file: File,
+  info: FieldData,
+  accessToken: string,
+  endpoint: string
+) : Promise<void> {
+  return new Promise((resolve, reject) => {
+    const upload = new Upload(file, {
+      // send directly to the backend with CORS
+      endpoint,
+      metadata: {
+        filename: file.name,
+        filetype: file.type,
+        tags: info.tags,
+        title: info.title,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      onProgress(bytesUploaded, bytesTotal) {
+        console.log(bytesUploaded, bytesTotal)
+      },
+      onBeforeRequest(req) {
+        const xhr = req.getUnderlyingObject() as XMLHttpRequest
+        xhr.withCredentials = true
+      },
+      onSuccess() {
+        resolve()
+      },
+      onError(error) {
+        reject(error)
+      },
+    })
+
+    upload.findPreviousUploads().then((uploads) => {
+      if (uploads.length) {
+        upload.resumeFromPreviousUpload(uploads[0])
+      }
+      upload.start()
+    })
+  })
+}
+
+const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
+  files,
+  user,
+}) => {
   const size = files.reduce((total, {file}) => total + file.size, 0) || 0
   const formattedSize = (size / MEGABYTES).toFixed(2)
   const [formState, setFormState] = useState<FieldData[]>(
@@ -55,7 +135,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
   )
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [error, setError] = useState<string>()
+  const navigate = useNavigate()
 
   const onChange = (index: number, field: keyof FieldData, value: string) => {
     setFormState((state) =>
@@ -65,54 +145,41 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
     )
   }
 
-  const onSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault()
-    setUploading(true)
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
+    (event) => {
+      event.preventDefault()
+      setUploading(true)
+      const endpoint = backendUrl("/api/images/upload")
 
-    const formData = new FormData()
-    formState.forEach((info, index) => {
-      const file = files[index].file
-      formData.append(file.name, file)
-      formData.append(`${file.name}-title`, info.title)
-      formData.append(`${file.name}-tags`, info.tags)
-    })
-    // fetch doesn't support upload progress..
-    const req = new XMLHttpRequest()
-    req.upload.onprogress = (event) => {
-      let percent = Math.round((100 * event.loaded) / event.total)
-      setProgress(percent)
-      console.log(percent)
-    }
-    req.upload.onerror = () => {
-      setError(`Upload failed: ${req.statusText}`)
-    }
-    req.upload.onload = (event) => {
-      console.log('upload finished', req)
-    }
+      files.forEach(async ({file}, index) => {
+        const info = formState[index]
+        await uploadFile(file, info, user.accessToken, endpoint)
+      })
 
-    req.open("POST", "/upload")
-    req.send(formData)
-  }
+      navigate("/")
+    },
+    [files, formState, user.accessToken, navigate]
+  )
 
   return (
     <form onSubmit={onSubmit}>
       <aside className="fixed left-0 bottom-0 w-full py-2 z-10 border-t bg-white border-t-black border-opacity-50">
-        <div className="container grid grid-cols-2 items-center ml-auto mr-auto px-2">
-          <div>
-            <strong>{files.length}</strong> files selected for upload (total
-            size: {formattedSize} MB)
+        {uploading ? (
+          <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+            <div
+              className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+              style={{width: `${progress}%`}}
+            >
+              {progress}%
+            </div>
           </div>
-          <Button
-            className="place-self-end"
-            color="success"
-            size="lg"
-            type="submit"
-            disabled={uploading}
-          >
-            <ArrowUpTrayIcon className="w-6 h-6 mr-2" />
-            Upload
-          </Button>
-        </div>
+        ) : (
+          <InfoBar
+            count={files.length}
+            uploading={uploading}
+            formattedSize={formattedSize}
+          />
+        )}
       </aside>
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-2 pb-20">
@@ -150,6 +217,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]}> = ({files}) => {
 const UploadPage: React.FC = () => {
   const [previewImages, setPreviewImages] = useState(false)
   const [files, setFiles] = useState<FileWithUrl[]>()
+  const {user} = useLoaderData<{user: User}>()
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const filesWithUrls = acceptedFiles.map((file) => ({
@@ -165,7 +233,7 @@ const UploadPage: React.FC = () => {
     <>
       <h1 className="text-3xl font-bold mb-4">Upload</h1>
       {!previewImages && <UploadStep onDrop={onDrop} />}
-      {previewImages && <PreviewStep files={files || []} />}
+      {previewImages && <PreviewStep user={user} files={files || []} />}
     </>
   )
 }

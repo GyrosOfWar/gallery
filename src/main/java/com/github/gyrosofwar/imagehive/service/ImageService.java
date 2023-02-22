@@ -8,21 +8,22 @@ import com.drew.metadata.exif.GpsDirectory;
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
-import io.micronaut.data.model.Page;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Pageable;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import me.desair.tus.server.upload.UploadInfo;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -32,7 +33,6 @@ import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 
 @Singleton
 public class ImageService {
@@ -72,14 +72,15 @@ public class ImageService {
     );
   }
 
-  private String getExtension(File tempFile, Optional<MediaType> contentTypeHint, String filename)
+  private String getExtension(File tempFile, @Nullable String contentTypeHint, String filename)
     throws ImageProcessingException {
     try (var inputStream = TikaInputStream.get(tempFile.toPath())) {
       var meta = new Metadata();
       meta.add(TikaCoreProperties.ORIGINAL_RESOURCE_NAME, filename);
-      contentTypeHint.ifPresent(mediaType ->
-        meta.add(TikaCoreProperties.CONTENT_TYPE_HINT, mediaType.toString())
-      );
+      if (StringUtils.isNotBlank(contentTypeHint)) {
+        meta.add(TikaCoreProperties.CONTENT_TYPE_HINT, contentTypeHint);
+      }
+
       var detectedMime = tikaConfig.getDetector().detect(inputStream, meta);
       log.info(
         "detected mime type {} for mime type hint {} and file name {}",
@@ -120,16 +121,18 @@ public class ImageService {
   }
 
   @Transactional
-  public ImageDTO create(StreamingFileUpload file, long userId)
+  public ImageDTO create(InputStream inputStream, UploadInfo file, Long userId)
     throws IOException, ImageProcessingException {
     var id = Ulid.fast();
-    log.info("generated ID {} for upload {}", id, file.getName());
+    log.info("generated ID {} for upload {}", id, file.getFileName());
     var tempFile = Files.createTempFile(id.toString(), "tmp");
 
-    Mono.from(file.transferTo(tempFile.toFile())).block();
+    try (var outputStream = Files.newOutputStream(tempFile)) {
+      inputStream.transferTo(outputStream);
+    }
 
-    var extension = getExtension(tempFile.toFile(), file.getContentType(), file.getFilename());
-    log.info("determined extension {} for filename {}", extension, file.getFilename());
+    var extension = getExtension(tempFile.toFile(), file.getFileMimeType(), file.getFileName());
+    log.info("determined extension {} for filename {}", extension, file.getFileName());
     var destinationPath = mediaService.persistImage(tempFile, id, extension, userId);
 
     log.info("moved temp file {} to {}", tempFile, destinationPath);
@@ -152,21 +155,21 @@ public class ImageService {
       destinationPath.toString()
     );
     dsl.newRecord(IMAGE, image).insert();
+    log.info("inserted new image {}", image);
     return toDto(image);
   }
 
-  public Page<ImageDTO> listImages(Pageable pageable, long userId) {
-    var images = dsl
+  public List<ImageDTO> listImages(Pageable pageable, long userId) {
+    return dsl
       .selectFrom(IMAGE)
       .where(IMAGE.OWNER_ID.eq(userId))
       .orderBy(IMAGE.CREATED_ON.desc())
+      .offset(pageable.getOffset())
+      .limit(pageable.getSize())
       .fetchInto(Image.class)
       .stream()
       .map(this::toDto)
       .toList();
-
-    var count = dsl.selectCount().from(IMAGE).where(IMAGE.OWNER_ID.eq(userId)).fetchOne().value1();
-    return Page.of(images, pageable, count);
   }
 
   record ParsedMetadata(

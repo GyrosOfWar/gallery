@@ -10,11 +10,13 @@ import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ImageControllerTest extends BaseTest {
 
   @Test
+  @Disabled("was replaced with tus file upload")
   void testCreateImage() throws IOException {
     var bytes = getClass().getResourceAsStream("/images/test-1.jpg").readAllBytes();
     var body = MultipartBody

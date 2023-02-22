@@ -2,6 +2,36 @@ micronaut:
   server:
     multipart:
       max-file-size: '100MB'
+      enabled: true
+      disk: true
+    # for tus file uploads
+    cors:
+      enabled: true
+      configurations:
+        ui:
+          single-header: true
+          allowed-methods:
+            - POST
+            - DELETE
+            - PATCH
+            - HEAD
+          exposed-headers:
+            - Location
+            - Upload-Offset
+            - Upload-Length
+          allowed-headers:
+            - Authorization
+            - Content-Type
+            - Tus-Resumable
+            - Upload-Offset
+            - Upload-Length
+            - Upload-Metadata
+          allowed-origins:
+            - http://localhost:3000
+            - http://127.0.0.1:3000
+
+    host: 0.0.0.0
+
   application:
     name: imagehive
   security:
@@ -12,6 +42,10 @@ micronaut:
           secret:
             generator:
               secret: ${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}
+        generator:
+          refresh-token:
+            enabled: true
+            secret: ${JWT_GENERATOR_REFRESH_TOKEN_SECRET:pleaseChangeThisSecretForANewOne}
 datasources:
   default:
     # e.g. jdbc:postgresql://localhost:5432/imagehive

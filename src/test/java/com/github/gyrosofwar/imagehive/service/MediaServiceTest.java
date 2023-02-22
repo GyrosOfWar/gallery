@@ -1,12 +1,10 @@
 package com.github.gyrosofwar.imagehive.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.BaseTest;
 import jakarta.inject.Inject;
-import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
 class MediaServiceTest extends BaseTest {
