@@ -4,8 +4,6 @@ import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUse
 
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.service.MediaService;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
@@ -15,7 +13,6 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

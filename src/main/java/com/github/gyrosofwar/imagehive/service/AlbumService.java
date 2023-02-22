@@ -10,7 +10,6 @@ import com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage;
 import io.micronaut.data.model.Pageable;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.UUID;
 import org.jooq.DSLContext;
 
 public class AlbumService {

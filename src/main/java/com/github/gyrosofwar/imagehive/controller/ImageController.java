@@ -4,7 +4,6 @@ import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUse
 
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.service.ImageService;
-import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
