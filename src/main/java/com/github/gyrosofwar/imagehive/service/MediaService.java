@@ -22,15 +22,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class MediaService {
 
-  private static final Rename RENAME_STRATEGY = new Rename() {
-    @Override
-    public String apply(String name, ThumbnailParameter param) {
-      var width = param.getSize().getWidth();
-      var height = param.getSize().getHeight();
-      return appendSuffix(name, String.format(".thumbnail-%s-%s", width, height));
-    }
-  };
-
+  private static final RenameStrategy RENAME_STRATEGY = new RenameStrategy();
   private static final Logger log = LoggerFactory.getLogger(MediaService.class);
 
   private final ImageHiveConfiguration configuration;
@@ -100,6 +92,14 @@ public class MediaService {
       return null;
     }
 
+    var fileName = Path.of(
+      RENAME_STRATEGY.getName(originalImage.getFileName().toString(), width, height)
+    );
+    var existingFile = originalImage.getParent().resolve(fileName);
+    if (Files.isRegularFile(existingFile)) {
+      return ImageData.from(existingFile);
+    }
+
     var image = Thumbnails
       .of(originalImage.toFile())
       .outputFormat("jpg")
@@ -133,6 +133,20 @@ public class MediaService {
       var contentType = MediaType.forFilename(path.getFileName().toString());
 
       return new ImageData(inputStream, contentType, lastModified, contentLength);
+    }
+  }
+
+  private static class RenameStrategy extends Rename {
+
+    public String getName(String name, long width, long height) {
+      return appendSuffix(name, String.format(".thumbnail-%s-%s", width, height));
+    }
+
+    @Override
+    public String apply(String name, ThumbnailParameter param) {
+      var width = Math.round(param.getSize().getWidth());
+      var height = Math.round(param.getSize().getHeight());
+      return getName(name, width, height);
     }
   }
 }

@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async ({request}) => {
   const images = await api.getImages(
     {
       pageable: {
-        size: 20,
+        size: 100,
         sort: {
           orderBy: [],
         },
@@ -59,7 +59,7 @@ export default function Index() {
         </div>
       )}
       <Masonry
-        columnCount={3}
+        columnCount={4}
         columnGutter={4}
         items={images}
         render={(image) => (
