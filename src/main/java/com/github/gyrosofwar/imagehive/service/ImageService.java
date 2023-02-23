@@ -1,7 +1,5 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
-
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.exif.GpsDirectory;
@@ -12,15 +10,6 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.OffsetDateTime;
-import java.util.*;
-import javax.imageio.ImageIO;
-import javax.transaction.Transactional;
 import me.desair.tus.server.upload.UploadInfo;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +22,18 @@ import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.util.*;
+
+import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 @Singleton
 public class ImageService {
@@ -142,6 +143,8 @@ public class ImageService {
     var image = new Image(
       id.toUuid(),
       // TODO title
+      "",
+      // TODO description
       "",
       OffsetDateTime.now(),
       userId,

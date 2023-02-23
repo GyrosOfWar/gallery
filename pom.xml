@@ -318,9 +318,10 @@
           <generator>
             <database>
               <name>org.jooq.meta.postgres.PostgresDatabase</name>
-              <includes>.*</includes>
-              <excludes>flyway_schema_history</excludes>
               <inputSchema>public</inputSchema>
+              <includeExcludeColumns>true</includeExcludeColumns>
+              <includes>.*</includes>
+              <excludes>flyway_schema_history|ts_vec</excludes>
             </database>
             <generate>
               <pojos>true</pojos>
