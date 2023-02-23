@@ -4,8 +4,8 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import com.github.gyrosofwar.imagehive.sql.tables.records.ImageRecord;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
-import java.util.ArrayList;
 import java.util.List;
 import org.jooq.DSLContext;
 import org.jooq.SelectWhereStep;
@@ -23,14 +23,17 @@ public class SearchService {
     this.dsl = dsl;
   }
 
-  public List<Image> findImages(String query) {
+  public List<Image> searchImages(String query, Pageable pageable, long userId) {
     try (SelectWhereStep<ImageRecord> selectFrom = dsl.selectFrom(IMAGE)) {
       return selectFrom
         .where("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query))
+        .and(IMAGE.OWNER_ID.eq(userId))
+        .offset(pageable.getOffset())
+        .limit(pageable.getSize())
         .fetchInto(Image.class);
     } catch (Exception e) {
       log.error("There was an error searching for images", e);
     }
-    return new ArrayList<>();
+    return List.of();
   }
 }

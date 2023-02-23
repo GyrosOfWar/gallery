@@ -72,6 +72,12 @@ public class ImageService {
     );
   }
 
+  public List<ImageDTO> toDtoList(List<Image> images) {
+    List<ImageDTO> dtos = new ArrayList<>();
+    images.forEach(img -> dtos.add(toDto(img)));
+    return dtos;
+  }
+
   private String getExtension(File tempFile, @Nullable String contentTypeHint, String filename)
     throws ImageProcessingException {
     try (var inputStream = TikaInputStream.get(tempFile.toPath())) {
