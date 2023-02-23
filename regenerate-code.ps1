@@ -16,3 +16,4 @@ npm run build
 Set-Location ..
 Set-Location imagehive-frontend
 npm i
+Set-Location ..
