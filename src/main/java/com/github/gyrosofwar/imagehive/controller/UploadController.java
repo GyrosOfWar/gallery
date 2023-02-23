@@ -10,6 +10,7 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import me.desair.tus.server.TusFileUploadService;
@@ -43,7 +44,19 @@ public class UploadController {
       var uploadInfo = fileUploadService.getUploadInfo(uploadUri);
       if (uploadInfo != null && !uploadInfo.isUploadInProgress()) {
         var inputStream = fileUploadService.getUploadedBytes(uploadUri);
-        imageService.create(inputStream, uploadInfo, getUserId(authentication));
+        var title = uploadInfo.getMetadata().get("title");
+        var description = uploadInfo.getMetadata().get("description");
+        var tags = List.of(uploadInfo.getMetadata().get("tags").split("\\s+"));
+        var newImage = new ImageService.NewImage(
+          inputStream,
+          getUserId(authentication),
+          uploadInfo.getFileName(),
+          uploadInfo.getFileMimeType(),
+          title,
+          description,
+          tags
+        );
+        imageService.create(newImage);
       }
     } catch (IOException | TusException | ImageProcessingException e) {
       log.error("encountered upload error", e);

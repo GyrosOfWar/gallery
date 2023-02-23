@@ -1,18 +1,24 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import static com.github.gyrosofwar.imagehive.sql.Tables.ALBUM;
-import static com.github.gyrosofwar.imagehive.sql.Tables.ALBUM_IMAGE;
+import static com.github.gyrosofwar.imagehive.sql.Tables.*;
 
 import com.github.gyrosofwar.imagehive.dto.AlbumDTO;
 import com.github.gyrosofwar.imagehive.dto.CreateAlbumDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Album;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage;
 import io.micronaut.data.model.Pageable;
+import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
 import java.util.List;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jooq.DSLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@Singleton
 public class AlbumService {
+
+  private static final Logger log = LoggerFactory.getLogger(AlbumService.class);
 
   private final DSLContext dsl;
 
@@ -56,4 +62,25 @@ public class AlbumService {
 
     return AlbumDTO.from(album, null);
   }
+
+  public AlbumDTO getAlbumWithImages(long id, Long userId) {
+    if (userId == null) {
+      return null;
+    }
+
+    var rows = dsl
+      .select(ALBUM.asterisk(), IMAGE.asterisk())
+      .from(ALBUM)
+      .innerJoin(ALBUM_IMAGE)
+      .on(ALBUM_IMAGE.ALBUM_ID.eq(ALBUM.ID))
+      .innerJoin(IMAGE)
+      .on(ALBUM_IMAGE.IMAGE_ID.eq(IMAGE.ID))
+      .where(ALBUM.ID.eq(id).and(ALBUM.OWNER_ID.eq(userId)))
+      .fetchInto(AlbumRow.class);
+    log.info("returned rows {}", rows);
+
+    throw new NotImplementedException();
+  }
+
+  private record AlbumRow() {}
 }

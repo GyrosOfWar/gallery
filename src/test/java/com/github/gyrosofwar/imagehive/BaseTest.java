@@ -27,7 +27,8 @@ public abstract class BaseTest {
 
   protected final String username = "admin";
   protected final String password = "cool-password-123";
-  protected String authHeader;
+
+  protected long userId;
 
   protected BearerAccessRefreshToken login() {
     return appClient.login(new UsernamePasswordCredentials(username, password));
@@ -36,9 +37,10 @@ public abstract class BaseTest {
   @BeforeEach
   void beforeEach() {
     if (userService.getUserCount() == 0) {
-      userService.create(new UserCreateDTO(username, "example@example.com", password, true, false));
+      userId =
+        userService.create(
+          new UserCreateDTO(username, "example@example.com", password, true, false)
+        );
     }
-    // var token = login().getAccessToken();
-    // authHeader = String.format("Bearer %s", token);
   }
 }

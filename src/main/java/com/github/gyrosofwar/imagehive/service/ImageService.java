@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 public class ImageService {
 
   private static final Logger log = LoggerFactory.getLogger(ImageService.class);
+  private static final List<String> IGNORED_EXIF_DIRECTORIES = List.of("ICC Profile");
 
   private final DSLContext dsl;
   private final TikaConfig tikaConfig;
@@ -104,6 +105,10 @@ public class ImageService {
     Map<String, Map<String, String>> result = new HashMap<>();
     var metadata = ImageMetadataReader.readMetadata(path.toFile());
     for (var directory : metadata.getDirectories()) {
+      if (IGNORED_EXIF_DIRECTORIES.contains(directory.getName())) {
+        continue;
+      }
+
       Map<String, String> values = new HashMap<>();
       for (var tag : directory.getTags()) {
         values.put(tag.getTagName(), tag.getDescription());
@@ -127,18 +132,21 @@ public class ImageService {
   }
 
   @Transactional
-  public ImageDTO create(InputStream inputStream, UploadInfo file, Long userId)
-    throws IOException, ImageProcessingException {
+  public ImageDTO create(NewImage newImage) throws IOException, ImageProcessingException {
     var id = Ulid.fast();
-    log.info("generated ID {} for upload {}", id, file.getFileName());
+    var userId = newImage.userId();
+    log.info("generated ID {} for upload {}", id, newImage.fileName());
     var tempFile = Files.createTempFile(id.toString(), "tmp");
 
-    try (var outputStream = Files.newOutputStream(tempFile)) {
+    try (
+      var inputStream = newImage.inputStream;
+      var outputStream = Files.newOutputStream(tempFile)
+    ) {
       inputStream.transferTo(outputStream);
     }
 
-    var extension = getExtension(tempFile.toFile(), file.getFileMimeType(), file.getFileName());
-    log.info("determined extension {} for filename {}", extension, file.getFileName());
+    var extension = getExtension(tempFile.toFile(), newImage.mimeType(), newImage.fileName());
+    log.info("determined extension {} for filename {}", extension, newImage.fileName());
     var destinationPath = mediaService.persistImage(tempFile, id, extension, userId);
 
     log.info("moved temp file {} to {}", tempFile, destinationPath);
@@ -147,10 +155,8 @@ public class ImageService {
     var bufferedImage = ImageIO.read(destinationPath.toFile());
     var image = new Image(
       id.toUuid(),
-      // TODO title
-      "",
-      // TODO description
-      "",
+      newImage.title(),
+      newImage.description(),
       OffsetDateTime.now(),
       userId,
       bufferedImage.getWidth(),
@@ -158,8 +164,7 @@ public class ImageService {
       metadata.latitude(),
       metadata.longitude(),
       metadataJson,
-      // TODO tags
-      new String[] {},
+      newImage.tags().toArray(new String[0]),
       destinationPath.toString()
     );
     dsl.newRecord(IMAGE, image).insert();
@@ -180,9 +185,19 @@ public class ImageService {
       .toList();
   }
 
-  record ParsedMetadata(
+  private record ParsedMetadata(
     Double latitude,
     Double longitude,
     Map<String, Map<String, String>> metadata
+  ) {}
+
+  public record NewImage(
+    InputStream inputStream,
+    Long userId,
+    String fileName,
+    String mimeType,
+    String title,
+    String description,
+    List<String> tags
   ) {}
 }
