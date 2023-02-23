@@ -1,3 +1,6 @@
+CREATE OR REPLACE FUNCTION immutable_array_to_string(VARCHAR[])
+  RETURNS text LANGUAGE sql IMMUTABLE AS $$SELECT array_to_string($1, ' ')$$;
+
 CREATE TABLE "user"
 (
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -25,7 +28,8 @@ CREATE TABLE image
     tags            VARCHAR[]        NOT NULL,
     file_path       VARCHAR          NOT NULL,
     ts_vec          tsvector         NOT NULL
-        GENERATED ALWAYS AS (to_tsvector('english', title || ' ' || description)) STORED
+        GENERATED ALWAYS AS (to_tsvector(
+            'english', title || ' ' || description || ' ' || immutable_array_to_string(tags))) STORED
 );
 
 CREATE INDEX fulltext_image_idx ON image USING GIN (ts_vec);
@@ -39,7 +43,8 @@ CREATE TABLE album
     owner_id    BIGINT REFERENCES "user" (id),
     tags        VARCHAR[]   NOT NULL,
     ts_vec      tsvector    NOT NULL
-        GENERATED ALWAYS AS (to_tsvector('english', "name" || ' ' || description)) STORED
+        GENERATED ALWAYS AS (to_tsvector(
+            'english', "name" || ' ' || description || ' ' || immutable_array_to_string(tags))) STORED
 );
 
 CREATE INDEX fulltext_album_idx ON album USING GIN (ts_vec);
