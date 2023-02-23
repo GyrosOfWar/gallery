@@ -7,6 +7,7 @@ import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.security.token.jwt.render.BearerAccessRefreshToken;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 
 @MicronautTest
@@ -17,6 +18,9 @@ public abstract class BaseTest {
 
   @Inject
   protected AppClient appClient;
+
+  @Inject
+  protected DSLContext dsl;
 
   @Inject
   protected UserService userService;
