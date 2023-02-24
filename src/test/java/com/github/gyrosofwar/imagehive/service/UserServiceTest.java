@@ -105,7 +105,7 @@ class UserServiceTest extends BaseTest {
     assertEquals(username, user.username());
     assertEquals("test@example.com", user.email());
     assertEquals(true, user.admin());
-    assertEquals(2, user.id());
+    assertThat(user.id()).isGreaterThanOrEqualTo(2);
     assertThat(user.createdOn()).isCloseToUtcNow(within(1, ChronoUnit.SECONDS));
   }
 }

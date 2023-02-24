@@ -1,29 +1,28 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.github.f4b6a3.ulid.Ulid;
+import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.BaseTest;
-import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.data.model.Pageable;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
-import java.time.OffsetDateTime;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 
-@MicronautTest
-public class SearchServiceTest extends BaseTest {
+class SearchServiceTest extends BaseTest {
 
   @Inject
   SearchService searchService;
 
+  @Inject
+  ImageService imageService;
+
   @Test
-  public void testFindImages() {
-    for (Image i : createTestImageData()) {
-      dsl.newRecord(IMAGE, i).insert();
+  void testFindImages() throws ImageProcessingException, IOException {
+    for (var image : createTestImageData()) {
+      imageService.create(image);
     }
 
     assertEquals(3, searchService.searchImages("Testtitle", Pageable.UNPAGED, 1).size());
@@ -31,57 +30,42 @@ public class SearchServiceTest extends BaseTest {
     assertEquals(1, searchService.searchImages("description two", Pageable.UNPAGED, 1).size());
   }
 
-  private List<Image> createTestImageData() {
-    List<Image> images = new ArrayList<>();
+  private List<NewImage> createTestImageData() {
+    List<NewImage> images = new ArrayList<>();
 
     images.add(
-      new Image(
-        Ulid.fast().toUuid(),
+      new NewImage(
+        getClass().getResourceAsStream("/images/image-1.jpg"),
+        userId,
+        "image-1.jpg",
+        "image/jpeg",
         "Testtitle One ",
         "This is test description two",
-        OffsetDateTime.now(),
-        1L,
-        0,
-        0,
-        0.0,
-        0.0,
-        null,
-        new String[] { "Tag1", "Tag2", "Tag3", "Tag4", "Tag5" },
-        ""
+        List.of("Tag1", "Tag2", "Tag3", "Tag4", "Tag5")
       )
     );
 
     images.add(
-      new Image(
-        Ulid.fast().toUuid(),
+      new NewImage(
+        getClass().getResourceAsStream("/images/image-2.jpg"),
+        userId,
+        "image-3.jpg",
+        "image/jpg",
         "Testtitle Two",
         "This is test description two",
-        OffsetDateTime.now(),
-        1L,
-        0,
-        0,
-        0.0,
-        0.0,
-        null,
-        new String[] { "Tag1", "Tag3", "Tag4" },
-        ""
+        List.of("Tag1", "Tag3", "Tag4")
       )
     );
 
     images.add(
-      new Image(
-        Ulid.fast().toUuid(),
+      new NewImage(
+        getClass().getResourceAsStream("/images/image-3.jpg"),
+        userId,
+        "image-3.jpg",
+        "image/jpeg",
         "Testtitle Three",
         "This is test description three",
-        OffsetDateTime.now(),
-        1L,
-        0,
-        0,
-        0.0,
-        0.0,
-        null,
-        new String[] { "Tag7", "Tag8", "Tag9" },
-        ""
+        List.of("Tag7", "Tag8", "Tag9")
       )
     );
 

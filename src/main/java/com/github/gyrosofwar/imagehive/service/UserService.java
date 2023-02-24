@@ -7,6 +7,8 @@ import com.github.gyrosofwar.imagehive.service.mail.Email;
 import com.github.gyrosofwar.imagehive.service.mail.EmailService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
 import com.github.gyrosofwar.imagehive.sql.tables.records.UserRecord;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
 import javax.transaction.Transactional;
@@ -106,17 +108,28 @@ public class UserService {
 
   @Transactional
   public User getById(long id) {
-    try (SelectWhereStep<?> selectFrom = dsl.selectFrom(USER)) {
-      return selectFrom.where(USER.ID.eq(id)).fetchOneInto(User.class);
-    }
+    return dsl.selectFrom(USER).where(USER.ID.eq(id)).fetchOneInto(User.class);
   }
 
   @Transactional
   public User getByNameOrEmail(String identifier) {
-    try (SelectWhereStep<?> selectFrom = dsl.selectFrom(USER)) {
-      return selectFrom
-        .where(USER.USERNAME.eq(identifier).or(USER.EMAIL.eq(identifier)))
-        .fetchOneInto(User.class);
-    }
+    return dsl
+      .selectFrom(USER)
+      .where(USER.USERNAME.eq(identifier).or(USER.EMAIL.eq(identifier)))
+      .fetchOneInto(User.class);
+  }
+
+  // admin-level method
+  @Transactional
+  public Page<User> listUsers(Pageable pageable) {
+    var users = dsl
+      .selectFrom(USER)
+      .orderBy(USER.CREATED_ON.desc())
+      .limit(pageable.getSize())
+      .offset(pageable.getOffset())
+      .fetchInto(User.class);
+    var count = dsl.selectCount().from(USER).fetchOne().value1();
+
+    return Page.of(users, pageable, count);
   }
 }

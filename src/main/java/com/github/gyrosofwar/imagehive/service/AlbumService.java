@@ -42,9 +42,10 @@ public class AlbumService {
   public AlbumDTO createAlbum(CreateAlbumDTO albumDTO) {
     var album = dsl
       .insertInto(ALBUM)
-      .columns(ALBUM.NAME, ALBUM.OWNER_ID, ALBUM.TAGS, ALBUM.CREATED_ON)
+      .columns(ALBUM.NAME, ALBUM.DESCRIPTION, ALBUM.OWNER_ID, ALBUM.TAGS, ALBUM.CREATED_ON)
       .values(
         albumDTO.name(),
+        albumDTO.description(),
         albumDTO.ownerId(),
         albumDTO.tags().toArray(new String[0]),
         OffsetDateTime.now()
