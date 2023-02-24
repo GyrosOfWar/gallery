@@ -11,16 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 
-public class SearchServiceTest extends BaseTest {
+class SearchServiceTest extends BaseTest {
 
   @Inject
   SearchService searchService;
 
   @Inject
-  protected ImageService imageService;
+  ImageService imageService;
 
   @Test
-  public void testFindImages() throws ImageProcessingException, IOException {
+  void testFindImages() throws ImageProcessingException, IOException {
     for (var image : createTestImageData()) {
       imageService.create(image);
     }

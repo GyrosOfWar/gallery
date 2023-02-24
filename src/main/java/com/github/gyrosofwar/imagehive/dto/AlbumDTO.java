@@ -8,6 +8,7 @@ import java.util.List;
 public record AlbumDTO(
   long id,
   String name,
+  String description,
   OffsetDateTime createdOn,
   long ownerId,
   List<String> tags,
@@ -17,6 +18,7 @@ public record AlbumDTO(
     return new AlbumDTO(
       album.id(),
       album.name(),
+      album.description(),
       album.createdOn(),
       album.ownerId(),
       Arrays.asList(album.tags()),

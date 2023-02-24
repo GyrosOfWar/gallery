@@ -10,6 +10,7 @@ import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.security.token.jwt.render.BearerAccessRefreshToken;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import java.util.List;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -31,7 +32,7 @@ public abstract class BaseTest {
   protected final String username = "admin";
   protected final String password = "cool-password-123";
 
-  protected long userId;
+  protected Long userId = null;
 
   protected BearerAccessRefreshToken login() {
     return appClient.login(new UsernamePasswordCredentials(username, password));
@@ -41,7 +42,7 @@ public abstract class BaseTest {
     Public.PUBLIC
       .getTables()
       .forEach(table -> {
-        dsl.truncate(table).execute();
+        dsl.truncate(table).cascade().execute();
       });
   }
 
