@@ -4,6 +4,7 @@ import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUse
 
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.service.ImageService;
+import com.github.gyrosofwar.imagehive.service.NewImage;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
@@ -47,7 +48,7 @@ public class UploadController {
         var title = uploadInfo.getMetadata().get("title");
         var description = uploadInfo.getMetadata().get("description");
         var tags = List.of(uploadInfo.getMetadata().get("tags").split("\\s+"));
-        var newImage = new ImageService.NewImage(
+        var newImage = new NewImage(
           inputStream,
           getUserId(authentication),
           uploadInfo.getFileName(),

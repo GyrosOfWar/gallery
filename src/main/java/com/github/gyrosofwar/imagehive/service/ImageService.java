@@ -14,14 +14,12 @@ import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
-import me.desair.tus.server.upload.UploadInfo;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.config.TikaConfig;
@@ -139,7 +137,7 @@ public class ImageService {
     var tempFile = Files.createTempFile(id.toString(), "tmp");
 
     try (
-      var inputStream = newImage.inputStream;
+      var inputStream = newImage.inputStream();
       var outputStream = Files.newOutputStream(tempFile)
     ) {
       inputStream.transferTo(outputStream);
@@ -189,15 +187,5 @@ public class ImageService {
     Double latitude,
     Double longitude,
     Map<String, Map<String, String>> metadata
-  ) {}
-
-  public record NewImage(
-    InputStream inputStream,
-    Long userId,
-    String fileName,
-    String mimeType,
-    String title,
-    String description,
-    List<String> tags
   ) {}
 }

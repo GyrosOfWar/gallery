@@ -8,7 +8,6 @@ import com.github.gyrosofwar.imagehive.dto.CreateAlbumDTO;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -32,12 +31,13 @@ class AlbumServiceTest extends BaseTest {
       var fileName = "test-" + (i + 1) + ".jpg";
       var inputSteam = getClass().getResourceAsStream("/images/" + fileName);
       var created = imageService.create(
-        new ImageService.NewImage(
+        new NewImage(
           inputSteam,
           userId,
           fileName,
           "image/jpeg",
           "Image " + (i + 1),
+          "description",
           List.of("vienna")
         )
       );
