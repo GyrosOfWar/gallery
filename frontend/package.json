@@ -1,4 +1,5 @@
 {
+  "name": "imagehive-frontend",
   "private": true,
   "sideEffects": false,
   "scripts": {
