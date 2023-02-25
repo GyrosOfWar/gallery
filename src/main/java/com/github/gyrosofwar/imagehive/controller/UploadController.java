@@ -11,7 +11,9 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import me.desair.tus.server.TusFileUploadService;
@@ -33,6 +35,19 @@ public class UploadController {
     this.imageService = imageService;
   }
 
+  private List<String> parseTags(@Nullable String input) {
+    if (input == null) {
+      return List.of();
+    } else {
+      var tokenizer = new StringTokenizer(input, " ,;");
+      List<String> tokens = new ArrayList<>();
+      while (tokenizer.hasMoreTokens()) {
+        tokens.add(tokenizer.nextToken());
+      }
+      return tokens;
+    }
+  }
+
   private void handleTusUpload(
     HttpServletRequest request,
     HttpServletResponse response,
@@ -47,7 +62,8 @@ public class UploadController {
         var inputStream = fileUploadService.getUploadedBytes(uploadUri);
         var title = uploadInfo.getMetadata().get("title");
         var description = uploadInfo.getMetadata().get("description");
-        var tags = List.of(uploadInfo.getMetadata().get("tags").split("\\s+"));
+        var tagString = uploadInfo.getMetadata().get("tags");
+        var tags = parseTags(tagString);
         var newImage = new NewImage(
           inputStream,
           getUserId(authentication),

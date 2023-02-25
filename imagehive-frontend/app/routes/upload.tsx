@@ -54,6 +54,7 @@ const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
 interface FieldData {
   tags: string
   title: string
+  description: string
 }
 
 interface InfoBarProps {
@@ -86,7 +87,7 @@ function uploadFile(
   info: FieldData,
   accessToken: string,
   endpoint: string
-) : Promise<void> {
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const upload = new Upload(file, {
       // send directly to the backend with CORS
@@ -96,6 +97,7 @@ function uploadFile(
         filetype: file.type,
         tags: info.tags,
         title: info.title,
+        description: info.description,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -114,14 +116,21 @@ function uploadFile(
         reject(error)
       },
     })
-
-    upload.findPreviousUploads().then((uploads) => {
-      if (uploads.length) {
-        upload.resumeFromPreviousUpload(uploads[0])
-      }
-      upload.start()
-    })
+    upload.start()
+    // upload.findPreviousUploads().then((uploads) => {
+    //   if (uploads.length) {
+    //     upload.resumeFromPreviousUpload(uploads[0])
+    //   }
+    //   upload.start()
+    // })
   })
+}
+
+interface Progress {
+  filesTotal: number
+  filesCompleted: number
+  currentFileTotal: number
+  currentFileCompleted: number
 }
 
 const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
@@ -131,10 +140,16 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
   const size = files.reduce((total, {file}) => total + file.size, 0) || 0
   const formattedSize = (size / MEGABYTES).toFixed(2)
   const [formState, setFormState] = useState<FieldData[]>(
-    files!.map(() => ({tags: "", title: ""}))
+    files!.map(() => ({tags: "", title: "", description: ""}))
   )
   const [uploading, setUploading] = useState(false)
-  const [progress, setProgress] = useState(0)
+  // TODO show two progress bars
+  const [progress, setProgress] = useState({
+    filesTotal: files.length,
+    filesCompleted: 0,
+    currentFileTotal: 0,
+    currentFileCompleted: 0,
+  } satisfies Progress)
   const navigate = useNavigate()
 
   const onChange = (index: number, field: keyof FieldData, value: string) => {
@@ -146,16 +161,16 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
   }
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
-    (event) => {
+    async (event) => {
       event.preventDefault()
       setUploading(true)
       const endpoint = backendUrl("/api/images/upload")
 
-      files.forEach(async ({file}, index) => {
+      const promises = files.map(({file}, index) => {
         const info = formState[index]
-        await uploadFile(file, info, user.accessToken, endpoint)
+        return uploadFile(file, info, user.accessToken, endpoint)
       })
-
+      await Promise.all(promises)
       navigate("/")
     },
     [files, formState, user.accessToken, navigate]
@@ -166,12 +181,12 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
       <aside className="fixed left-0 bottom-0 w-full py-2 z-10 border-t bg-white border-t-black border-opacity-50">
         {uploading ? (
           <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
-            <div
+            {/* <div
               className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
               style={{width: `${progress}%`}}
             >
               {progress}%
-            </div>
+            </div> */}
           </div>
         ) : (
           <InfoBar
@@ -184,10 +199,15 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-2 pb-20">
         {files.map(({file, url}, index) => (
-          <figure key={file.name} className="flex flex-col justify-between">
+          <figure
+            key={file.name}
+            className="flex flex-col justify-between bg-slate-50 rounded-xl p-2 shadow-lg"
+          >
             <img loading="lazy" src={url} alt={file.name} />
             <div className="flex flex-col gap-2">
-              <span>{file.name}</span>
+              <p className="mt-1">
+                <strong>File</strong> {file.name}
+              </p>
               <TextInput
                 name={`${file.name}-title`}
                 placeholder="Enter title (optional)"
@@ -195,6 +215,15 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
                   onChange(index, "title", event.target.value)
                 }
                 value={formState[index].title}
+                disabled={uploading}
+              />
+              <TextInput
+                name={`${file.name}-description`}
+                placeholder="Enter description (optional)"
+                onChange={(event) =>
+                  onChange(index, "description", event.target.value)
+                }
+                value={formState[index].description}
                 disabled={uploading}
               />
               <TextInput

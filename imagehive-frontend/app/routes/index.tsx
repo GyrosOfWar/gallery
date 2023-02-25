@@ -1,31 +1,39 @@
 import {json} from "@remix-run/node"
-import {Link, useLoaderData} from "@remix-run/react"
+import {Form, Link, useFetcher, useLoaderData} from "@remix-run/react"
 import type {LoaderFunction} from "react-router"
-import type {ImageDTO} from "imagehive-client"
+import type {ImageDTO, Pageable} from "imagehive-client"
 import {DefaultApi} from "imagehive-client"
-import type {User} from "~/services/auth.server"
 import {requireUser} from "~/services/auth.server"
-import {PlusIcon} from "@heroicons/react/24/outline"
-import {Masonry} from "masonic"
-import { thumbnailUrl } from "~/util/consts"
+import {MagnifyingGlassIcon, PlusIcon} from "@heroicons/react/24/outline"
+import {Masonry, useInfiniteLoader} from "masonic"
+import {thumbnailUrl} from "~/util/consts"
+import {Button, TextInput} from "flowbite-react"
+import QueryStringHelper from "~/util/query-string-helper"
 
 interface Data {
-  user: User
+  query?: string
   images: ImageDTO[]
+  pageable: Pageable
 }
 
 export const loader: LoaderFunction = async ({request}) => {
   const user = await requireUser(request)
   const api = new DefaultApi()
+  const queryString = new QueryStringHelper(request.url)
+  const pageable = {
+    size: queryString.getNumber("size", 10),
+    orderBy: [],
+    sort: {
+      orderBy: [],
+    },
+    number: queryString.getNumber("page", 0),
+  } satisfies Pageable
+  const query = queryString.getString("query", "")
+
   const images = await api.getImages(
     {
-      pageable: {
-        size: 100,
-        sort: {
-          orderBy: [],
-        },
-        orderBy: [],
-      },
+      pageable,
+      query,
     },
     {
       headers: {
@@ -33,15 +41,26 @@ export const loader: LoaderFunction = async ({request}) => {
       },
     }
   )
-  const data = {user, images} satisfies Data
+  const data = {query, images, pageable} satisfies Data
   return json(data)
 }
 
 export default function Index() {
-  const {images, user} = useLoaderData<Data>()
+  const {images, query, pageable} = useLoaderData<Data>()
+  const fetcher = useFetcher()
+
+  const fetchMoreItems = async () => {
+    fetcher.submit(
+      {page: ((pageable.number || 0) + 1).toString()},
+      {method: "get"}
+    )
+  }
+  const maybeLoadMore = useInfiniteLoader(fetchMoreItems, {
+    isItemLoaded: (index, items) => !!items[index],
+  })
 
   return (
-    <div className="relative flex grow">
+    <div className="relative flex flex-col grow">
       {images.length === 0 && (
         <div className="grow flex justify-center items-center text-xl">
           <div className="text-center">
@@ -58,17 +77,39 @@ export default function Index() {
           </div>
         </div>
       )}
-      <Masonry
-        columnCount={4}
-        columnGutter={4}
-        items={images}
-        render={(image) => (
-          <img
-            alt={image.data.title || "<no title>"}
-            src={thumbnailUrl(image.data.id, 600, 600, image.data.extension)}
+      {images.length > 0 && !query && (
+        <>
+          <Form className="my-4 flex" method="get">
+            <TextInput
+              className="mr-2 grow"
+              name="query"
+              placeholder="Search..."
+            />
+            <Button type="submit">
+              <MagnifyingGlassIcon className="w-4 h-4 mr-2" />
+              Search
+            </Button>
+          </Form>
+          <Masonry
+            columnCount={4}
+            columnGutter={4}
+            items={images}
+            key={query}
+            onRender={maybeLoadMore}
+            render={(image) => (
+              <img
+                alt={image.data.title || "<no title>"}
+                src={thumbnailUrl(
+                  image.data.id,
+                  600,
+                  600,
+                  image.data.extension
+                )}
+              />
+            )}
           />
-        )}
-      />
+        </>
+      )}
 
       <Link
         to="/upload"

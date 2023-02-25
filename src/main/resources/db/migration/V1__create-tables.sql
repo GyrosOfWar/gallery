@@ -29,7 +29,7 @@ CREATE TABLE image
     file_path       VARCHAR          NOT NULL,
     ts_vec          tsvector         NOT NULL
         GENERATED ALWAYS AS (to_tsvector(
-            'english', title || ' ' || description || ' ' || immutable_array_to_string(tags))) STORED
+            'english', coalesce(title, '') || ' ' || coalesce(description, '') || ' ' || immutable_array_to_string(tags))) STORED
 );
 
 CREATE INDEX fulltext_image_idx ON image USING GIN (ts_vec);
@@ -44,7 +44,7 @@ CREATE TABLE album
     tags        VARCHAR[]   NOT NULL,
     ts_vec      tsvector    NOT NULL
         GENERATED ALWAYS AS (to_tsvector(
-            'english', "name" || ' ' || description || ' ' || immutable_array_to_string(tags))) STORED
+            'english', "name" || ' ' || coalesce(description, '') || ' ' || immutable_array_to_string(tags))) STORED
 );
 
 CREATE INDEX fulltext_album_idx ON album USING GIN (ts_vec);

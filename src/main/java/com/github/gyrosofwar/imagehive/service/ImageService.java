@@ -29,6 +29,7 @@ import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MimeTypeException;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
+import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,10 +171,16 @@ public class ImageService {
     return toDto(image);
   }
 
-  public List<ImageDTO> listImages(Pageable pageable, long userId) {
+  public List<ImageDTO> listImages(@Nullable String query, Pageable pageable, long userId) {
+    var where = IMAGE.OWNER_ID.eq(userId);
+    if (StringUtils.isNotBlank(query)) {
+      where =
+        where.and(DSL.condition("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query)));
+    }
+
     return dsl
       .selectFrom(IMAGE)
-      .where(IMAGE.OWNER_ID.eq(userId))
+      .where(where)
       .orderBy(IMAGE.CREATED_ON.desc())
       .offset(pageable.getOffset())
       .limit(pageable.getSize())
