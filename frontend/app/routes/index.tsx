@@ -9,6 +9,8 @@ import {Masonry, useInfiniteLoader} from "masonic"
 import {thumbnailUrl} from "~/util/consts"
 import {Button, TextInput} from "flowbite-react"
 import QueryStringHelper from "~/util/query-string-helper"
+import http from "~/util/http"
+import {useState} from "react"
 
 interface Data {
   query?: string
@@ -21,7 +23,7 @@ export const loader: LoaderFunction = async ({request}) => {
   const api = new DefaultApi()
   const queryString = new QueryStringHelper(request.url)
   const pageable = {
-    size: queryString.getNumber("size", 10),
+    size: queryString.getNumber("size", 20),
     orderBy: [],
     sort: {
       orderBy: [],
@@ -46,22 +48,44 @@ export const loader: LoaderFunction = async ({request}) => {
 }
 
 export default function Index() {
-  const {images, query, pageable} = useLoaderData<Data>()
-  const fetcher = useFetcher()
+  const {images: imagesInitial, query, pageable} = useLoaderData<Data>()
+  const [images, setImages] = useState(imagesInitial)
 
   const fetchMoreItems = async () => {
-    fetcher.submit(
-      {page: ((pageable.number || 0) + 1).toString()},
-      {method: "get"}
-    )
+    const params = new URLSearchParams()
+    if (query) {
+      params.set("query", query)
+    }
+    // TODO
+    // params.set("page", ((pageable.number || 0) + 1).toString())
+    // const response: ImageDTO[] = await http.getJson("/")
+    // setImages([...images, response])
   }
+
   const maybeLoadMore = useInfiniteLoader(fetchMoreItems, {
     isItemLoaded: (index, items) => !!items[index],
   })
 
+  const noImages = images.length === 0 && !query
+  const nothingForQuery = images.length === 0 && query && query.length > 0
+
   return (
     <div className="relative flex flex-col grow">
-      {images.length === 0 && (
+      {!noImages && (
+        <Form className="my-4 flex" method="get">
+          <TextInput
+            className="mr-2 grow"
+            name="query"
+            placeholder="Search..."
+            defaultValue={query}
+          />
+          <Button type="submit">
+            <MagnifyingGlassIcon className="w-4 h-4 mr-2" />
+            Search
+          </Button>
+        </Form>
+      )}
+      {noImages && (
         <div className="grow flex justify-center items-center text-xl">
           <div className="text-center">
             <p>No photos yet!</p>
@@ -72,44 +96,35 @@ export default function Index() {
                 to="/upload"
               >
                 here!
-              </Link>{" "}
+              </Link>
             </p>
           </div>
         </div>
       )}
-      {images.length > 0 && !query && (
-        <>
-          <Form className="my-4 flex" method="get">
-            <TextInput
-              className="mr-2 grow"
-              name="query"
-              placeholder="Search..."
-            />
-            <Button type="submit">
-              <MagnifyingGlassIcon className="w-4 h-4 mr-2" />
-              Search
-            </Button>
-          </Form>
-          <Masonry
-            columnCount={4}
-            columnGutter={4}
-            items={images}
-            key={query}
-            onRender={maybeLoadMore}
-            render={(image) => (
-              <img
-                alt={image.data.title || "<no title>"}
-                src={thumbnailUrl(
-                  image.data.id,
-                  600,
-                  600,
-                  image.data.extension
-                )}
-              />
-            )}
-          />
-        </>
+      {nothingForQuery && (
+        <div className="grow flex justify-center items-center text-xl">
+          <div className="text-center">
+            <p>No results for query '{query}'</p>
+          </div>
+        </div>
       )}
+
+      <Masonry
+        columnCount={4}
+        columnGutter={4}
+        items={images}
+        key={query}
+        itemKey={(image) => image.id}
+        onRender={maybeLoadMore}
+        render={(image) => (
+          <Link to={`/image/${image.data.id}`}>
+            <img
+              alt={image.data.title || "<no title>"}
+              src={thumbnailUrl(image.data.id, 600, 600, image.data.extension)}
+            />
+          </Link>
+        )}
+      />
 
       <Link
         to="/upload"

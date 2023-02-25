@@ -10,17 +10,19 @@ function getUrl(path: string): string {
 }
 
 const http = {
-  async getJson<T>(path: string, accessToken: string): Promise<T> {
+  async getJson<T>(path: string, accessToken?: string): Promise<T> {
     const response = await this.get(path, accessToken)
     return await response.json()
   },
 
-  async get(path: string, accessToken: string): Promise<Response> {
+  async get(path: string, accessToken?: string): Promise<Response> {
     const url = getUrl(path)
     try {
-      const response = await fetch(url, {
-        headers: {authorization: `Bearer ${accessToken}}`},
-      })
+      const headers: HeadersInit = {}
+      if (accessToken) {
+        headers.authorization = `Bearer ${accessToken}}`
+      }
+      const response = await fetch(url, {headers})
       if (response.ok) {
         return response
       } else {
