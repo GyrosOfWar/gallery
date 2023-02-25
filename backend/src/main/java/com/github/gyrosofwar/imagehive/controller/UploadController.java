@@ -10,6 +10,8 @@ import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
+import io.swagger.v3.oas.annotations.Hidden;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +85,7 @@ public class UploadController {
   }
 
   @Post
+  @Hidden
   public void postUpload(
     HttpServletRequest request,
     HttpServletResponse response,
@@ -92,6 +95,7 @@ public class UploadController {
   }
 
   @Patch(value = "{id}", consumes = "application/offset+octet-stream")
+  @Hidden
   public void patchUpload(
     HttpServletRequest request,
     HttpServletResponse response,
@@ -102,6 +106,7 @@ public class UploadController {
   }
 
   @Head("{id}")
+  @Hidden
   public void headUpload(
     HttpServletRequest request,
     HttpServletResponse response,
@@ -112,6 +117,7 @@ public class UploadController {
   }
 
   @Delete("{id}")
+  @Hidden
   public void deleteUpload(
     HttpServletRequest request,
     HttpServletResponse response,
