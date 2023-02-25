@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
+cd backend
 ./mvnw clean
+cd ..
+
 rm -rf imagehive-client
-rm -rf imagehive-frontend/node_modules
 . build.sh
 cd imagehive-client
 npm run build
 cd ..
-cd imagehive-frontend
+cd frontend
 npm i

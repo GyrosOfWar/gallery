@@ -7,7 +7,7 @@
       "client": {
         "generatorName": "typescript-fetch",
         "output": "imagehive-client",
-        "inputSpec": "./target/classes/META-INF/swagger/imagehive-0.1.0.yml",
+        "inputSpec": "./backend/target/classes/META-INF/swagger/imagehive-0.1.0.yml",
         "additionalProperties": {
           "npmName": "imagehive-client"
         }

@@ -3,6 +3,8 @@ if (!(Test-Path "env:IMAGEHIVE_PG_JDBC_URL") -and !(Test-Path "env:IMAGEHIVE_PG_
     $env:IMAGEHIVE_PG_USER=$args[1]
     $env:IMAGEHIVE_PG_PASSWORD=$args[2]
 }
+Set-Location backend
 ./mvnw.bat flyway:migrate
 ./mvnw.bat compile
+Set-Location ..
 npx @openapitools/openapi-generator-cli generate
