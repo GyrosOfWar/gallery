@@ -12,6 +12,7 @@ import io.micronaut.http.server.types.files.StreamedFile;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
+import io.swagger.v3.oas.annotations.Hidden;
 import java.io.IOException;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ public class MediaController {
   }
 
   @Get("{uuid}")
+  @Hidden
   public StreamedFile getImageBytes(
     @PathVariable UUID uuid,
     @QueryValue String extension,
@@ -51,6 +53,7 @@ public class MediaController {
   }
 
   @Get("/thumbnail/{width}/{height}/{uuid}")
+  @Hidden
   public StreamedFile getThumbnail(
     @PathVariable int width,
     @PathVariable int height,

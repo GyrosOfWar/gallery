@@ -10,6 +10,7 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
@@ -70,7 +71,15 @@ public class AlbumService {
     }
 
     var rows = dsl
-      .select(ALBUM.asterisk(), IMAGE.asterisk())
+      .select(
+        ALBUM.NAME,
+        ALBUM.ID.as("albumId"),
+        ALBUM.TAGS,
+        ALBUM.DESCRIPTION,
+        ALBUM.CREATED_ON,
+        IMAGE.ID.as("imageId"),
+        IMAGE.FILE_PATH
+      )
       .from(ALBUM)
       .innerJoin(ALBUM_IMAGE)
       .on(ALBUM_IMAGE.ALBUM_ID.eq(ALBUM.ID))
@@ -80,8 +89,29 @@ public class AlbumService {
       .fetchInto(AlbumRow.class);
     log.info("returned rows {}", rows);
 
-    throw new NotImplementedException();
+    if (rows.isEmpty()) {
+      return null;
+    }
+
+    var album = rows.get(0);
+    var imageIds = rows.stream().map(AlbumRow::imageId).toList();
+    return new AlbumDTO(
+      album.albumId(),
+      album.name(),
+      album.description(),
+      album.createdOn(),
+      List.of(album.tags()),
+      imageIds
+    );
   }
 
-  private record AlbumRow() {}
+  private record AlbumRow(
+    String name,
+    long albumId,
+    String[] tags,
+    String description,
+    OffsetDateTime createdOn,
+    UUID imageId,
+    String filePath
+  ) {}
 }

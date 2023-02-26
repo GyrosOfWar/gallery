@@ -19,6 +19,7 @@ CREATE TABLE image
     title           VARCHAR,
     description     VARCHAR,
     created_on      TIMESTAMPTZ      NOT NULL,
+    captured_on     TIMESTAMPTZ,
     owner_id        BIGINT REFERENCES "user" (id),
     width           INT              NOT NULL,
     height          INT              NOT NULL,

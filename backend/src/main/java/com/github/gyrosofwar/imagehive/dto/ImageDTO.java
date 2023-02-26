@@ -10,9 +10,11 @@ import java.util.UUID;
 public record ImageDTO(
   UUID id,
   @Nullable String title,
+  @Nullable String description,
   int height,
   int width,
   OffsetDateTime createdOn,
+  @Nullable OffsetDateTime capturedOn,
   @Nullable List<String> tags,
   String extension
 ) {}

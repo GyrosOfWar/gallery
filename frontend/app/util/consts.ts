@@ -11,3 +11,6 @@ export const thumbnailUrl = (
 ) => {
   return `/api/thumbnail/${width}/${height}/${uuid}?extension=${extension}`
 }
+
+export const originalImageUrl = (uuid: string, extension: string) =>
+  `/api/media/${uuid}?extension=${extension}`

@@ -8,10 +8,13 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
+import io.micronaut.security.rules.SecurityRule;
 import java.util.List;
 
-@Controller
+@Controller("/api/albums")
+@Secured({ SecurityRule.IS_AUTHENTICATED })
 public class AlbumController {
 
   private static final int IMAGES_PER_ALBUM_PREVIEW = 3;

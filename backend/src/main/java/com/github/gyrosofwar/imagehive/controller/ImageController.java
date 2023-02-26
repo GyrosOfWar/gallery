@@ -35,7 +35,11 @@ public class ImageController {
   @Get(produces = MediaType.APPLICATION_JSON, uri = "/{uuid}")
   @Transactional
   public ImageDTO getImage(@PathVariable UUID uuid) {
-    return imageService.toDto(imageService.getByUuid(uuid));
+    var image = imageService.getByUuid(uuid);
+    if (image == null) {
+      return null;
+    }
+    return imageService.toDto(image);
   }
 
   @Get(produces = MediaType.APPLICATION_JSON)

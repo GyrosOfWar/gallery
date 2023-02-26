@@ -4,7 +4,9 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.GpsDirectory;
+import com.drew.metadata.iptc.IptcDirectory;
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
@@ -64,9 +67,11 @@ public class ImageService {
     return new ImageDTO(
       image.id(),
       image.title(),
+      image.description(),
       image.height(),
       image.width(),
       image.createdOn(),
+      image.capturedOn(),
       Arrays.asList(image.tags()),
       FilenameUtils.getExtension(Path.of(image.filePath()).getFileName().toString())
     );
@@ -127,7 +132,42 @@ public class ImageService {
       }
     }
 
-    return new ParsedMetadata(lat, lon, result);
+    OffsetDateTime capturedOn = extractDate(metadata);
+    return new ParsedMetadata(lat, lon, capturedOn, result);
+  }
+
+  private OffsetDateTime extractDate(com.drew.metadata.Metadata metadata) {
+    var exifIfd0 = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+    if (exifIfd0 != null) {
+      var tagIds = List.of(
+        ExifIFD0Directory.TAG_DATETIME,
+        ExifIFD0Directory.TAG_DATETIME_DIGITIZED,
+        ExifIFD0Directory.TAG_DATETIME_ORIGINAL
+      );
+
+      for (int tagId : tagIds) {
+        var date = exifIfd0.getDate(tagId, TimeZone.getTimeZone(ZoneOffset.UTC));
+        if (date != null) {
+          return toOffsetDate(date);
+        }
+      }
+    }
+
+    var iptc = metadata.getFirstDirectoryOfType(IptcDirectory.class);
+    if (iptc != null) {
+      if (iptc.getDateCreated() != null) {
+        return toOffsetDate(iptc.getDateCreated());
+      }
+      if (iptc.getDigitalDateCreated() != null) {
+        return toOffsetDate(iptc.getDigitalDateCreated());
+      }
+    }
+
+    return null;
+  }
+
+  private OffsetDateTime toOffsetDate(Date date) {
+    return OffsetDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
   }
 
   @Transactional
@@ -157,6 +197,7 @@ public class ImageService {
       newImage.title(),
       newImage.description(),
       OffsetDateTime.now(),
+      metadata.captureDate(),
       userId,
       bufferedImage.getWidth(),
       bufferedImage.getHeight(),
@@ -181,7 +222,7 @@ public class ImageService {
     return dsl
       .selectFrom(IMAGE)
       .where(where)
-      .orderBy(IMAGE.CREATED_ON.desc())
+      .orderBy(IMAGE.CAPTURED_ON.desc().nullsLast(), IMAGE.CREATED_ON.desc())
       .offset(pageable.getOffset())
       .limit(pageable.getSize())
       .fetchInto(Image.class)
@@ -193,6 +234,7 @@ public class ImageService {
   private record ParsedMetadata(
     Double latitude,
     Double longitude,
+    OffsetDateTime captureDate,
     Map<String, Map<String, String>> metadata
   ) {}
 }

@@ -23,7 +23,6 @@ class AlbumServiceTest extends BaseTest {
   ImageService imageService;
 
   @Test
-  @Disabled("TODO")
   void testGetAlbumWithImages() throws ImageProcessingException, IOException {
     final var imageCount = 3;
     assertNotNull(userId);
@@ -52,6 +51,6 @@ class AlbumServiceTest extends BaseTest {
     assertNotNull(album);
 
     var dto = albumService.getAlbumWithImages(album.id(), userId);
-    assertEquals(3, dto.images().size());
+    assertEquals(3, dto.imageIds().size());
   }
 }

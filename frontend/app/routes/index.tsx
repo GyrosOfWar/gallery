@@ -57,7 +57,7 @@ export default function Index() {
       params.set("query", query)
     }
     // TODO
-    // params.set("page", ((pageable.number || 0) + 1).toString())
+    params.set("page", ((pageable.number || 0) + 1).toString())
     // const response: ImageDTO[] = await http.getJson("/")
     // setImages([...images, response])
   }
