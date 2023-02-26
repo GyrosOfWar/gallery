@@ -1,5 +1,5 @@
 import {json} from "@remix-run/node"
-import {Form, Link, useFetcher, useLoaderData} from "@remix-run/react"
+import {Form, Link, useLoaderData} from "@remix-run/react"
 import type {LoaderFunction} from "react-router"
 import type {ImageDTO, Pageable} from "imagehive-client"
 import {DefaultApi} from "imagehive-client"
@@ -9,7 +9,6 @@ import {Masonry, useInfiniteLoader} from "masonic"
 import {thumbnailUrl} from "~/util/consts"
 import {Button, TextInput} from "flowbite-react"
 import QueryStringHelper from "~/util/query-string-helper"
-import http from "~/util/http"
 import {useState} from "react"
 
 interface Data {

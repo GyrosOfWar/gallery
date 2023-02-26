@@ -1,6 +1,5 @@
 import type {LoaderFunction} from "@remix-run/node"
 import {requireUser} from "~/services/auth.server"
-import {backendUrl} from "~/util/consts"
 import http from "~/util/http"
 
 export const loader: LoaderFunction = async ({request, params}) => {

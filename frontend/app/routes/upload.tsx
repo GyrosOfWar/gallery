@@ -35,7 +35,7 @@ const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
   })
 
   return (
-    <section className="self-center">
+    <section className="self-center mt-8">
       <div
         className={clsx(
           "p-16 text-xl border border-gray-500 border-dashed flex items-center flex-col gap-4 cursor-pointer",
@@ -140,7 +140,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
   const size = files.reduce((total, {file}) => total + file.size, 0) || 0
   const formattedSize = (size / MEGABYTES).toFixed(2)
   const [formState, setFormState] = useState<FieldData[]>(
-    files!.map(() => ({tags: "", title: "", description: ""}))
+    files!.map(f => ({tags: "", title: f.file.name, description: ""}))
   )
   const [uploading, setUploading] = useState(false)
   // TODO show two progress bars

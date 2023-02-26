@@ -9,7 +9,8 @@
     "dev:css": "tailwindcss -w -i ./css/app.css -o ./app/css/app.css",
     "start": "remix-serve build",
     "typecheck": "tsc",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lint": "eslint app"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.15",
@@ -38,11 +39,13 @@
     "@types/jsonwebtoken": "^9.0.1",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
     "concurrently": "^7.6.0",
-    "eslint": "^8.27.0",
+    "eslint": "^8.35.0",
     "prettier": "^2.8.4",
     "tailwindcss": "^3.2.6",
-    "typescript": "^4.8.4"
+    "typescript": "^4.9.5"
   },
   "engines": {
     "node": ">=14"

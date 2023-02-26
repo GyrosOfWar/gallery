@@ -32,6 +32,7 @@ const http = {
         )
       }
     } catch (e) {
+      console.error(`failed to GET ${url}:`, e)
       throw e
     }
   },
