@@ -1,72 +1,67 @@
 import {json} from "@remix-run/node"
-import {Form, Link, useLoaderData} from "@remix-run/react"
+import {Form, Link, useLoaderData, useSearchParams} from "@remix-run/react"
 import type {LoaderFunction} from "react-router"
-import type {ImageDTO, Pageable} from "imagehive-client"
-import {DefaultApi} from "imagehive-client"
+import {useNavigate} from "react-router"
+import type {ImageDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
 import {MagnifyingGlassIcon, PlusIcon} from "@heroicons/react/24/outline"
-import {Masonry, useInfiniteLoader} from "masonic"
 import {thumbnailUrl} from "~/util/consts"
-import {Button, TextInput} from "flowbite-react"
-import QueryStringHelper from "~/util/query-string-helper"
-import {useState} from "react"
+import {Button, Pagination, TextInput} from "flowbite-react"
+import React from "react"
+import http from "~/util/http"
 
 interface Data {
-  query?: string
   images: ImageDTO[]
-  pageable: Pageable
 }
+
+type ClientImageList = ReturnType<typeof useLoaderData<Data>>["images"]
+type ClientImage = ClientImageList[0]
+
+const Image: React.FC<{image: ClientImage}> = ({image}) => {
+  return (
+    <Link to={`/image/${image.id}`}>
+      <img
+        alt={image.title || "<no title>"}
+        src={thumbnailUrl(image.id, 600, 600, image.extension)}
+      />
+    </Link>
+  )
+}
+
+const SimpleGrid: React.FC<{images: ClientImageList}> = ({images}) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1">
+    {images.map((image) => (
+      <Image image={image} key={image.id} />
+    ))}
+  </div>
+)
 
 export const loader: LoaderFunction = async ({request}) => {
   const user = await requireUser(request)
-  const api = new DefaultApi()
-  const queryString = new QueryStringHelper(request.url)
-  const pageable = {
-    size: queryString.getNumber("size", 20),
-    orderBy: [],
-    sort: {
-      orderBy: [],
-    },
-    number: queryString.getNumber("page", 0),
-  } satisfies Pageable
-  const query = queryString.getString("query", "")
-
-  const images = await api.getImages(
-    {
-      pageable,
-      query,
-    },
-    {
-      headers: {
-        authorization: `Bearer ${user.accessToken}`,
-      },
-    }
+  const query = new URL(request.url).search
+  const images: ImageDTO[] = await http.getJson(
+    `/api/images?${query}`,
+    user.accessToken
   )
-  const data = {query, images, pageable} satisfies Data
+  const data = {images} satisfies Data
   return json(data)
 }
 
 export default function Index() {
-  const {images: imagesInitial, query, pageable} = useLoaderData<Data>()
-  const [images, setImages] = useState(imagesInitial)
-
-  const fetchMoreItems = async () => {
-    const params = new URLSearchParams()
-    if (query) {
-      params.set("query", query)
-    }
-    // TODO
-    params.set("page", ((pageable.number || 0) + 1).toString())
-    // const response: ImageDTO[] = await http.getJson("/")
-    // setImages([...images, response])
-  }
-
-  const maybeLoadMore = useInfiniteLoader(fetchMoreItems, {
-    isItemLoaded: (index, items) => !!items[index],
-  })
-
+  const [queryParams, setQueryParams] = useSearchParams()
+  const query = queryParams.get("query") || ""
+  const {images} = useLoaderData<Data>()
   const noImages = images.length === 0 && !query
   const nothingForQuery = images.length === 0 && query && query.length > 0
+  const currentPage = parseInt(queryParams.get("page") || "0")
+  // TODO
+  const totalPages = 10
+
+  const onPageChange = (page: number) => {
+    setQueryParams({
+      page: page.toString(),
+    })
+  }
 
   return (
     <div className="relative flex flex-col grow">
@@ -107,24 +102,13 @@ export default function Index() {
           </div>
         </div>
       )}
-
-      <Masonry
-        columnCount={4}
-        columnGutter={4}
-        items={images}
-        key={query}
-        itemKey={(image) => image.id}
-        onRender={maybeLoadMore}
-        render={(image) => (
-          <Link to={`/image/${image.data.id}`}>
-            <img
-              alt={image.data.title || "<no title>"}
-              src={thumbnailUrl(image.data.id, 600, 600, image.data.extension)}
-            />
-          </Link>
-        )}
+      <SimpleGrid images={images} />
+      <Pagination
+        className="self-center"
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
       />
-
       <Link
         to="/upload"
         title="Upload new photos"

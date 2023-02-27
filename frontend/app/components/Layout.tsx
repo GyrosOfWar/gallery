@@ -2,7 +2,7 @@ import {Link, NavLink} from "@remix-run/react"
 import {Navbar, useTheme} from "flowbite-react"
 import type {User} from "~/services/auth.server"
 import {MoonIcon, PhotoIcon, SunIcon} from "@heroicons/react/24/outline"
-import {useContext} from "react"
+import {useContext, useEffect} from "react"
 
 const navlinkStyle =
   "block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
@@ -54,11 +54,29 @@ const NavbarLink: React.FC<NavLinkProps> = ({
 const DarkThemeToggle = () => {
   const {mode, toggleMode} = useTheme()
 
+  const onToggleTheme = () => {
+    if (toggleMode) {
+      toggleMode()
+      if (mode) {
+        localStorage.setItem("theme", mode)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const shouldSwitch = localStorage.getItem("theme") === "dark"
+      if (shouldSwitch) {
+        toggleMode && toggleMode()
+      }
+    }
+  }, [toggleMode])
+
   return (
     <button
       aria-label="Toggle dark mode"
       data-testid="dark-theme-toggle"
-      onClick={toggleMode}
+      onClick={onToggleTheme}
       type="button"
       className="px-2"
     >
