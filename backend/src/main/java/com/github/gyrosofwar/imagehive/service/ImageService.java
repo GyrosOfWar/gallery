@@ -9,8 +9,10 @@ import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.iptc.IptcDirectory;
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.ImageMetadata;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.type.Argument;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
@@ -42,6 +44,15 @@ public class ImageService {
   private static final Logger log = LoggerFactory.getLogger(ImageService.class);
   private static final List<String> IGNORED_EXIF_DIRECTORIES = List.of("ICC Profile");
 
+  private static final Argument<Map<String, String>> STRING_STRING_MAP = Argument.mapOf(
+    String.class,
+    String.class
+  );
+  private static final Argument<Map<String, Map<String, String>>> METADATA_SHAPE = Argument.mapOf(
+    Argument.STRING,
+    STRING_STRING_MAP
+  );
+
   private final DSLContext dsl;
   private final TikaConfig tikaConfig;
   private final ObjectMapper objectMapper;
@@ -63,6 +74,14 @@ public class ImageService {
     return dsl.selectFrom(IMAGE).where(IMAGE.ID.eq(uuid)).fetchOneInto(Image.class);
   }
 
+  private Map<String, Map<String, String>> parseMetadata(JSONB jsonb) {
+    try {
+      return objectMapper.readValue(jsonb.data(), METADATA_SHAPE);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public ImageDTO toDto(Image image) {
     return new ImageDTO(
       image.id(),
@@ -73,7 +92,8 @@ public class ImageService {
       image.createdOn(),
       image.capturedOn(),
       Arrays.asList(image.tags()),
-      FilenameUtils.getExtension(Path.of(image.filePath()).getFileName().toString())
+      FilenameUtils.getExtension(Path.of(image.filePath()).getFileName().toString()),
+      ImageMetadata.from(parseMetadata(image.metadata()))
     );
   }
 

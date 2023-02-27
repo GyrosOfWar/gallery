@@ -1,13 +1,20 @@
 import {useLoaderData} from "@remix-run/react"
-import type {ImageDTO} from "imagehive-client"
+import type {ImageDTO, ImageMetadata} from "imagehive-client"
 import {DefaultApi} from "imagehive-client"
 import type {LoaderFunction} from "react-router"
 import {json} from "react-router"
-import KVList from "~/components/KeyValueList"
 import {requireUser} from "~/services/auth.server"
 import {originalImageUrl} from "~/util/consts"
 import {parseISO, formatRelative} from "date-fns"
-import {useMemo} from "react"
+import {useMemo, useState} from "react"
+import {
+  CalendarIcon,
+  CameraIcon,
+  CheckIcon,
+  PencilIcon,
+  PhotoIcon,
+} from "@heroicons/react/24/outline"
+import {Button, TextInput} from "flowbite-react"
 
 const RelativeDate: React.FC<{timestamp: string | null | undefined}> = ({
   timestamp,
@@ -42,44 +49,87 @@ export const loader: LoaderFunction = async ({params, request}) => {
   return json({data} satisfies Data)
 }
 
+const FormattedMetadata: React.FC<{
+  meta: ImageMetadata
+  width: number
+  height: number
+}> = ({meta, width, height}) => {
+  return (
+    <div>
+      <p className="text-xl">{meta.camera}</p>
+      <div className="flex flex-wrap gap-x-4 lg:gap-6 font-light text-gray-600 dark:text-gray-300">
+        <span>{meta.aperture}</span>
+        <span>{meta.focalLength}</span>
+        <span>{meta.exposure}</span>
+        <span>ISO {meta.iso}</span>
+        <span>
+          {width} x {height}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 const ImageDetailsPage: React.FC = () => {
   const {data} = useLoaderData<Data>()
+  const [editMode, setEditMode] = useState(false)
+
+  const toggleEditMode = () => setEditMode((mode) => !mode)
 
   return (
     <>
       <img
         src={originalImageUrl(data.id, data.extension)}
         alt={data.title || "no title"}
-        className="max-h-[95vh] self-center"
+        className="max-h-[90vh] self-center"
       />
-      <KVList>
-        {data.title && (
-          <KVList.Item>
-            <KVList.Key>Title</KVList.Key>
-            <KVList.Value>{data.title}</KVList.Value>
-          </KVList.Item>
-        )}
 
-        {data.description && (
-          <KVList.Item>
-            <KVList.Key>Description</KVList.Key>
-            <KVList.Value>{data.description}</KVList.Value>
-          </KVList.Item>
-        )}
+      <div className="mt-4">
+        <Button onClick={toggleEditMode} color={editMode ? "success" : "info"}>
+          {!editMode && (
+            <>
+              <PencilIcon className="w-4 h-4 mr-2" /> Edit
+            </>
+          )}
+          {editMode && (
+            <>
+              <CheckIcon className="w-4 h-4 mr-2" /> Save
+            </>
+          )}
+        </Button>
+      </div>
 
-        <KVList.Item>
-          <KVList.Key>Date captured</KVList.Key>
-          <KVList.Value>
-            <RelativeDate timestamp={data.capturedOn} />
-          </KVList.Value>
-        </KVList.Item>
-        <KVList.Item>
-          <KVList.Key>Dimensions</KVList.Key>
-          <KVList.Value>
-            {data.width} x {data.height} px
-          </KVList.Value>
-        </KVList.Item>
-      </KVList>
+      <ul className="flex flex-col gap-4 my-4">
+        <li className="flex gap-4 items-center">
+          <PhotoIcon className="w-8 h-8" />
+          <div>
+            {editMode && (
+              <TextInput sizing="sm" defaultValue={data.title || ""} />
+            )}
+            {!editMode && <p>{data.title}</p>}
+            {data.description && (
+              <p className="text-gray-600 dark:text-gray-300 font-light">
+                {data.description}
+              </p>
+            )}
+          </div>
+        </li>
+
+        <li className="flex gap-4 items-center">
+          <CalendarIcon className="w-8 h-8" />
+          <RelativeDate timestamp={data.capturedOn} />
+        </li>
+        {data.metadata && (
+          <li className="flex gap-4 items-center">
+            <CameraIcon className="w-8 h-8" />
+            <FormattedMetadata
+              meta={data.metadata}
+              width={data.width}
+              height={data.height}
+            />
+          </li>
+        )}
+      </ul>
     </>
   )
 }

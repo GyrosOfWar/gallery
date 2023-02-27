@@ -53,6 +53,7 @@ public class ImageController {
     if (userId == null) {
       return List.of();
     } else {
+      log.info("fetching images for user {} and page {}", userId, pageable);
       return imageService.listImages(query, pageable, userId);
     }
   }

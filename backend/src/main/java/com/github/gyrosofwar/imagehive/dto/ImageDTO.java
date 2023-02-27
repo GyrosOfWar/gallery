@@ -16,5 +16,6 @@ public record ImageDTO(
   OffsetDateTime createdOn,
   @Nullable OffsetDateTime capturedOn,
   @Nullable List<String> tags,
-  String extension
+  String extension,
+  @Nullable ImageMetadata metadata
 ) {}
