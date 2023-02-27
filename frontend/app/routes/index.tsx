@@ -128,7 +128,7 @@ export default function Index() {
       <Link
         to="/upload"
         title="Upload new photos"
-        className="fixed bottom-8 right-8 bg-gray-100 rounded-full shadow-xl hover:bg-gray-200 transition p-4"
+        className="fixed bottom-8 right-8 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-xl hover:bg-gray-200 transition p-4"
       >
         <PlusIcon className="w-10 h-10" />
       </Link>

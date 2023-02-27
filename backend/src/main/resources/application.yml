@@ -46,6 +46,8 @@ micronaut:
           refresh-token:
             enabled: true
             secret: ${JWT_GENERATOR_REFRESH_TOKEN_SECRET:pleaseChangeThisSecretForANewOne}
+          access-token:
+            expiration: 28800
 datasources:
   default:
     # e.g. jdbc:postgresql://localhost:5432/imagehive
@@ -60,10 +62,6 @@ flyway:
     default:
       enabled: true
       locations: classpath:db/migration
-netty:
-  default:
-    allocator:
-      max-order: 3
 
 imagehive:
   application:

@@ -40,7 +40,7 @@ export default function App() {
           <Meta />
           <Links />
         </head>
-        <body>
+        <body className="bg-white dark:bg-gray-900 dark:text-white">
           <Layout user={user}>
             <Outlet context={{user}} />
           </Layout>

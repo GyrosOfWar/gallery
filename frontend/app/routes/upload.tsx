@@ -140,7 +140,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
   const size = files.reduce((total, {file}) => total + file.size, 0) || 0
   const formattedSize = (size / MEGABYTES).toFixed(2)
   const [formState, setFormState] = useState<FieldData[]>(
-    files!.map(f => ({tags: "", title: f.file.name, description: ""}))
+    files!.map((f) => ({tags: "", title: f.file.name, description: ""}))
   )
   const [uploading, setUploading] = useState(false)
   // TODO show two progress bars
@@ -178,7 +178,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
 
   return (
     <form onSubmit={onSubmit}>
-      <aside className="fixed left-0 bottom-0 w-full py-2 z-10 border-t bg-white border-t-black border-opacity-50">
+      <aside className="fixed left-0 bottom-0 w-full py-2 z-10 border-t bg-white dark:bg-gray-800 border-t-black dark:border-t-gray-300 border-opacity-50">
         {uploading ? (
           <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
             {/* <div
@@ -201,13 +201,10 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
         {files.map(({file, url}, index) => (
           <figure
             key={file.name}
-            className="flex flex-col justify-between bg-slate-50 rounded-xl p-2 shadow-lg"
+            className="flex flex-col justify-between bg-white dark:bg-gray-800 rounded-xl p-2 shadow-lg"
           >
             <img loading="lazy" src={url} alt={file.name} />
-            <div className="flex flex-col gap-2">
-              <p className="mt-1">
-                <strong>File</strong> {file.name}
-              </p>
+            <div className="flex flex-col gap-2 mt-2">
               <TextInput
                 name={`${file.name}-title`}
                 placeholder="Enter title (optional)"

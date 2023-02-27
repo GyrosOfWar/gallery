@@ -1,7 +1,8 @@
 import {Link, NavLink} from "@remix-run/react"
-import {Navbar} from "flowbite-react"
+import {Navbar, useTheme} from "flowbite-react"
 import type {User} from "~/services/auth.server"
-import {PhotoIcon} from "@heroicons/react/24/outline"
+import {MoonIcon, PhotoIcon, SunIcon} from "@heroicons/react/24/outline"
+import {useContext} from "react"
 
 const navlinkStyle =
   "block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
@@ -50,6 +51,26 @@ const NavbarLink: React.FC<NavLinkProps> = ({
   )
 }
 
+const DarkThemeToggle = () => {
+  const {mode, toggleMode} = useTheme()
+
+  return (
+    <button
+      aria-label="Toggle dark mode"
+      data-testid="dark-theme-toggle"
+      onClick={toggleMode}
+      type="button"
+      className="px-2"
+    >
+      {mode === "dark" ? (
+        <SunIcon aria-label="Currently dark mode" className="w-4 h-4" />
+      ) : (
+        <MoonIcon aria-label="Currently light mode" className="w-4 h-4" />
+      )}
+    </button>
+  )
+}
+
 const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
   children,
   user,
@@ -69,18 +90,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
           <NavbarLink to="/admin/user/create" user={user} visibleFor="admin">
             Create user
           </NavbarLink>
-
-          {/* {isLoggedIn && user.roles.includes("ADMIN") && (
-            <Navbar.Link as={Link} to="/admin/user/create">
-              Create user
-            </Navbar.Link>
-          )}
-          <Navbar.Link
-            to={isLoggedIn ? "/auth/logout" : "/auth/login"}
-            as={Link}
-          >
-            {isLoggedIn ? "Logout" : "Login"}
-          </Navbar.Link> */}
+          <DarkThemeToggle />
         </Navbar.Collapse>
       </Navbar>
       <main
