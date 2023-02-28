@@ -3,10 +3,8 @@ package com.github.gyrosofwar.imagehive.dto;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.serde.annotation.Serdeable;
 import java.util.Map;
 
-@Serdeable
 public record ImageMetadata(
   @Nullable String camera,
   @Nullable String lens,

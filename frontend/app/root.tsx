@@ -42,26 +42,21 @@ export default function App() {
   const user = useLoaderData<User>()
 
   return (
-    <Flowbite>
-      <html lang="en">
-        <head>
-          <Meta />
-          <Links />
-        </head>
-        <body className="bg-white dark:bg-gray-900 dark:text-white">
+    <html lang="en">
+      <head>
+        <Meta />
+        <Links />
+      </head>
+      <body className="bg-white dark:bg-gray-900 dark:text-white">
+        <Flowbite>
           <Layout user={user}>
             <Outlet context={{user}} />
           </Layout>
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-          <script
-            src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-            integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-            crossOrigin=""
-          />
-        </body>
-      </html>
-    </Flowbite>
+        </Flowbite>
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
   )
 }
