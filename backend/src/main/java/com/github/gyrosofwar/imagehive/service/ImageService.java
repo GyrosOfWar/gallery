@@ -7,6 +7,8 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.iptc.IptcDirectory;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.dto.ImageMetadata;
@@ -15,7 +17,6 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.type.Argument;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
-import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
@@ -44,15 +45,7 @@ public class ImageService {
 
   private static final Logger log = LoggerFactory.getLogger(ImageService.class);
   private static final List<String> IGNORED_EXIF_DIRECTORIES = List.of("ICC Profile");
-
-  private static final Argument<Map<String, String>> STRING_STRING_MAP = Argument.mapOf(
-    String.class,
-    String.class
-  );
-  private static final Argument<Map<String, Map<String, String>>> METADATA_SHAPE = Argument.mapOf(
-    Argument.STRING,
-    STRING_STRING_MAP
-  );
+  private static final TypeReference<Map<String, Map<String, String>>> METADATA_SHAPE = new TypeReference<>() {};
 
   private final DSLContext dsl;
   private final TikaConfig tikaConfig;
