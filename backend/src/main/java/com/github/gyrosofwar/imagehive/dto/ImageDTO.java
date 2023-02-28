@@ -15,6 +15,8 @@ public record ImageDTO(
   int width,
   OffsetDateTime createdOn,
   @Nullable OffsetDateTime capturedOn,
+  @Nullable Double latitude,
+  @Nullable Double longitude,
   @Nullable List<String> tags,
   String extension,
   @Nullable ImageMetadata metadata

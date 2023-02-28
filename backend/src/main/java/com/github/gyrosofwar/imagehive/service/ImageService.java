@@ -91,6 +91,8 @@ public class ImageService {
       image.width(),
       image.createdOn(),
       image.capturedOn(),
+      image.gpsLatitude(),
+      image.gpsLongitude(),
       Arrays.asList(image.tags()),
       FilenameUtils.getExtension(Path.of(image.filePath()).getFileName().toString()),
       ImageMetadata.from(parseMetadata(image.metadata()))

@@ -70,6 +70,40 @@ const FormattedMetadata: React.FC<{
   )
 }
 
+//TODO: find a nicer solution to prevent react-leaflet server side rendering
+
+let MapContainer = false;
+let TileLayer = false;
+let Marker = false;
+let Popup = false;
+
+if (process.env.BROWSER) {
+  MapContainer = require('react-leaflet').MapContainer;
+  TileLayer = require('react-leaflet').TileLayer;
+  Marker = require('react-leaflet').Marker;
+  Popup = require('react-leaflet').Popup;
+}
+
+const OpenStreetMapEmbed: React.FC<{
+  lat: number
+  long: number
+  name: string | null | undefined
+}> = ({lat, long, name}) => {
+  return (
+    <MapContainer center={[lat, long]} zoom={13} scrollWheelZoom={false}>
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <Marker position={[lat, long]}>
+        <Popup>
+          {name}
+        </Popup>
+      </Marker>
+    </MapContainer>
+  )
+}
+
 const ImageDetailsPage: React.FC = () => {
   const {data} = useLoaderData<Data>()
   const [editMode, setEditMode] = useState(false)
@@ -128,6 +162,13 @@ const ImageDetailsPage: React.FC = () => {
               height={data.height}
             />
           </li>
+        )}
+        {data.latitude && data.longitude && (
+          <OpenStreetMapEmbed
+            lat={data.latitude}
+            long={data.longitude}
+            name={data.title}
+          />         
         )}
       </ul>
     </>
