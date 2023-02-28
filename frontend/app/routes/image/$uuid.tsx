@@ -15,6 +15,7 @@ import {
   PhotoIcon,
 } from "@heroicons/react/24/outline"
 import {Button, TextInput} from "flowbite-react"
+import OpenStreetMapEmbed from "~/components/OpenStreetMapEmbed.client"
 
 const RelativeDate: React.FC<{timestamp: string | null | undefined}> = ({
   timestamp,
@@ -70,40 +71,6 @@ const FormattedMetadata: React.FC<{
   )
 }
 
-//TODO: find a nicer solution to prevent react-leaflet server side rendering
-
-let MapContainer = false;
-let TileLayer = false;
-let Marker = false;
-let Popup = false;
-
-if (process.env.BROWSER) {
-  MapContainer = require('react-leaflet').MapContainer;
-  TileLayer = require('react-leaflet').TileLayer;
-  Marker = require('react-leaflet').Marker;
-  Popup = require('react-leaflet').Popup;
-}
-
-const OpenStreetMapEmbed: React.FC<{
-  lat: number
-  long: number
-  name: string | null | undefined
-}> = ({lat, long, name}) => {
-  return (
-    <MapContainer center={[lat, long]} zoom={13} scrollWheelZoom={false}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Marker position={[lat, long]}>
-        <Popup>
-          {name}
-        </Popup>
-      </Marker>
-    </MapContainer>
-  )
-}
-
 const ImageDetailsPage: React.FC = () => {
   const {data} = useLoaderData<Data>()
   const [editMode, setEditMode] = useState(false)
@@ -122,12 +89,14 @@ const ImageDetailsPage: React.FC = () => {
         <Button onClick={toggleEditMode} color={editMode ? "success" : "info"}>
           {!editMode && (
             <>
-              <PencilIcon className="w-4 h-4 mr-2" /> Edit
+              <PencilIcon className="w-4 h-4 mr-2" />
+              Edit
             </>
           )}
           {editMode && (
             <>
-              <CheckIcon className="w-4 h-4 mr-2" /> Save
+              <CheckIcon className="w-4 h-4 mr-2" />
+              Save
             </>
           )}
         </Button>
@@ -163,12 +132,12 @@ const ImageDetailsPage: React.FC = () => {
             />
           </li>
         )}
-        {data.latitude && data.longitude && (
+        {data.latitude && data.longitude && typeof window !== "undefined" && (
           <OpenStreetMapEmbed
             lat={data.latitude}
-            long={data.longitude}
+            lon={data.longitude}
             name={data.title}
-          />         
+          />
         )}
       </ul>
     </>

@@ -5,6 +5,7 @@ import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUse
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
 import com.github.gyrosofwar.imagehive.service.ImageService;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -44,14 +45,14 @@ public class ImageController {
 
   @Get(produces = MediaType.APPLICATION_JSON)
   @Transactional
-  public List<ImageDTO> getImages(
+  public Page<ImageDTO> getImages(
     Pageable pageable,
     Authentication authentication,
     @QueryValue @Nullable String query
   ) {
     var userId = getUserId(authentication);
     if (userId == null) {
-      return List.of();
+      return Page.empty();
     } else {
       log.info("fetching images for user {} and page {}", userId, pageable);
       return imageService.listImages(query, pageable, userId);

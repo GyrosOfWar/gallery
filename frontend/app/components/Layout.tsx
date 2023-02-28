@@ -66,7 +66,7 @@ const DarkThemeToggle = () => {
   useEffect(() => {
     const localStorageTheme = localStorage.getItem("theme")
     if (localStorageTheme && localStorageTheme.length > 0) {
-      console.log(localStorageTheme)
+      // TODO
     }
   }, [])
 

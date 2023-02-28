@@ -16,7 +16,15 @@ import type {User} from "./services/auth.server"
 import {authenticator} from "./services/auth.server"
 
 export function links() {
-  return [{rel: "stylesheet", href: css}]
+  return [
+    {rel: "stylesheet", href: css},
+    {
+      rel: "stylesheet",
+      href: "https://unpkg.com/leaflet@1.9.3/dist/leaflet.css",
+      integrity: "sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=",
+      crossOrigin: "",
+    },
+  ]
 }
 
 export const meta: MetaFunction = () => ({
@@ -47,6 +55,11 @@ export default function App() {
           <ScrollRestoration />
           <Scripts />
           <LiveReload />
+          <script
+            src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+            integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+            crossOrigin=""
+          />
         </body>
       </html>
     </Flowbite>

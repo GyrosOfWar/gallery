@@ -13,6 +13,7 @@ import com.github.gyrosofwar.imagehive.dto.ImageMetadata;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.type.Argument;
+import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
@@ -234,14 +235,14 @@ public class ImageService {
     return toDto(image);
   }
 
-  public List<ImageDTO> listImages(@Nullable String query, Pageable pageable, long userId) {
+  public Page<ImageDTO> listImages(@Nullable String query, Pageable pageable, long userId) {
     var where = IMAGE.OWNER_ID.eq(userId);
     if (StringUtils.isNotBlank(query)) {
       where =
         where.and(DSL.condition("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query)));
     }
 
-    return dsl
+    var images = dsl
       .selectFrom(IMAGE)
       .where(where)
       .orderBy(IMAGE.CAPTURED_ON.desc().nullsLast(), IMAGE.CREATED_ON.desc())
@@ -251,6 +252,9 @@ public class ImageService {
       .stream()
       .map(this::toDto)
       .toList();
+
+    var count = dsl.selectCount().from(IMAGE).where(where).fetchOne().value1();
+    return Page.of(images, pageable, count);
   }
 
   private record ParsedMetadata(
