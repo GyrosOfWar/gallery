@@ -1,4 +1,4 @@
-package com.github.gyrosofwar.imagehive.service;
+package com.github.gyrosofwar.imagehive.service.image;
 
 import java.io.InputStream;
 import java.util.List;

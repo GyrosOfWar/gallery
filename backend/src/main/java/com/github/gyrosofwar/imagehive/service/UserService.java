@@ -15,7 +15,6 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
 import org.jooq.DeleteUsingStep;
-import org.jooq.SelectWhereStep;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

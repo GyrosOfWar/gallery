@@ -1,17 +1,18 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.BaseTest;
 import com.github.gyrosofwar.imagehive.dto.CreateAlbumDTO;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import com.github.gyrosofwar.imagehive.service.image.ImageCreationService;
+import com.github.gyrosofwar.imagehive.service.image.NewImage;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class AlbumServiceTest extends BaseTest {
@@ -20,7 +21,7 @@ class AlbumServiceTest extends BaseTest {
   AlbumService albumService;
 
   @Inject
-  ImageService imageService;
+  ImageCreationService imageService;
 
   @Test
   void testGetAlbumWithImages() throws ImageProcessingException, IOException {

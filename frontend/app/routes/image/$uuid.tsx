@@ -7,6 +7,7 @@ import {requireUser} from "~/services/auth.server"
 import {originalImageUrl} from "~/util/consts"
 import {parseISO, formatRelative} from "date-fns"
 import {useMemo, useState} from "react"
+import {ClientOnly} from "remix-utils"
 import {
   CalendarIcon,
   CameraIcon,
@@ -132,12 +133,17 @@ const ImageDetailsPage: React.FC = () => {
             />
           </li>
         )}
-        {data.latitude && data.longitude && typeof window !== "undefined" && (
-          <OpenStreetMapEmbed
-            lat={data.latitude}
-            lon={data.longitude}
-            name={data.title}
-          />
+
+        {data.latitude && data.longitude && (
+          <ClientOnly>
+            {() => (
+              <OpenStreetMapEmbed
+                lat={data.latitude!}
+                lon={data.longitude!}
+                name={data.title}
+              />
+            )}
+          </ClientOnly>
         )}
       </ul>
     </>

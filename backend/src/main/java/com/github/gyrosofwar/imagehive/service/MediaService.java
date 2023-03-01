@@ -11,10 +11,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
 import net.coobird.thumbnailator.ThumbnailParameter;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +118,18 @@ public class MediaService {
         .filter(path -> path.getFileName().startsWith(prefix.getFileName()))
         .findFirst()
         .orElse(null);
+    }
+  }
+
+  public void delete(UUID uuid, Path filePath, long userId) throws IOException {
+    var extension = FilenameUtils.getExtension(filePath.getFileName().toString());
+    var basePath = getImagePath(Ulid.from(uuid), extension, userId).getParent();
+    try (var stream = Files.list(basePath)) {
+      var filesToDelete = stream.filter(f -> f.startsWith(uuid.toString())).toList();
+      for (var path : filesToDelete) {
+        log.error("deleting file {}", path);
+        Files.delete(path);
+      }
     }
   }
 

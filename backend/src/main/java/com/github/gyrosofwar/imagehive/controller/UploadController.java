@@ -3,8 +3,8 @@ package com.github.gyrosofwar.imagehive.controller;
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 
 import com.drew.imaging.ImageProcessingException;
-import com.github.gyrosofwar.imagehive.service.ImageService;
-import com.github.gyrosofwar.imagehive.service.NewImage;
+import com.github.gyrosofwar.imagehive.service.image.ImageCreationService;
+import com.github.gyrosofwar.imagehive.service.image.NewImage;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
@@ -29,11 +29,14 @@ public class UploadController {
   private static final Logger log = LoggerFactory.getLogger(UploadController.class);
 
   private final TusFileUploadService fileUploadService;
-  private final ImageService imageService;
+  private final ImageCreationService imageCreationService;
 
-  public UploadController(TusFileUploadService fileUploadService, ImageService imageService) {
+  public UploadController(
+    TusFileUploadService fileUploadService,
+    ImageCreationService imageCreationService
+  ) {
     this.fileUploadService = fileUploadService;
-    this.imageService = imageService;
+    this.imageCreationService = imageCreationService;
   }
 
   private List<String> parseTags(@Nullable String input) {
@@ -74,7 +77,7 @@ public class UploadController {
           description,
           tags
         );
-        imageService.create(newImage);
+        imageCreationService.create(newImage);
       }
     } catch (IOException | TusException | ImageProcessingException e) {
       log.error("encountered upload error", e);

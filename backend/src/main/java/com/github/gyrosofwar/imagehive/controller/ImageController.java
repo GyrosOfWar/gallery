@@ -2,20 +2,18 @@ package com.github.gyrosofwar.imagehive.controller;
 
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 
+import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
-import com.github.gyrosofwar.imagehive.service.ImageService;
+import com.github.gyrosofwar.imagehive.service.image.ImageService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
-import java.util.List;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
@@ -28,19 +26,28 @@ public class ImageController {
   private static final Logger log = LoggerFactory.getLogger(ImageController.class);
 
   private final ImageService imageService;
+  private final ImageDTOConverter imageDTOConverter;
 
-  public ImageController(ImageService imageService) {
+  public ImageController(ImageService imageService, ImageDTOConverter imageDTOConverter) {
     this.imageService = imageService;
+    this.imageDTOConverter = imageDTOConverter;
   }
 
   @Get(produces = MediaType.APPLICATION_JSON, uri = "/{uuid}")
-  @Transactional
-  public ImageDTO getImage(@PathVariable UUID uuid) {
-    var image = imageService.getByUuid(uuid);
+  public ImageDTO getImage(@PathVariable UUID uuid, Authentication authentication) {
+    var userId = getUserId(authentication);
+    var image = imageService.getByUuid(uuid, userId);
     if (image == null) {
       return null;
     }
-    return imageService.toDto(image);
+    return imageDTOConverter.convert(image);
+  }
+
+  @Delete("/{uuid}")
+  public HttpResponse<Void> deleteImage(@PathVariable UUID uuid, Authentication authentication) {
+    var userId = getUserId(authentication);
+    imageService.delete(uuid, userId);
+    return HttpResponse.noContent();
   }
 
   @Get(produces = MediaType.APPLICATION_JSON)
