@@ -4,6 +4,7 @@ import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUse
 
 import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.ImageUpdateDTO;
 import com.github.gyrosofwar.imagehive.service.image.ImageService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
@@ -16,6 +17,8 @@ import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import java.util.UUID;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +50,12 @@ public class ImageController {
   public HttpResponse<Void> deleteImage(@PathVariable UUID uuid, Authentication authentication) {
     var userId = getUserId(authentication);
     imageService.delete(uuid, userId);
+    return HttpResponse.noContent();
+  }
+
+  @Patch
+  public HttpResponse<Void> patchImage(@Body @Valid ImageUpdateDTO imageUpdate, Authentication authentication) {
+    imageService.update(imageUpdate, getUserId(authentication));
     return HttpResponse.noContent();
   }
 

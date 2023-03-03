@@ -5,6 +5,7 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
 import com.github.gyrosofwar.imagehive.dto.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.ImageUpdateDTO;
 import com.github.gyrosofwar.imagehive.service.MediaService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.core.annotation.Nullable;
@@ -104,5 +105,25 @@ public class ImageService {
         log.warn("failed to delete files for image " + uuid, e);
       }
     }
+  }
+
+  @Transactional
+  public void update(ImageUpdateDTO imageUpdate, Long userId) {
+    var update = dsl.updateQuery(IMAGE);
+    update.addConditions(IMAGE.ID.eq(imageUpdate.uuid()).and(IMAGE.OWNER_ID.eq(userId)));
+
+    if (imageUpdate.tags() != null) {
+      update.addValue(IMAGE.TAGS, imageUpdate.tags());
+    }
+
+    if (imageUpdate.description() != null) {
+      update.addValue(IMAGE.DESCRIPTION, imageUpdate.description());
+    }
+
+    if (imageUpdate.title() != null) {
+      update.addValue(IMAGE.TITLE, imageUpdate.title());
+    }
+
+    update.execute();
   }
 }

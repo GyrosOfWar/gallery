@@ -1,11 +1,10 @@
-import {Link, useLoaderData} from "@remix-run/react"
+import {Form, Link, useLoaderData} from "@remix-run/react"
 import type {ImageDTO, ImageMetadata} from "imagehive-client"
-import {DefaultApi} from "imagehive-client"
 import type {LoaderFunction} from "react-router"
 import {json} from "react-router"
 import {requireUser} from "~/services/auth.server"
 import {originalImageUrl} from "~/util/consts"
-import {parseISO, formatRelative} from "date-fns"
+import {formatRelative, parseISO} from "date-fns"
 import {useMemo, useState} from "react"
 import {ClientOnly} from "remix-utils"
 import {
@@ -14,9 +13,13 @@ import {
   CheckIcon,
   PencilIcon,
   PhotoIcon,
+  TagIcon,
 } from "@heroicons/react/24/outline"
-import {Button, TextInput} from "flowbite-react"
+import {Button} from "flowbite-react"
 import OpenStreetMapEmbed from "~/components/OpenStreetMapEmbed.client"
+import http from "~/util/http"
+import {ActionFunction} from "@remix-run/node"
+import ToggleableInput from "~/components/ToggleableInput"
 
 const RelativeDate: React.FC<{timestamp: string | null | undefined}> = ({
   timestamp,
@@ -29,7 +32,7 @@ const RelativeDate: React.FC<{timestamp: string | null | undefined}> = ({
     return <span>No date found</span>
   }
 
-  return <time dateTime={timestamp}>{formatted}</time>
+  return <time>{formatted}</time>
 }
 
 interface Data {
@@ -43,12 +46,16 @@ export const loader: LoaderFunction = async ({params, request}) => {
   if (!uuid) {
     return new Response("missing parameter", {status: 404})
   }
-  const client = new DefaultApi()
-  const data = await client.getImage(
-    {uuid},
-    {headers: {authorization: `Bearer ${accessToken}`}}
-  )
+  const data: ImageDTO = await http.getJson(`/api/images/${uuid}`, accessToken)
   return json({data} satisfies Data)
+}
+
+export const action: ActionFunction = async ({request}) => {
+  const data = await request.formData()
+  const {accessToken} = await requireUser(request)
+
+  const payload = Object.fromEntries(data.entries())
+  return await http.patchJson("/api/images", payload, accessToken)
 }
 
 const FormattedMetadata: React.FC<{
@@ -94,8 +101,9 @@ const Tags: React.FC<{tags: string[]}> = ({tags}) => {
 const ImageDetailsPage: React.FC = () => {
   const {data} = useLoaderData<Data>()
   const [editMode, setEditMode] = useState(false)
-
-  const toggleEditMode = () => setEditMode((mode) => !mode)
+  const toggleEditMode = () => {
+    setEditMode((mode) => !mode)
+  }
 
   return (
     <>
@@ -105,71 +113,76 @@ const ImageDetailsPage: React.FC = () => {
         className="max-h-[90vh] self-center"
       />
 
-      <div className="mt-4">
-        <Button onClick={toggleEditMode} color={editMode ? "success" : "info"}>
-          {!editMode && (
-            <>
-              <PencilIcon className="w-4 h-4 mr-2" />
-              Edit
-            </>
+      <Form onSubmit={toggleEditMode} method="post">
+        <input type="hidden" name="uuid" value={data.id} />
+        <ul className="flex flex-col gap-4 my-4">
+          <li className="flex gap-4 items-center">
+            <PhotoIcon className="w-8 h-8" />
+            <div className="flex flex-col gap-4">
+              <ToggleableInput
+                editMode={editMode}
+                defaultValue={data.title || ""}
+                name="title"
+                placeholder="Title"
+              />
+              {(data.description || editMode) && (
+                <ToggleableInput
+                  editMode={editMode}
+                  defaultValue={data.description || ""}
+                  name="description"
+                  placeholder="Description"
+                />
+              )}
+            </div>
+          </li>
+          {data.tags && (
+            <li className="flex gap-4 items-center">
+              <TagIcon className="w-8 h-8" />
+              <Tags tags={data.tags} />
+            </li>
           )}
-          {editMode && (
-            <>
-              <CheckIcon className="w-4 h-4 mr-2" />
-              Save
-            </>
-          )}
-        </Button>
-      </div>
 
-      <ul className="flex flex-col gap-4 my-4">
-        <li className="flex gap-4 items-center">
-          <PhotoIcon className="w-8 h-8" />
-          <div>
-            {editMode && (
-              <TextInput sizing="sm" defaultValue={data.title || ""} />
+          <li className="flex gap-4 items-center">
+            <CalendarIcon className="w-8 h-8" />
+            <RelativeDate timestamp={data.capturedOn} />
+          </li>
+          {data.metadata && (
+            <li className="flex gap-4 items-center">
+              <CameraIcon className="w-8 h-8" />
+              <FormattedMetadata
+                meta={data.metadata}
+                width={data.width}
+                height={data.height}
+              />
+            </li>
+          )}
+          <div className="mt-1">
+            {!editMode && (
+              <Button onClick={toggleEditMode} color="info">
+                <PencilIcon className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
             )}
-            {!editMode && <p>{data.title}</p>}
-            {data.description && (
-              <p className="text-gray-600 dark:text-gray-300 font-light">
-                {data.description}
-              </p>
+            {editMode && (
+              <Button type="submit" color="success">
+                <CheckIcon className="w-4 h-4 mr-2" />
+                Save
+              </Button>
             )}
           </div>
-        </li>
-        {data.tags && (
-          <li>
-            <Tags tags={data.tags} />
-          </li>
-        )}
-
-        <li className="flex gap-4 items-center">
-          <CalendarIcon className="w-8 h-8" />
-          <RelativeDate timestamp={data.capturedOn} />
-        </li>
-        {data.metadata && (
-          <li className="flex gap-4 items-center">
-            <CameraIcon className="w-8 h-8" />
-            <FormattedMetadata
-              meta={data.metadata}
-              width={data.width}
-              height={data.height}
+        </ul>
+      </Form>
+      {data.latitude && data.longitude && (
+        <ClientOnly>
+          {() => (
+            <OpenStreetMapEmbed
+              lat={data.latitude!}
+              lon={data.longitude!}
+              name={data.title}
             />
-          </li>
-        )}
-
-        {data.latitude && data.longitude && (
-          <ClientOnly>
-            {() => (
-              <OpenStreetMapEmbed
-                lat={data.latitude!}
-                lon={data.longitude!}
-                name={data.title}
-              />
-            )}
-          </ClientOnly>
-        )}
-      </ul>
+          )}
+        </ClientOnly>
+      )}
     </>
   )
 }
