@@ -1,4 +1,4 @@
-import {useLoaderData} from "@remix-run/react"
+import {Link, useLoaderData} from "@remix-run/react"
 import type {ImageDTO, ImageMetadata} from "imagehive-client"
 import {DefaultApi} from "imagehive-client"
 import type {LoaderFunction} from "react-router"
@@ -72,6 +72,25 @@ const FormattedMetadata: React.FC<{
   )
 }
 
+const Tags: React.FC<{tags: string[]}> = ({tags}) => {
+  return (
+    <ul className="flex gap-1">
+      {tags.map((tag) => (
+        <li
+          className="bg-gray-100 px-2 py-0.5 rounded-lg hover:underline"
+          key={tag}
+        >
+          <Link
+            to={{pathname: "/", search: `?query=${encodeURIComponent(tag)}`}}
+          >
+            {tag}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 const ImageDetailsPage: React.FC = () => {
   const {data} = useLoaderData<Data>()
   const [editMode, setEditMode] = useState(false)
@@ -118,6 +137,11 @@ const ImageDetailsPage: React.FC = () => {
             )}
           </div>
         </li>
+        {data.tags && (
+          <li>
+            <Tags tags={data.tags} />
+          </li>
+        )}
 
         <li className="flex gap-4 items-center">
           <CalendarIcon className="w-8 h-8" />

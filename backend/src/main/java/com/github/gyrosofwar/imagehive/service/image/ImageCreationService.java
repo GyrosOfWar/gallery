@@ -46,19 +46,21 @@ public class ImageCreationService {
   private final TikaConfig tikaConfig;
   private final DSLContext dsl;
   private final ImageDTOConverter imageDTOConverter;
+  private final ImageTagger imageTagger;
 
   public ImageCreationService(
     MediaService mediaService,
     ObjectMapper objectMapper,
     TikaConfig tikaConfig,
     DSLContext dsl,
-    ImageDTOConverter imageDTOConverter
-  ) {
+    ImageDTOConverter imageDTOConverter,
+    ImageTagger imageTagger) {
     this.mediaService = mediaService;
     this.objectMapper = objectMapper;
     this.tikaConfig = tikaConfig;
     this.dsl = dsl;
     this.imageDTOConverter = imageDTOConverter;
+    this.imageTagger = imageTagger;
   }
 
   private OffsetDateTime toOffsetDate(Date date) {
@@ -148,6 +150,12 @@ public class ImageCreationService {
     }
   }
 
+  private String[] getTags(Path path, List<String> existingTags) throws IOException {
+    var tags = imageTagger.getTags(path);
+    tags.addAll(existingTags);
+    return tags.toArray(new String[] {});
+  }
+
   @Transactional
   public ImageDTO create(NewImage newImage) throws IOException, ImageProcessingException {
     var id = Ulid.fast();
@@ -161,6 +169,7 @@ public class ImageCreationService {
     ) {
       inputStream.transferTo(outputStream);
     }
+    var tags = getTags(tempFile, newImage.tags());
 
     var extension = getExtension(tempFile.toFile(), newImage.mimeType(), newImage.fileName());
     log.info("determined extension {} for filename {}", extension, newImage.fileName());
@@ -182,7 +191,7 @@ public class ImageCreationService {
       metadata.latitude(),
       metadata.longitude(),
       metadataJson,
-      newImage.tags().toArray(new String[0]),
+      tags,
       destinationPath.toString()
     );
     dsl.newRecord(IMAGE, image).insert();
