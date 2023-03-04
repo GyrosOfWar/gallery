@@ -18,7 +18,6 @@ import io.micronaut.security.rules.SecurityRule;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,10 @@ public class ImageController {
   }
 
   @Patch
-  public HttpResponse<Void> patchImage(@Body @Valid ImageUpdateDTO imageUpdate, Authentication authentication) {
+  public HttpResponse<Void> patchImage(
+    @Body @Valid ImageUpdateDTO imageUpdate,
+    Authentication authentication
+  ) {
     imageService.update(imageUpdate, getUserId(authentication));
     return HttpResponse.noContent();
   }

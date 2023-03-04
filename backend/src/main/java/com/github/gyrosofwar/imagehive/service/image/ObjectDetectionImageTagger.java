@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class ObjectDetectionImageTagger implements ImageTagger {
+
   private DetectedObjects detectObjects(Image image) throws IOException {
     Criteria<Image, DetectedObjects> criteria = Criteria
       .builder()

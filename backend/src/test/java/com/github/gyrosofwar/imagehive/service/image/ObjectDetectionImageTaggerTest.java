@@ -1,10 +1,10 @@
 package com.github.gyrosofwar.imagehive.service.image;
 
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 class ObjectDetectionImageTaggerTest {
+
   @Test
   void testDetectStuff() throws IOException {
     var objectDetector = new ObjectDetectionImageTagger();

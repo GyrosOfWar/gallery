@@ -10,12 +10,10 @@ import com.github.gyrosofwar.imagehive.sql.tables.records.UserRecord;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
-
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import javax.transaction.Transactional;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;

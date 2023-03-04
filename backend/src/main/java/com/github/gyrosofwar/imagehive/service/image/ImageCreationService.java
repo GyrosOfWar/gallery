@@ -54,7 +54,8 @@ public class ImageCreationService {
     TikaConfig tikaConfig,
     DSLContext dsl,
     ImageDTOConverter imageDTOConverter,
-    ImageTagger imageTagger) {
+    ImageTagger imageTagger
+  ) {
     this.mediaService = mediaService;
     this.objectMapper = objectMapper;
     this.tikaConfig = tikaConfig;
