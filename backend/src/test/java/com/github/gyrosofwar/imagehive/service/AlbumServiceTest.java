@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.BaseTest;
-import com.github.gyrosofwar.imagehive.dto.CreateAlbumDTO;
+import com.github.gyrosofwar.imagehive.dto.album.CreateAlbumDTO;
 import com.github.gyrosofwar.imagehive.service.image.ImageCreationService;
 import com.github.gyrosofwar.imagehive.service.image.NewImage;
 import jakarta.inject.Inject;
@@ -47,7 +47,8 @@ class AlbumServiceTest extends BaseTest {
     }
 
     var album = albumService.createAlbum(
-      new CreateAlbumDTO("test", "cool description", userId, List.of("tag1", "tag2"), images)
+      new CreateAlbumDTO("test", "cool description", List.of("tag1", "tag2")),
+      userId
     );
     assertNotNull(album);
 

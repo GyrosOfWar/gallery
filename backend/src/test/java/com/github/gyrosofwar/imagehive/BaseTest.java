@@ -1,6 +1,6 @@
 package com.github.gyrosofwar.imagehive;
 
-import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
 import com.github.gyrosofwar.imagehive.service.UserService;
 import com.github.gyrosofwar.imagehive.sql.Public;
 import io.micronaut.runtime.server.EmbeddedServer;

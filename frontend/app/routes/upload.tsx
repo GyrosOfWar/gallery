@@ -33,6 +33,9 @@ const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
     onDrop,
     multiple: true,
+    accept: {
+      "image/*": [".jpg", ".jpeg", ".png"],
+    },
   })
 
   return (

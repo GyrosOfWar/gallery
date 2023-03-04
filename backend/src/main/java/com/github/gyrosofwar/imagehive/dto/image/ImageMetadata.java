@@ -1,4 +1,4 @@
-package com.github.gyrosofwar.imagehive.dto;
+package com.github.gyrosofwar.imagehive.dto.image;
 
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;

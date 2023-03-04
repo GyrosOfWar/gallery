@@ -1,4 +1,4 @@
-package com.github.gyrosofwar.imagehive.dto;
+package com.github.gyrosofwar.imagehive.dto.image;
 
 import io.micronaut.core.annotation.Nullable;
 import java.time.OffsetDateTime;

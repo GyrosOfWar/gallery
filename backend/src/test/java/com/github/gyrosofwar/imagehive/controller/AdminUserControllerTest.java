@@ -3,7 +3,7 @@ package com.github.gyrosofwar.imagehive.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.gyrosofwar.imagehive.BaseTest;
-import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;

@@ -2,7 +2,7 @@ package com.github.gyrosofwar.imagehive.service;
 
 import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
 
-import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
 import com.github.gyrosofwar.imagehive.service.mail.Email;
 import com.github.gyrosofwar.imagehive.service.mail.EmailService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
@@ -63,7 +63,10 @@ public class UserService {
       assert is != null;
       defaultSettings = JSONB.jsonb(IOUtils.toString(is, StandardCharsets.UTF_8));
     } catch (Exception e) {
-      throw new RuntimeException("There was an error reading the default_settings.json for user creation", e);
+      throw new RuntimeException(
+        "There was an error reading the default_settings.json for user creation",
+        e
+      );
     }
     // Prepare the password hash either by generating a random password or using the given password
     String password;

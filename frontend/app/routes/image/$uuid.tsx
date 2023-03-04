@@ -18,7 +18,7 @@ import {
 import {Button} from "flowbite-react"
 import OpenStreetMapEmbed from "~/components/OpenStreetMapEmbed.client"
 import http from "~/util/http"
-import {ActionFunction} from "@remix-run/node"
+import type {ActionFunction} from "@remix-run/node"
 import ToggleableInput from "~/components/ToggleableInput"
 
 const RelativeDate: React.FC<{timestamp: string | null | undefined}> = ({
@@ -84,7 +84,7 @@ const Tags: React.FC<{tags: string[]}> = ({tags}) => {
     <ul className="flex gap-1">
       {tags.map((tag) => (
         <li
-          className="bg-gray-100 px-2 py-0.5 rounded-lg hover:underline"
+          className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-lg hover:underline"
           key={tag}
         >
           <Link

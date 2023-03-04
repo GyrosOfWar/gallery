@@ -4,8 +4,8 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.ALBUM_IMAGE;
 import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
-import com.github.gyrosofwar.imagehive.dto.ImageDTO;
-import com.github.gyrosofwar.imagehive.dto.ImageUpdateDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageUpdateDTO;
 import com.github.gyrosofwar.imagehive.service.MediaService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.core.annotation.Nullable;

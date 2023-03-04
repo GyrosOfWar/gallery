@@ -2,8 +2,8 @@ package com.github.gyrosofwar.imagehive.converter;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.gyrosofwar.imagehive.dto.ImageDTO;
-import com.github.gyrosofwar.imagehive.dto.ImageMetadata;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageMetadata;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import jakarta.inject.Singleton;
 import java.io.IOException;

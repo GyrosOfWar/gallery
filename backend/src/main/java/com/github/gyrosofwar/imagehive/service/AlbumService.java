@@ -2,15 +2,19 @@ package com.github.gyrosofwar.imagehive.service;
 
 import static com.github.gyrosofwar.imagehive.sql.Tables.*;
 
-import com.github.gyrosofwar.imagehive.dto.AlbumDTO;
-import com.github.gyrosofwar.imagehive.dto.CreateAlbumDTO;
+import com.github.gyrosofwar.imagehive.dto.album.AlbumDetailsDTO;
+import com.github.gyrosofwar.imagehive.dto.album.AlbumListDTO;
+import com.github.gyrosofwar.imagehive.dto.album.CreateAlbumDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Album;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +30,8 @@ public class AlbumService {
     this.dsl = dsl;
   }
 
-  public List<AlbumDTO> listAlbums(Pageable pageable, int numberOfImages, Long userId) {
+  @Transactional
+  public List<AlbumListDTO> listAlbums(Pageable pageable, Long userId) {
     return dsl
       .selectFrom(ALBUM)
       .where(ALBUM.OWNER_ID.eq(userId))
@@ -35,36 +40,30 @@ public class AlbumService {
       .limit(pageable.getSize())
       .fetchInto(Album.class)
       .stream()
-      .map(album -> AlbumDTO.from(album, null))
+      .map(album -> AlbumListDTO.from(album))
       .toList();
   }
 
-  public AlbumDTO createAlbum(CreateAlbumDTO albumDTO) {
+  @Transactional
+  public AlbumDetailsDTO createAlbum(CreateAlbumDTO albumDTO, long userId) {
     var album = dsl
       .insertInto(ALBUM)
       .columns(ALBUM.NAME, ALBUM.DESCRIPTION, ALBUM.OWNER_ID, ALBUM.TAGS, ALBUM.CREATED_ON)
       .values(
         albumDTO.name(),
         albumDTO.description(),
-        albumDTO.ownerId(),
+        userId,
         albumDTO.tags().toArray(new String[0]),
         OffsetDateTime.now()
       )
       .returningResult()
       .fetchOneInto(Album.class);
 
-    var records = albumDTO
-      .imageIds()
-      .stream()
-      .map(imageId -> dsl.newRecord(ALBUM_IMAGE, new AlbumImage(album.id(), imageId)))
-      .toList();
-
-    dsl.batchInsert(records).execute();
-
-    return AlbumDTO.from(album, null);
+    return AlbumDetailsDTO.from(album, List.of());
   }
 
-  public AlbumDTO getAlbumWithImages(long id, Long userId) {
+  @Transactional
+  public AlbumDetailsDTO getAlbumWithImages(long id, Long userId) {
     if (userId == null) {
       return null;
     }
@@ -76,6 +75,7 @@ public class AlbumService {
         ALBUM.TAGS,
         ALBUM.DESCRIPTION,
         ALBUM.CREATED_ON,
+        ALBUM.THUMBNAIL_ID,
         IMAGE.ID.as("imageId"),
         IMAGE.FILE_PATH
       )
@@ -94,14 +94,41 @@ public class AlbumService {
 
     var album = rows.get(0);
     var imageIds = rows.stream().map(AlbumRow::imageId).toList();
-    return new AlbumDTO(
+    return new AlbumDetailsDTO(
       album.albumId(),
       album.name(),
       album.description(),
       album.createdOn(),
       List.of(album.tags()),
-      imageIds
+      imageIds,
+      album.thumbnailId()
     );
+  }
+
+  @Transactional
+  public boolean isAlbumOwner(long albumId, long userId) {
+    var count = dsl
+      .selectCount()
+      .from(ALBUM)
+      .where(ALBUM.ID.eq(albumId).and(ALBUM.OWNER_ID.eq(userId)))
+      .fetchOne()
+      .value1();
+    return count == 1;
+  }
+
+  @Transactional
+  public void addImages(long id, Set<UUID> imageIds, Long userId) {
+    if (userId == null || !isAlbumOwner(id, userId)) {
+      // todo throw the right exception
+      return;
+    }
+
+    var records = imageIds
+      .stream()
+      .map(imageId -> dsl.newRecord(ALBUM_IMAGE, new AlbumImage(id, imageId)))
+      .toList();
+
+    dsl.batchInsert(records).execute();
   }
 
   private record AlbumRow(
@@ -111,6 +138,7 @@ public class AlbumService {
     String description,
     OffsetDateTime createdOn,
     UUID imageId,
-    String filePath
+    String filePath,
+    UUID thumbnailId
   ) {}
 }

@@ -5,7 +5,13 @@ export interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string
 }
 
-const ToggleableInput: React.FC<Props> = ({editMode, value, defaultValue, name, ...rest}) => {
+const ToggleableInput: React.FC<Props> = ({
+  editMode,
+  value,
+  defaultValue,
+  name,
+  ...rest
+}) => {
   return (
     <>
       {editMode && (

@@ -3,8 +3,8 @@ package com.github.gyrosofwar.imagehive.controller;
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 
 import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
-import com.github.gyrosofwar.imagehive.dto.ImageDTO;
-import com.github.gyrosofwar.imagehive.dto.ImageUpdateDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageUpdateDTO;
 import com.github.gyrosofwar.imagehive.service.image.ImageService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;

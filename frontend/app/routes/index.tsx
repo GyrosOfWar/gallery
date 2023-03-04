@@ -95,6 +95,7 @@ export default function Index() {
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setQueryParams({query})
+    setPages([])
     fetcher.load(`/?index&query=${encodeURIComponent(query)}`)
   }
 
