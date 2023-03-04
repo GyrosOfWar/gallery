@@ -1,5 +1,6 @@
 package com.github.gyrosofwar.imagehive.service;
 
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
+@Requires(notEnv = "test")
 public class CleanupService {
 
   private static final Logger log = LoggerFactory.getLogger(CleanupService.class);

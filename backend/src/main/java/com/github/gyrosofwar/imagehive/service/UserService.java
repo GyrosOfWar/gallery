@@ -59,11 +59,11 @@ public class UserService {
     }
     // Load the default settings for new users
     JSONB defaultSettings;
-    try (InputStream is = getClass().getResourceAsStream("default_usersettings.json")) {
+    try (InputStream is = getClass().getResourceAsStream("/default_usersettings.json")) {
       assert is != null;
       defaultSettings = JSONB.jsonb(IOUtils.toString(is, StandardCharsets.UTF_8));
     } catch (Exception e) {
-      throw new Error("There was an error reading the default_settings.json for user creation", e);
+      throw new RuntimeException("There was an error reading the default_settings.json for user creation", e);
     }
     // Prepare the password hash either by generating a random password or using the given password
     String password;
