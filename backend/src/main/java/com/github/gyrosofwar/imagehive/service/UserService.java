@@ -10,11 +10,17 @@ import com.github.gyrosofwar.imagehive.sql.tables.records.UserRecord;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import javax.transaction.Transactional;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
 import org.jooq.DeleteUsingStep;
+import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +59,14 @@ public class UserService {
     ) {
       throw new IllegalArgumentException("User with the given information already exists");
     }
+    // Load the default settings for new users
+    JSONB defaultSettings;
+    try (InputStream is = getClass().getResourceAsStream("default_usersettings.json")) {
+      assert is != null;
+      defaultSettings = JSONB.jsonb(IOUtils.toString(is, StandardCharsets.UTF_8));
+    } catch (Exception e) {
+      throw new Error("There was an error reading the default_settings.json for user creation", e);
+    }
     // Prepare the password hash either by generating a random password or using the given password
     String password;
     if (userCreate.generatePassword()) {
@@ -69,6 +83,7 @@ public class UserService {
       .set(USER.PASSWORD_HASH, hashedPassword)
       .set(USER.ADMIN, userCreate.admin())
       .set(USER.CREATED_ON, OffsetDateTime.now())
+      .set(USER.USER_SETTINGS, defaultSettings)
       .execute();
     if (result != 1) {
       throw new UnknownError("There was an unknown problem creating the user");
