@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.BaseTest;
+import com.github.gyrosofwar.imagehive.service.image.ImageCreationService;
+import com.github.gyrosofwar.imagehive.service.image.NewImage;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import java.io.IOException;
@@ -17,12 +19,12 @@ class SearchServiceTest extends BaseTest {
   SearchService searchService;
 
   @Inject
-  ImageService imageService;
+  ImageCreationService imageCreationService;
 
   @Test
   void testFindImages() throws ImageProcessingException, IOException {
     for (var image : createTestImageData()) {
-      imageService.create(image);
+      imageCreationService.create(image);
     }
 
     assertEquals(3, searchService.searchImages("Testtitle", Pageable.UNPAGED, 1).size());

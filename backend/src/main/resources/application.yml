@@ -31,7 +31,6 @@ micronaut:
             - http://127.0.0.1:3000
 
     host: 0.0.0.0
-
   application:
     name: imagehive
   security:
@@ -73,3 +72,5 @@ imagehive:
     username: "dummy"
     password: "dummy"
 
+jackson:
+  date-format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"

@@ -1,16 +1,13 @@
 package com.github.gyrosofwar.imagehive;
 
 import com.github.gyrosofwar.imagehive.dto.UserCreateDTO;
-import com.github.gyrosofwar.imagehive.service.ImageService;
 import com.github.gyrosofwar.imagehive.service.UserService;
 import com.github.gyrosofwar.imagehive.sql.Public;
-import com.github.gyrosofwar.imagehive.sql.Tables;
 import io.micronaut.runtime.server.EmbeddedServer;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.security.token.jwt.render.BearerAccessRefreshToken;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
-import java.util.List;
 import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 

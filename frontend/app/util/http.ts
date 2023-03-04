@@ -36,6 +36,33 @@ const http = {
       throw e
     }
   },
+
+  async patchJson(
+    path: string,
+    payload: unknown,
+    accessToken?: string
+  ): Promise<Response> {
+    const url = getUrl(path)
+    try {
+      const headers: HeadersInit = {"content-type": "application/json"}
+      if (accessToken) {
+        headers.authorization = `Bearer ${accessToken}}`
+      }
+      const json = JSON.stringify(payload)
+      const response = await fetch(url, {headers, method: "PATCH", body: json})
+      if (response.ok) {
+        return response
+      } else {
+        const body = await response.text()
+        throw new Error(
+          `Request to get JSON from URL ${url} failed: ${response.status}, response body: ${body}`
+        )
+      }
+    } catch (e) {
+      console.error(`failed to PATCH ${url} with payload ${payload}`, e)
+      throw e
+    }
+  },
 }
 
 export default http

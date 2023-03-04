@@ -24,6 +24,7 @@
     <jib.docker.image>${project.artifactId}</jib.docker.image>
     <jib.docker.tag>${project.version}</jib.docker.tag>
     <exec.mainClass>com.github.gyrosofwar.imagehive.ImageHiveApplication</exec.mainClass>
+    <djl.version>0.21.0</djl.version>
   </properties>
 
   <repositories>
@@ -175,6 +176,30 @@
       <groupId>me.desair.tus</groupId>
       <artifactId>tus-java-server</artifactId>
       <version>1.0.0-2.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>api</artifactId>
+      <version>${djl.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>model-zoo</artifactId>
+      <version>${djl.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.djl.pytorch</groupId>
+      <artifactId>pytorch-engine</artifactId>
+      <version>${djl.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.djl.pytorch</groupId>
+      <artifactId>pytorch-model-zoo</artifactId>
+      <version>${djl.version}</version>
     </dependency>
 
     <dependency>

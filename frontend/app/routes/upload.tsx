@@ -5,6 +5,7 @@ import {useLoaderData, useNavigate} from "@remix-run/react"
 import clsx from "clsx"
 import {Button, TextInput} from "flowbite-react"
 import produce from "immer"
+import type {Dispatch, SetStateAction} from "react"
 import {useCallback, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
@@ -64,7 +65,7 @@ interface InfoBarProps {
 }
 
 const InfoBar: React.FC<InfoBarProps> = ({count, formattedSize, uploading}) => (
-  <div className="container grid grid-cols-2 items-center ml-auto mr-auto px-2">
+  <div className="grid grid-cols-2 items-center">
     <div>
       <strong>{count}</strong> files selected for upload (total size:{" "}
       {formattedSize} MB)
@@ -86,11 +87,16 @@ function uploadFile(
   file: File,
   info: FieldData,
   accessToken: string,
-  endpoint: string
+  endpoint: string,
+  setProgress: Dispatch<SetStateAction<Progress>>
 ): Promise<void> {
   return new Promise((resolve, reject) => {
+    setProgress((oldProgress) => ({
+      ...oldProgress,
+      currentFileTotal: file.size,
+    }))
+
     const upload = new Upload(file, {
-      // send directly to the backend with CORS
       endpoint,
       metadata: {
         filename: file.name,
@@ -103,13 +109,23 @@ function uploadFile(
         Authorization: `Bearer ${accessToken}`,
       },
       onProgress(bytesUploaded, bytesTotal) {
-        console.log(bytesUploaded, bytesTotal)
+        setProgress((oldProgress) => ({
+          ...oldProgress,
+          currentFileCompleted: bytesUploaded,
+          currentFileTotal: bytesTotal,
+        }))
       },
       onBeforeRequest(req) {
         const xhr = req.getUnderlyingObject() as XMLHttpRequest
         xhr.withCredentials = true
       },
       onSuccess() {
+        setProgress((oldProgress) => ({
+          filesCompleted: oldProgress.filesCompleted + 1,
+          filesTotal: oldProgress.filesTotal,
+          currentFileCompleted: 0,
+          currentFileTotal: 0,
+        }))
         resolve()
       },
       onError(error) {
@@ -133,6 +149,35 @@ interface Progress {
   currentFileCompleted: number
 }
 
+const ProgressBar: React.FC<{
+  completed: number
+  total: number
+  title: string
+}> = ({completed, total, title}) => {
+  const progress = Math.round((completed / total) * 100)
+
+  return (
+    <div>
+      <div className="flex justify-between mb-1">
+        <span className="text-base font-medium text-blue-700 dark:text-white">
+          {title}
+        </span>
+        <span className="text-sm font-medium text-blue-700 dark:text-white">
+          {progress}%
+        </span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+        <div
+          className="bg-blue-600 h-2.5 rounded-full"
+          style={{
+            width: `${progress}%`,
+          }}
+        ></div>
+      </div>
+    </div>
+  )
+}
+
 const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
   files,
   user,
@@ -140,10 +185,9 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
   const size = files.reduce((total, {file}) => total + file.size, 0) || 0
   const formattedSize = (size / MEGABYTES).toFixed(2)
   const [formState, setFormState] = useState<FieldData[]>(
-    files!.map((f) => ({tags: "", title: f.file.name, description: ""}))
+    files.map((f) => ({tags: "", title: f.file.name, description: ""}))
   )
   const [uploading, setUploading] = useState(false)
-  // TODO show two progress bars
   const [progress, setProgress] = useState({
     filesTotal: files.length,
     filesCompleted: 0,
@@ -168,7 +212,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
 
       const promises = files.map(({file}, index) => {
         const info = formState[index]
-        return uploadFile(file, info, user.accessToken, endpoint)
+        return uploadFile(file, info, user.accessToken, endpoint, setProgress)
       })
       await Promise.all(promises)
       navigate("/")
@@ -179,22 +223,28 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
   return (
     <form onSubmit={onSubmit}>
       <aside className="fixed left-0 bottom-0 w-full py-2 z-10 border-t bg-white dark:bg-gray-800 border-t-black dark:border-t-gray-300 border-opacity-50">
-        {uploading ? (
-          <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
-            {/* <div
-              className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-              style={{width: `${progress}%`}}
-            >
-              {progress}%
-            </div> */}
-          </div>
-        ) : (
-          <InfoBar
-            count={files.length}
-            uploading={uploading}
-            formattedSize={formattedSize}
-          />
-        )}
+        <div className="container ml-auto mr-auto px-2">
+          {uploading ? (
+            <div className="flex flex-col gap-2">
+              <ProgressBar
+                total={progress.currentFileTotal}
+                completed={progress.currentFileCompleted}
+                title="Current file"
+              />
+              <ProgressBar
+                total={progress.filesTotal}
+                completed={progress.filesCompleted}
+                title="All files"
+              />
+            </div>
+          ) : (
+            <InfoBar
+              count={files.length}
+              uploading={uploading}
+              formattedSize={formattedSize}
+            />
+          )}
+        </div>
       </aside>
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-2 pb-20">
