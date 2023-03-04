@@ -192,6 +192,7 @@ public class ImageCreationService {
       metadata.longitude(),
       metadataJson,
       tags,
+      false,
       destinationPath.toString()
     );
     dsl.newRecord(IMAGE, image).insert();
