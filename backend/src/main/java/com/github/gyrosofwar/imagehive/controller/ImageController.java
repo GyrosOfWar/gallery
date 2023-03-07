@@ -57,6 +57,7 @@ public class ImageController {
     @Body @Valid ImageUpdateDTO imageUpdate,
     Authentication authentication
   ) {
+    log.info("updating image with {} for user '{}'", imageUpdate, authentication.getName());
     imageService.update(imageUpdate, getUserId(authentication));
     return HttpResponse.noContent();
   }

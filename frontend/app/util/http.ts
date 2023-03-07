@@ -14,6 +14,7 @@ export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 class Http {
   async getJson<T>(path: string, accessToken?: string): Promise<T> {
     const response = await this.get(path, accessToken)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await response.json()
   }
 
@@ -65,6 +66,7 @@ class Http {
         )
       }
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       console.error(`failed to ${method} ${url} with payload ${payload}`, e)
       throw e
     }

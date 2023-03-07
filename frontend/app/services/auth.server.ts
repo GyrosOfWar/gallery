@@ -47,10 +47,7 @@ async function login(username: string, password: string): Promise<User> {
     } else {
       const text = await response.text()
       throw new Error(
-        "request failed with status code " +
-          response.status +
-          ", response: " +
-          text
+        `Request failed with status code ${response.status}, response: '${text}'`
       )
     }
   } catch (err) {

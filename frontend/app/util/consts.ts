@@ -7,9 +7,13 @@ export const thumbnailUrl = (
   uuid: string,
   width: number,
   height: number,
-  extension: string
+  extension?: string
 ) => {
-  return `/api/thumbnail/${width}/${height}/${uuid}?extension=${extension}`
+  let url = `/api/thumbnail/${width}/${height}/${uuid}`
+  if (extension) {
+    url += `?extension=${extension}`
+  }
+  return url
 }
 
 export const originalImageUrl = (uuid: string, extension: string) =>

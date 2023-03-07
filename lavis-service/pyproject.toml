@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "lavis_service"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 Flask = "^2.2.3"
 salesforce-lavis = "^1.0.2"
 

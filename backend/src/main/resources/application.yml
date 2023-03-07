@@ -47,6 +47,10 @@ micronaut:
             secret: ${JWT_GENERATOR_REFRESH_TOKEN_SECRET:pleaseChangeThisSecretForANewOne}
           access-token:
             expiration: 28800
+  http:
+    client:
+      read-timeout: 60s
+
 datasources:
   default:
     # e.g. jdbc:postgresql://localhost:5432/imagehive
@@ -65,6 +69,7 @@ flyway:
 imagehive:
   application:
     image-base-path: "images"
+    lavis-service-url: "http://localhost:5000"
   smtpmail:
     host: "localhost"
     port: "25"

@@ -1,9 +1,11 @@
-import {PlusIcon} from "@heroicons/react/24/outline"
+import {PhotoIcon, PlusIcon} from "@heroicons/react/24/outline"
 import type {LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {Link, useLoaderData} from "@remix-run/react"
 import type {AlbumListDTO} from "imagehive-client"
+import Card from "~/components/Card"
 import {requireUser} from "~/services/auth.server"
+import {thumbnailUrl} from "~/util/consts"
 import http from "~/util/http"
 
 interface Data {
@@ -33,7 +35,20 @@ const AlbumListPage: React.FC = () => {
       </header>
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {albums.map((album) => (
-          <article key={album.id}>{album.name}</article>
+          <Link key={album.id} to={`/albums/${album.id}`}>
+            <Card>
+              {album.thumbnailImage && (
+                <img
+                  alt={album.name}
+                  src={thumbnailUrl(album.thumbnailImage, 400, 400)}
+                />
+              )}
+              {!album.thumbnailImage && (
+                <PhotoIcon className="w-[400px] h-[250px] max-w-full max-h-full" />
+              )}
+              <p className="text-xl p-2">{album.name}</p>
+            </Card>
+          </Link>
         ))}
       </section>
     </>

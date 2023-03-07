@@ -5,8 +5,17 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "@remix-run/eslint-config",
     "@remix-run/eslint-config/node",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
   ],
+  parserOptions: {
+    project: true,
+    tsconfigRootDir: __dirname,
+  },
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
   root: true,
+  rules: {
+    "@typescript-eslint/no-unsafe-assignment": 0,
+    "@typescript-eslint/no-unsafe-return": 0,
+  },
 }

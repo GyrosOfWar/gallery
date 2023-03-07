@@ -36,7 +36,7 @@ const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
   testId,
 }) => {
   const columnItems = (): React.ReactNode[][] => {
-    const cols = new Array(columnCount)
+    const cols: React.ReactNode[][] = new Array(columnCount)
     const items = Children.toArray(children)
     for (let i = 0; i < items.length; i++) {
       const columnIndex = i % columnCount

@@ -9,13 +9,13 @@ import type {LoaderFunction} from "react-router"
 import type {PageImageDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
 import {MagnifyingGlassIcon, PlusIcon} from "@heroicons/react/24/outline"
-import {thumbnailUrl} from "~/util/consts"
 import {Button, TextInput} from "flowbite-react"
 import type {FormEvent} from "react"
 import React, {useEffect, useState} from "react"
 import http from "~/util/http"
 import Masonry from "~/components/Masonry"
 import useInfiniteScroll from "react-infinite-scroll-hook"
+import ThumbnailImage from "~/components/ThumbnailImage"
 
 interface Data {
   images: PageImageDTO
@@ -24,18 +24,7 @@ interface Data {
 type ClientImageList = ReturnType<
   typeof useLoaderData<Data>
 >["images"]["content"]
-type ClientImage = ClientImageList[0]
-
-const Image: React.FC<{image: ClientImage}> = ({image}) => {
-  return (
-    <Link className="mb-1 flex" to={`/image/${image.id}`}>
-      <img
-        alt={image.title || "<no title>"}
-        src={thumbnailUrl(image.id, 600, 600, image.extension)}
-      />
-    </Link>
-  )
-}
+export type ClientImage = ClientImageList[0]
 
 export const loader: LoaderFunction = async ({request}) => {
   const user = await requireUser(request)
@@ -150,7 +139,7 @@ export default function Index() {
         testId="main-grid"
       >
         {images.map((image) => (
-          <Image image={image} key={image.id} />
+          <ThumbnailImage image={image} key={image.id} />
         ))}
         {(loading || hasNextPage) && <div ref={sentryRef}>Loading...</div>}
       </Masonry>

@@ -22,6 +22,8 @@ import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
@@ -45,23 +47,17 @@ public class ImageCreationService {
   private final ObjectMapper objectMapper;
   private final TikaConfig tikaConfig;
   private final DSLContext dsl;
-  private final ImageDTOConverter imageDTOConverter;
-  private final ImageTagger imageTagger;
 
   public ImageCreationService(
     MediaService mediaService,
     ObjectMapper objectMapper,
     TikaConfig tikaConfig,
-    DSLContext dsl,
-    ImageDTOConverter imageDTOConverter,
-    ImageTagger imageTagger
+    DSLContext dsl
   ) {
     this.mediaService = mediaService;
     this.objectMapper = objectMapper;
     this.tikaConfig = tikaConfig;
     this.dsl = dsl;
-    this.imageDTOConverter = imageDTOConverter;
-    this.imageTagger = imageTagger;
   }
 
   private OffsetDateTime toOffsetDate(Date date) {
@@ -151,14 +147,8 @@ public class ImageCreationService {
     }
   }
 
-  private String[] getTags(Path path, List<String> existingTags) throws IOException {
-    var tags = imageTagger.getTags(path);
-    tags.addAll(existingTags);
-    return tags.toArray(new String[] {});
-  }
-
   @Transactional
-  public ImageDTO create(NewImage newImage) throws IOException, ImageProcessingException {
+  public Image create(NewImage newImage) throws IOException, ImageProcessingException {
     var id = Ulid.fast();
     var userId = newImage.userId();
     log.info("generated ID {} for upload {}", id, newImage.fileName());
@@ -170,7 +160,8 @@ public class ImageCreationService {
     ) {
       inputStream.transferTo(outputStream);
     }
-    var tags = getTags(tempFile, newImage.tags());
+    var tags = newImage.tags().toArray(new String[0]); // getTags(tempFile, newImage.tags());
+    var description = newImage.description();
 
     var extension = getExtension(tempFile.toFile(), newImage.mimeType(), newImage.fileName());
     log.info("determined extension {} for filename {}", extension, newImage.fileName());
@@ -183,7 +174,7 @@ public class ImageCreationService {
     var image = new Image(
       id.toUuid(),
       newImage.title(),
-      newImage.description(),
+      description,
       OffsetDateTime.now(),
       metadata.captureDate(),
       userId,
@@ -198,8 +189,7 @@ public class ImageCreationService {
     );
     dsl.newRecord(IMAGE, image).insert();
     log.info("inserted new image {}", image);
-
-    return imageDTOConverter.convert(image);
+    return image;
   }
 
   private record ParsedMetadata(

@@ -7,6 +7,9 @@ export const loader: LoaderFunction = async ({request, params}) => {
   const {uuid} = params
   const queryParams = new URL(request.url).searchParams
   const extension = queryParams.get("extension")
+  if (!uuid || !extension) {
+    return new Response("missing parameters", {status: 400})
+  }
 
   const response = await http.get(
     `/api/media/${uuid}?extension=${extension}`,

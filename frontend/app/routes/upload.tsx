@@ -10,6 +10,7 @@ import {useCallback, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
 import {Upload} from "tus-js-client"
+import Card from "~/components/Card"
 import type {User} from "~/services/auth.server"
 import {requireUser} from "~/services/auth.server"
 import {backendUrl} from "~/util/consts"
@@ -207,6 +208,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
     )
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   const onSubmit: React.FormEventHandler<HTMLFormElement> = useCallback(
     async (event) => {
       event.preventDefault()
@@ -252,10 +254,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-2 pb-20">
         {files.map(({file, url}, index) => (
-          <figure
-            key={file.name}
-            className="flex flex-col justify-between bg-white dark:bg-gray-800 rounded-xl p-2 shadow-lg"
-          >
+          <Card key={file.name}>
             <img loading="lazy" src={url} alt={file.name} />
             <div className="flex flex-col gap-2 mt-2">
               <TextInput
@@ -286,7 +285,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
                 disabled={uploading}
               />
             </div>
-          </figure>
+          </Card>
         ))}
       </section>
     </form>

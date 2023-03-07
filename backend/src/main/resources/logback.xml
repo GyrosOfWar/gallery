@@ -16,5 +16,4 @@
     <logger name="org.flywaydb.core.internal.license.VersionPrinter" level="WARN" />
 <!--    <logger name="io.micronaut.http" level="TRACE" />-->
 <!--    <logger name="io.micronaut.security" level="DEBUG" />-->
-    <logger name="me.desair.tus.server" level="DEBUG" />
 </configuration>

@@ -37,6 +37,7 @@ function handleBotRequest(
   return new Promise((resolve, reject) => {
     let didError = false
 
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const {pipe, abort} = renderToPipeableStream(
       <RemixServer context={remixContext} url={request.url} />,
       {
@@ -78,6 +79,7 @@ function handleBrowserRequest(
   return new Promise((resolve, reject) => {
     let didError = false
 
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const {pipe, abort} = renderToPipeableStream(
       <RemixServer context={remixContext} url={request.url} />,
       {

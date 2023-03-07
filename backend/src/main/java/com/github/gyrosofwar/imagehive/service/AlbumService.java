@@ -5,6 +5,7 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.*;
 import com.github.gyrosofwar.imagehive.dto.album.AlbumDetailsDTO;
 import com.github.gyrosofwar.imagehive.dto.album.AlbumListDTO;
 import com.github.gyrosofwar.imagehive.dto.album.CreateAlbumDTO;
+import com.github.gyrosofwar.imagehive.sql.tables.Image;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Album;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage;
 import io.micronaut.data.model.Pageable;
@@ -68,39 +69,30 @@ public class AlbumService {
       return null;
     }
 
-    var rows = dsl
-      .select(
-        ALBUM.NAME,
-        ALBUM.ID.as("albumId"),
-        ALBUM.TAGS,
-        ALBUM.DESCRIPTION,
-        ALBUM.CREATED_ON,
-        ALBUM.THUMBNAIL_ID,
-        IMAGE.ID.as("imageId"),
-        IMAGE.FILE_PATH
-      )
-      .from(ALBUM)
-      .innerJoin(ALBUM_IMAGE)
-      .on(ALBUM_IMAGE.ALBUM_ID.eq(ALBUM.ID))
-      .innerJoin(IMAGE)
-      .on(ALBUM_IMAGE.IMAGE_ID.eq(IMAGE.ID))
+    var album = dsl
+      .selectFrom(ALBUM)
       .where(ALBUM.ID.eq(id).and(ALBUM.OWNER_ID.eq(userId)))
-      .fetchInto(AlbumRow.class);
-    log.info("returned rows {}", rows);
+      .fetchOneInto(Album.class);
 
-    if (rows.isEmpty()) {
+    if (album == null) {
       return null;
     }
 
-    var album = rows.get(0);
-    var imageIds = rows.stream().map(AlbumRow::imageId).toList();
+    var albumImages = dsl
+      .select(IMAGE.ID)
+      .from(ALBUM_IMAGE)
+      .innerJoin(IMAGE)
+      .on(ALBUM_IMAGE.IMAGE_ID.eq(IMAGE.ID))
+      .where(ALBUM_IMAGE.ALBUM_ID.eq(id))
+      .fetch(IMAGE.ID);
+
     return new AlbumDetailsDTO(
-      album.albumId(),
+      album.id(),
       album.name(),
       album.description(),
       album.createdOn(),
       List.of(album.tags()),
-      imageIds,
+      albumImages,
       album.thumbnailId()
     );
   }
