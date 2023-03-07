@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "lapis-service"
+version = "0.1.0"
+description = ""
+authors = ["Rubikan <rubikandreas@gmail.com>"]
+readme = "README.md"
+packages = [{include = "lapis_service"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Flask = "^2.2.3"
+salesforce-lavis = "^1.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
