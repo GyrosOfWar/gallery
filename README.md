@@ -7,7 +7,7 @@ A self-hostable photo gallery. Very early, very work-in-progress and not ready f
 - A photo feed similar to GPhotos or Apple Photos, searchable.
 - Album management: Allow creating albums with images and share them with others
 - Automatic tagging of images
-- Easy deployment with a `docker-compose.yaml` file. (potentially also )
+- Easy deployment with a `docker-compose.yaml` file. (potentially also provide a Kubernetes deployment setup)
 
 ## Non-features
 - Support for databases other than PostgreSQL. We use PostgreSQL specific features and support for MySQL etc. is not planned.
