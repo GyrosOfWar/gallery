@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "lapis-service"
+name = "lavis-service"
 version = "0.1.0"
 description = ""
 authors = ["Rubikan <rubikandreas@gmail.com>"]
 readme = "README.md"
-packages = [{include = "lapis_service"}]
+packages = [{include = "lavis_service"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"

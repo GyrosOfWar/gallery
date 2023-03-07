@@ -19,3 +19,4 @@ out/
 /temp-images
 password.txt
 .vscode
+.env
