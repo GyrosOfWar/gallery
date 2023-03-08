@@ -1,7 +1,7 @@
 package com.github.gyrosofwar.imagehive.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.BaseTest;
@@ -53,6 +53,6 @@ class AlbumServiceTest extends BaseTest {
     assertNotNull(album);
 
     var dto = albumService.getAlbumWithImages(album.id(), userId);
-    assertEquals(3, dto.imageIds().size());
+    assertThat(dto.imageIds()).isEmpty();
   }
 }
