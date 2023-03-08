@@ -1,4 +1,4 @@
-import {HeartIcon} from "@heroicons/react/24/outline"
+import {StarIcon} from "@heroicons/react/24/outline"
 import {Link} from "@remix-run/react"
 import type {ClientImage} from "~/routes"
 import {thumbnailUrl} from "~/util/consts"
@@ -10,9 +10,9 @@ const Overlay: React.FC = () => {
 
   return (
     <div className="z-10 absolute top-0 left-0 w-full h-full bg-transparent">
-      <HeartIcon
+      <StarIcon
         onClick={toggleFavorite}
-        color="red"
+        color="yellow"
         className="w-12 h-12 absolute bottom-1 right-1"
       />
     </div>

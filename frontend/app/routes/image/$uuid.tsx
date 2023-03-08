@@ -107,23 +107,26 @@ const ImageDetailsPage: React.FC = () => {
 
   return (
     <>
-      <img
-        src={originalImageUrl(data.id, data.extension)}
-        alt={data.title || "no title"}
-        className="max-h-[90vh] self-center"
-      />
+      <a href={originalImageUrl(data.id, data.extension)}>
+        <img
+          src={originalImageUrl(data.id, data.extension)}
+          alt={data.title || "no title"}
+          className="max-h-[90vh] self-center"
+        />
+      </a>
 
-      <Form onSubmit={toggleEditMode} method="post">
+      <Form onSubmit={toggleEditMode} method="post" className="max-w-2xl">
         <input type="hidden" name="uuid" value={data.id} />
-        <ul className="flex flex-col gap-4 my-4">
+        <ul className="flex w-full flex-col gap-4 my-4">
           <li className="flex gap-4 items-center">
             <PhotoIcon className="w-8 h-8" />
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col grow">
               <ToggleableInput
                 editMode={editMode}
                 defaultValue={data.title || ""}
                 name="title"
                 placeholder="Title"
+                className="font-semibold"
               />
               {(data.description || editMode) && (
                 <ToggleableInput
@@ -131,6 +134,7 @@ const ImageDetailsPage: React.FC = () => {
                   defaultValue={data.description || ""}
                   name="description"
                   placeholder="Description"
+                  className="text-gray-600 font-light"
                 />
               )}
             </div>

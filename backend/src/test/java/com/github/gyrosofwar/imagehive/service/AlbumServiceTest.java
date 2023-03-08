@@ -12,6 +12,7 @@ import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,18 @@ class AlbumServiceTest extends BaseTest {
 
   @Inject
   ImageCreationService imageService;
+
+  @Test
+  void testGetAlbum() {
+    var album = albumService.createAlbum(
+      new CreateAlbumDTO("test", "cool description", List.of("tag1", "tag2")),
+      userId
+    );
+    assertNotNull(album);
+
+    var dto = albumService.getAlbumWithImages(album.id(), userId);
+    assertThat(dto.imageIds()).isEmpty();
+  }
 
   @Test
   void testGetAlbumWithImages() throws ImageProcessingException, IOException {
@@ -54,5 +67,10 @@ class AlbumServiceTest extends BaseTest {
 
     var dto = albumService.getAlbumWithImages(album.id(), userId);
     assertThat(dto.imageIds()).isEmpty();
+
+    albumService.addImages(dto.id(), Set.copyOf(images), userId);
+
+    var result = albumService.getAlbumWithImages(album.id(), userId);
+    assertThat(result.imageIds()).hasSize(imageCount);
   }
 }

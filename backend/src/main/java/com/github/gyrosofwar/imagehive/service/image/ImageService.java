@@ -133,16 +133,17 @@ public class ImageService {
     update.execute();
   }
 
+  @Transactional
   public void setGeneratedDescription(Image image) {
     if (image.description() == null) {
       try {
         var description = imageLabeler.getDescription(Path.of(image.filePath()));
-        log.info("received description '{}'", description);
-        dsl
+        var updateCount = dsl
           .update(IMAGE)
           .set(IMAGE.DESCRIPTION, description)
           .where(IMAGE.ID.eq(image.id()))
           .execute();
+        log.info("updating description on image {} to '{}' matched {} rows", image.id(), description, updateCount);
       } catch (IOException e) {
         log.error("failed to get description:", e);
       }

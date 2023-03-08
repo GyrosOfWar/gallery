@@ -122,15 +122,4 @@ public class AlbumService {
 
     dsl.batchInsert(records).execute();
   }
-
-  private record AlbumRow(
-    String name,
-    long albumId,
-    String[] tags,
-    String description,
-    OffsetDateTime createdOn,
-    UUID imageId,
-    String filePath,
-    UUID thumbnailId
-  ) {}
 }
