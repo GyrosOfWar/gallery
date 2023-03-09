@@ -54,8 +54,8 @@ export default function Index() {
   const [pages, setPages] = useState([initialPage])
   const page = pages[pages.length - 1]
   const loading = fetcher.state !== "idle"
-  const total = page.totalPages || 0
-  const number = page.pageNumber || 0
+  const total = page?.totalPages || 0
+  const number = page?.pageNumber || 0
   const hasNextPage = number < total - 1
 
   const loadMore = () => {
@@ -89,8 +89,8 @@ export default function Index() {
   }
 
   const images = pages.flatMap((p) => p.content).filter(Boolean)
-  const noImages = !query && page.empty
-  const nothingForQuery = query && page.empty
+  const noImages = !query && page?.empty
+  const nothingForQuery = query && page?.empty
 
   return (
     <div className="relative flex flex-col grow">

@@ -107,13 +107,11 @@ const ImageDetailsPage: React.FC = () => {
 
   return (
     <>
-      <a href={originalImageUrl(data.id, data.extension)}>
-        <img
-          src={originalImageUrl(data.id, data.extension)}
-          alt={data.title || "no title"}
-          className="max-h-[90vh] self-center"
-        />
-      </a>
+      <img
+        className="max-h-[90vh] flex self-center"
+        src={originalImageUrl(data.id, data.extension)}
+        alt={data.title || "no title"}
+      />
 
       <Form onSubmit={toggleEditMode} method="post" className="max-w-2xl">
         <input type="hidden" name="uuid" value={data.id} />
@@ -134,7 +132,7 @@ const ImageDetailsPage: React.FC = () => {
                   defaultValue={data.description || ""}
                   name="description"
                   placeholder="Description"
-                  className="text-gray-600 font-light"
+                  className="text-gray-600 dark:text-gray-200 font-light"
                 />
               )}
             </div>

@@ -5,7 +5,6 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "@remix-run/eslint-config",
     "@remix-run/eslint-config/node",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
   ],
   parserOptions: {
     project: true,

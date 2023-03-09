@@ -7,7 +7,7 @@ const OpenStreetMapEmbed: React.FC<{
 }> = ({lat, lon, name}) => {
   return (
     <MapContainer
-      className="h-64"
+      className="h-96 mb-4"
       center={[lat, lon]}
       zoom={13}
       scrollWheelZoom={false}

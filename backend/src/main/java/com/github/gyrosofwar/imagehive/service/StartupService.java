@@ -1,5 +1,6 @@
 package com.github.gyrosofwar.imagehive.service;
 
+import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
 import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.ApplicationEventListener;
@@ -18,18 +19,25 @@ public class StartupService implements ApplicationEventListener<StartupEvent> {
 
   private static final Logger log = LoggerFactory.getLogger(StartupService.class);
   private final UserService userService;
+  private final ImageHiveConfiguration configuration;
 
-  public StartupService(UserService userService) {
+  public StartupService(UserService userService, ImageHiveConfiguration configuration) {
     this.userService = userService;
+    this.configuration = configuration;
   }
 
   @Override
   public void onApplicationEvent(StartupEvent event) {
     try {
       createAdminUserOnNewInstall();
+      createDirectories();
     } catch (Exception e) {
-      log.error("failed to create new user on startup", e);
+      log.error("failed running startup tasks:", e);
     }
+  }
+
+  private void createDirectories() throws IOException {
+    Files.createDirectories(Path.of(configuration.imageBasePath()));
   }
 
   private void createAdminUserOnNewInstall() throws IOException {
