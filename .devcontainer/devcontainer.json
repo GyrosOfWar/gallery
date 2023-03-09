@@ -19,7 +19,7 @@
 		},
 		"ghcr.io/devcontainers-contrib/features/poetry:2": {}
 	},
-	"forwardPorts": [8080, 5000],
+	"forwardPorts": [8080, 5000, 3000],
 	"postCreateCommand": "createdb -U postgres -h localhost imagehive || exit 0"
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
