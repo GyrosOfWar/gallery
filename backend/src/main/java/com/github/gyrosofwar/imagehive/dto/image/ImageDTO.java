@@ -17,5 +17,6 @@ public record ImageDTO(
   @Nullable Double longitude,
   @Nullable List<String> tags,
   String extension,
-  @Nullable ImageMetadata metadata
+  @Nullable ImageMetadata metadata,
+  boolean favorite
 ) {}

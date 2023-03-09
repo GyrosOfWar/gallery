@@ -45,7 +45,8 @@ public class ImageDTOConverter implements Converter<Image, ImageDTO> {
       image.gpsLongitude(),
       Arrays.asList(image.tags()),
       FilenameUtils.getExtension(Path.of(image.filePath()).getFileName().toString()),
-      ImageMetadata.from(parseMetadata(image.metadata()))
+      ImageMetadata.from(parseMetadata(image.metadata())),
+      image.favorite()
     );
   }
 }
