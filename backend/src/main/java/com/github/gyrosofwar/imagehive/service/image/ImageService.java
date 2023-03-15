@@ -143,7 +143,12 @@ public class ImageService {
           .set(IMAGE.DESCRIPTION, description)
           .where(IMAGE.ID.eq(image.id()))
           .execute();
-        log.info("updating description on image {} to '{}' matched {} rows", image.id(), description, updateCount);
+        log.info(
+          "updating description on image {} to '{}' matched {} rows",
+          image.id(),
+          description,
+          updateCount
+        );
       } catch (IOException e) {
         log.error("failed to get description:", e);
       }
