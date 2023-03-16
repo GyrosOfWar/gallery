@@ -1,13 +1,18 @@
 import {Link, NavLink} from "@remix-run/react"
 import {Navbar, Dropdown, useTheme} from "flowbite-react"
 import type {User} from "~/services/auth.server"
-import {MoonIcon, PhotoIcon, SunIcon, Cog6ToothIcon} from "@heroicons/react/24/outline"
-import {HiCog, HiUserAdd, HiLogout} from "react-icons/hi";
+import {
+  MoonIcon,
+  PhotoIcon,
+  SunIcon,
+  Cog6ToothIcon,
+} from "@heroicons/react/24/outline"
+import {HiCog, HiUserAdd, HiLogout} from "react-icons/hi"
 import {useEffect} from "react"
-import Avatar from 'react-avatar';
+import Avatar from "react-avatar"
 
 const navlinkStyle =
-  "block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+  "self-center block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
 
 interface NavLinkProps {
   to: string
@@ -57,7 +62,7 @@ interface DropdownProps {
   label: React.ReactNode
   children: React.ReactNode
   visibleFor: "everyone" | "user" | "admin"
-  user?: User  
+  user?: User
 }
 
 const DynamicDropdown: React.FC<DropdownProps> = ({
@@ -86,10 +91,7 @@ const DynamicDropdown: React.FC<DropdownProps> = ({
   }
 
   return (
-    <Dropdown 
-      label={label} 
-      inline={true}
-      >
+    <Dropdown label={label} inline={true}>
       {children}
     </Dropdown>
   )
@@ -151,18 +153,28 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
             Albums
           </NavbarLink>
           <DarkThemeToggle />
-          <DynamicDropdown label={ <Cog6ToothIcon className="w-7 h-7" /> } user={user} visibleFor="admin">
+          <DynamicDropdown
+            label={<Cog6ToothIcon className="w-7 h-7" />}
+            user={user}
+            visibleFor="admin"
+          >
             <Dropdown.Item icon={HiUserAdd}>
-              <NavbarLink to="/admin/user/create" user={user} visibleFor="admin">
+              <NavbarLink
+                to="/admin/user/create"
+                user={user}
+                visibleFor="admin"
+              >
                 Create User
               </NavbarLink>
             </Dropdown.Item>
           </DynamicDropdown>
-          <DynamicDropdown label={ <Avatar name={user?.username} round={true} size="30px" /> } user={user} visibleFor="user">
+          <DynamicDropdown
+            label={<Avatar name={user?.username} round={true} size="30px" />}
+            user={user}
+            visibleFor="user"
+          >
             <Dropdown.Header>
-              <span className="block text-sm">
-                {user?.username}
-              </span>
+              <span className="block text-sm">{user?.username}</span>
               <span className="block truncate text-sm font-medium">
                 {user?.email}
               </span>
@@ -170,13 +182,13 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
             <Dropdown.Item icon={HiCog}>
               <NavbarLink to="/user/settings" user={user} visibleFor="user">
                 Settings
-              </NavbarLink>              
+              </NavbarLink>
             </Dropdown.Item>
             <Dropdown.Item icon={HiLogout}>
               <NavbarLink to="/auth/logout" user={user} visibleFor="user">
                 Logout
-              </NavbarLink>     
-            </Dropdown.Item>             
+              </NavbarLink>
+            </Dropdown.Item>
           </DynamicDropdown>
         </Navbar.Collapse>
       </Navbar>

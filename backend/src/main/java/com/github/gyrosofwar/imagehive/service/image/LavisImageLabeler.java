@@ -1,5 +1,6 @@
 package com.github.gyrosofwar.imagehive.service.image;
 
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.client.multipart.MultipartBody;
 import jakarta.inject.Singleton;
@@ -9,6 +10,7 @@ import java.nio.file.Path;
 import java.util.Set;
 
 @Singleton
+@Requires("${imagehive.lavis.enabled}")
 public class LavisImageLabeler implements ImageLabeler {
 
   private final LavisServiceClient lavisServiceClient;

@@ -69,7 +69,9 @@ flyway:
 imagehive:
   application:
     image-base-path: "images"
-    lavis-service-url: "http://localhost:5000"
+  lavis:
+    enabled: true
+    url: "http://localhost:5000"
   smtpmail:
     host: "localhost"
     port: "25"
