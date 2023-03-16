@@ -1,3 +1,4 @@
+import type {ActionArgs} from "@remix-run/node"
 import {Authenticator} from "remix-auth"
 import {sessionStorage} from "~/services/session.server"
 import {FormStrategy} from "remix-auth-form"
@@ -44,6 +45,27 @@ async function login(username: string, password: string): Promise<User> {
         userId: token.userId,
         email: token.email,
       }
+    } else {
+      const text = await response.text()
+      throw new Error(
+        `Request failed with status code ${response.status}, response: '${text}'`
+      )
+    }
+  } catch (err) {
+    console.error(err)
+    return Promise.reject(err)
+  }
+}
+
+export async function logoutUser(): Promise<void> {
+  const logoutUrl = backendUrl("/logout")
+  try {
+    const response = await fetch(logoutUrl, {
+      method: "POST",
+    })
+
+    if (response.ok) {
+      return Promise.resolve()
     } else {
       const text = await response.text()
       throw new Error(
