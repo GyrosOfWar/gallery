@@ -1,7 +1,20 @@
 import type {ActionArgs} from "@remix-run/node"
-import {authenticator, logoutUser} from "~/services/auth.server"
+import {useSubmit} from "@remix-run/react"
+import {useEffect, useRef} from "react"
+import {authenticator} from "~/services/auth.server"
 
 export async function action({request}: ActionArgs) {
-  await logoutUser()
-  await authenticator.logout(request, {redirectTo: "/"})
+  await authenticator.logout(request, {redirectTo: "/auth/login"})
 }
+
+const Logout = () => {
+  const ref = useRef<HTMLFormElement>(null)
+  const submit = useSubmit()
+  useEffect(() => {
+    submit(ref.current)
+  }, [submit])
+
+  return <form ref={ref} />
+}
+
+export default Logout

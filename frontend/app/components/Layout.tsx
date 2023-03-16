@@ -91,7 +91,7 @@ const DynamicDropdown: React.FC<DropdownProps> = ({
   }
 
   return (
-    <Dropdown label={label} inline={true}>
+    <Dropdown placement="bottom" label={label} inline >
       {children}
     </Dropdown>
   )
