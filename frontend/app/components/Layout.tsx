@@ -1,8 +1,10 @@
 import {Link, NavLink} from "@remix-run/react"
-import {Navbar, useTheme} from "flowbite-react"
+import {Navbar, Dropdown, useTheme} from "flowbite-react"
 import type {User} from "~/services/auth.server"
-import {MoonIcon, PhotoIcon, SunIcon} from "@heroicons/react/24/outline"
+import {MoonIcon, PhotoIcon, SunIcon, Cog6ToothIcon} from "@heroicons/react/24/outline"
+import {HiCog, HiUserAdd, HiLogout} from "react-icons/hi";
 import {useEffect} from "react"
+import Avatar from 'react-avatar';
 
 const navlinkStyle =
   "block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
@@ -48,6 +50,48 @@ const NavbarLink: React.FC<NavLinkProps> = ({
     >
       {children}
     </NavLink>
+  )
+}
+
+interface DropdownProps {
+  label: React.ReactNode
+  children: React.ReactNode
+  visibleFor: "everyone" | "user" | "admin"
+  user?: User  
+}
+
+const DynamicDropdown: React.FC<DropdownProps> = ({
+  label,
+  children,
+  visibleFor,
+  user,
+}) => {
+  const isLoggedIn = !!user?.username
+  const isAdmin = user?.roles.includes("ADMIN")
+  let isVisible
+  switch (visibleFor) {
+    case "everyone":
+      isVisible = true
+      break
+    case "admin":
+      isVisible = isAdmin
+      break
+    case "user":
+      isVisible = isLoggedIn
+      break
+  }
+
+  if (!isVisible) {
+    return null
+  }
+
+  return (
+    <Dropdown 
+      label={label} 
+      inline={true}
+      >
+      {children}
+    </Dropdown>
   )
 }
 
@@ -100,13 +144,40 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
         </Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse>
+          <NavbarLink to="/" user={user} visibleFor="user">
+            Images
+          </NavbarLink>
           <NavbarLink to="/albums" user={user} visibleFor="user">
             Albums
           </NavbarLink>
-          <NavbarLink to="/admin/user/create" user={user} visibleFor="admin">
-            Create user
-          </NavbarLink>
           <DarkThemeToggle />
+          <DynamicDropdown label={ <Cog6ToothIcon className="w-7 h-7" /> } user={user} visibleFor="admin">
+            <Dropdown.Item icon={HiUserAdd}>
+              <NavbarLink to="/admin/user/create" user={user} visibleFor="admin">
+                Create User
+              </NavbarLink>
+            </Dropdown.Item>
+          </DynamicDropdown>
+          <DynamicDropdown label={ <Avatar name={user?.username} round={true} size="30px" /> } user={user} visibleFor="user">
+            <Dropdown.Header>
+              <span className="block text-sm">
+                {user?.username}
+              </span>
+              <span className="block truncate text-sm font-medium">
+                {user?.email}
+              </span>
+            </Dropdown.Header>
+            <Dropdown.Item icon={HiCog}>
+              <NavbarLink to="/user/settings" user={user} visibleFor="user">
+                Settings
+              </NavbarLink>              
+            </Dropdown.Item>
+            <Dropdown.Item icon={HiLogout}>
+              <NavbarLink to="/auth/logout" user={user} visibleFor="user">
+                Logout
+              </NavbarLink>     
+            </Dropdown.Item>             
+          </DynamicDropdown>
         </Navbar.Collapse>
       </Navbar>
       <main
