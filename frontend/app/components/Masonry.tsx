@@ -25,7 +25,7 @@ export interface Props {
   columnClassName?: string
   renderColumn?: RenderColumnFn
   testId: string
-  imageRange: number
+  columnCount: number
 }
 
 const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
@@ -34,13 +34,13 @@ const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
   children,
   renderColumn,
   testId,
-  imageRange,
+  columnCount,
 }) => {
   const columnItems = (): React.ReactNode[][] => {
-    const cols: React.ReactNode[][] = new Array(imageRange)
+    const cols: React.ReactNode[][] = new Array(columnCount)
     const items = Children.toArray(children)
     for (let i = 0; i < items.length; i++) {
-      const columnIndex = i % imageRange
+      const columnIndex = i % columnCount
       if (!cols[columnIndex]) {
         cols[columnIndex] = []
       }

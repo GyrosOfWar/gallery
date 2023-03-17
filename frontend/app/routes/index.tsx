@@ -18,6 +18,7 @@ import useInfiniteScroll from "react-infinite-scroll-hook"
 import type {ImageSize} from "~/components/ThumbnailImage"
 import ThumbnailImage from "~/components/ThumbnailImage"
 import Slider from "~/components/Slider"
+import {useLocalStorage} from "usehooks-ts"
 interface Data {
   images: PageImageDTO
 }
@@ -70,7 +71,11 @@ export default function Index() {
   const total = page?.totalPages || 0
   const number = page?.pageNumber || 0
   const hasNextPage = number < total - 1
-  const [imageRange, setImageRange] = useState(4)
+  const [numColumns, setNumColumns] = useLocalStorage(
+    "image-library-columns",
+    4
+  )
+
   const loadMore = () => {
     const nextPage = (page.pageNumber || 0) + 1
     fetcher.load(`/?index&page=${nextPage}`)
@@ -121,7 +126,12 @@ export default function Index() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            <Slider min={1} max={8} onSetImageRange={setImageRange} />
+            <Slider
+              min={1}
+              max={8}
+              onChange={(e) => setNumColumns(e.target.valueAsNumber)}
+              value={numColumns}
+            />
             <Button type="submit">
               <MagnifyingGlassIcon className="w-4 h-4 mr-2" />
               Search
@@ -156,11 +166,11 @@ export default function Index() {
         className="flex -ml-1"
         columnClassName="pl-1"
         testId="main-grid"
-        imageRange={imageRange}
+        columnCount={numColumns}
       >
         {images.map((image) => (
           <ThumbnailImage
-            size={imageSizeForColumns(imageRange)}
+            size={imageSizeForColumns(numColumns)}
             image={image}
             key={image.id}
           />
