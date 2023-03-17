@@ -4,8 +4,24 @@ on:
   push
 
 jobs:
-  build:
-    name: Build
+  frontend:
+    name: Frontend tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
+      - name: Install packages
+        run: cd frontend && npm ci
+      - name: Run lint
+        run: cd frontend && npm run lint
+      - name: Run tests
+        run: cd frontend && npm test
+
+  backend:
+    name: Backend tests
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -48,6 +64,8 @@ jobs:
           IMAGEHIVE_PG_JDBC_URL: jdbc:postgresql://localhost:5432/postgres
           IMAGEHIVE_PG_USER: postgres
           IMAGEHIVE_PG_PASSWORD: password
+      - name: Check code formatting
+        run: cd backend && ./mvnw prettier:check
       - name: Run tests and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

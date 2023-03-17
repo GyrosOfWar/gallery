@@ -10,8 +10,8 @@ export interface Props {
   size: ImageSize
 }
 
-function getImageSize(size: ImageSize): number {
-  switch (size) {
+function getResolution(sizeType: ImageSize): number {
+  switch (sizeType) {
     case "sm":
       return 300
     case "md":
@@ -21,6 +21,18 @@ function getImageSize(size: ImageSize): number {
     case "xl":
       return 1500
   }
+}
+
+function getImageSize(
+  sizeType: ImageSize,
+  originalWidth: number,
+  originalHeight: number
+): [number, number] {
+  const resolution = getResolution(sizeType)
+  const aspectRatio = originalWidth / originalHeight
+  const w = resolution
+  const h = Math.round(w * (1.0 / aspectRatio))
+  return [w, h]
 }
 
 const Overlay: React.FC<{image: ClientImage}> = ({image}) => {
@@ -41,20 +53,21 @@ const Overlay: React.FC<{image: ClientImage}> = ({image}) => {
 }
 
 const ThumbnailImage: React.FC<Props> = ({image, size}) => {
-  const resolution = getImageSize(size)
+  const [width, height] = getImageSize(size, image.width, image.height)
 
   return (
     <Link
       className={clsx("mb-1 flex relative", size === "xl" && "justify-center")}
       to={`/image/${image.id}`}
+      data-testid={`image-${image.id}`}
     >
       <Overlay image={image} />
       <img
         className="w-full"
         alt={image.title || "<no title>"}
-        src={thumbnailUrl(image.id, resolution, resolution, image.extension)}
-        height={resolution}
-        width={resolution}
+        src={thumbnailUrl(image.id, width, height, image.extension)}
+        height={width}
+        width={height}
       />
     </Link>
   )
