@@ -25,14 +25,13 @@ const Overlay: React.FC<Props> = ({image}) => {
   )
 }
 
-const ThumbnailImage: React.FC<Props> = (props) => {
-  const {image} = props
+const ThumbnailImage: React.FC<Props> = ({image, imageRange}) => {
   return (
-    <Link className="mb-1 flex relative " to={`/image/${image.id}`}>
-      <Overlay {...props} />
+    <Link className={`mb-1 flex relative ${imageRange === 1 ? 'justify-center' : ''}`} to={`/image/${image.id}`}>
+      <Overlay image={image} />
       <img className=""
         alt={image.title || "<no title>"}
-        src={thumbnailUrl(image.id, 1200, 1200, image.extension)}
+        src={thumbnailUrl(image.id, 1000, 1000, image.extension)}
       />
 
     </Link>

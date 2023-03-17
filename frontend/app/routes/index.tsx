@@ -95,6 +95,7 @@ export default function Index() {
   return (
     <div className="relative flex flex-col grow">
       {!noImages && (
+        <>
         <form onSubmit={onSubmit} className="my-4 flex" method="get">
           <TextInput
             className="mr-2 grow"
@@ -108,8 +109,10 @@ export default function Index() {
             Search
           </Button>
         </form>
+        <Slider max={8} onSetImageRange={setImageRange} />
+        </>
       )}
-      <Slider max={8} onSetImageRange={setImageRange} />
+      {!noImages &&  }
       {noImages && (
         <div className="grow flex justify-center items-center text-xl">
           <div className="text-center">
