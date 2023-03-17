@@ -6,6 +6,7 @@ import {thumbnailUrl} from "~/util/consts"
 
 export interface Props {
   image: ClientImage
+  imageRange: number
 }
 
 const Overlay: React.FC<Props> = ({image}) => {
@@ -14,7 +15,6 @@ const Overlay: React.FC<Props> = ({image}) => {
   }
 
   return (
-    <div className="z-10 absolute top-0 left-0 w-full h-full bg-transparent">
       <StarIcon
         onClick={toggleFavorite}
         className={clsx(
@@ -22,19 +22,19 @@ const Overlay: React.FC<Props> = ({image}) => {
           image.favorite && "fill-yellow-300"
         )}
       />
-    </div>
   )
 }
 
 const ThumbnailImage: React.FC<Props> = (props) => {
   const {image} = props
   return (
-    <Link className="mb-1 flex relative" to={`/image/${image.id}`}>
+    <Link className="mb-1 flex relative " to={`/image/${image.id}`}>
       <Overlay {...props} />
-      <img
+      <img className=""
         alt={image.title || "<no title>"}
-        src={thumbnailUrl(image.id, 600, 600, image.extension)}
+        src={thumbnailUrl(image.id, 1200, 1200, image.extension)}
       />
+
     </Link>
   )
 }

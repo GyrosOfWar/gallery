@@ -11,12 +11,12 @@ import {requireUser} from "~/services/auth.server"
 import {MagnifyingGlassIcon, PlusIcon} from "@heroicons/react/24/outline"
 import {Button, TextInput} from "flowbite-react"
 import type {FormEvent} from "react"
-import React, {useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import http from "~/util/http"
 import Masonry from "~/components/Masonry"
 import useInfiniteScroll from "react-infinite-scroll-hook"
 import ThumbnailImage from "~/components/ThumbnailImage"
-
+import Slider from "~/components/Slider"
 interface Data {
   images: PageImageDTO
 }
@@ -57,7 +57,7 @@ export default function Index() {
   const total = page?.totalPages || 0
   const number = page?.pageNumber || 0
   const hasNextPage = number < total - 1
-
+  const [imageRange, setImageRange] = useState(4)
   const loadMore = () => {
     const nextPage = (page.pageNumber || 0) + 1
     fetcher.load(`/?index&page=${nextPage}`)
@@ -109,6 +109,7 @@ export default function Index() {
           </Button>
         </form>
       )}
+      <Slider max={8} onSetImageRange={setImageRange} />
       {noImages && (
         <div className="grow flex justify-center items-center text-xl">
           <div className="text-center">
@@ -135,11 +136,11 @@ export default function Index() {
       <Masonry
         className="flex -ml-1"
         columnClassName="pl-1"
-        columnCount={4}
         testId="main-grid"
+        imageRange={imageRange}
       >
         {images.map((image) => (
-          <ThumbnailImage image={image} key={image.id} />
+          <ThumbnailImage imageRange={imageRange} image={image} key={image.id} />
         ))}
         {(loading || hasNextPage) && <div ref={sentryRef}>Loading...</div>}
       </Masonry>

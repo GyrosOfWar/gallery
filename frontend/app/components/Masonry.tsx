@@ -1,4 +1,5 @@
-import type {CSSProperties} from "react"
+/* eslint-disable react-hooks/exhaustive-deps */
+import type {CSSProperties} from "react";
 import {Children} from "react"
 
 export interface RenderProps {
@@ -23,8 +24,8 @@ export interface Props {
   className?: string
   columnClassName?: string
   renderColumn?: RenderColumnFn
-  columnCount: number
   testId: string
+  imageRange: string
 }
 
 const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
@@ -32,14 +33,17 @@ const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
   columnClassName,
   children,
   renderColumn,
-  columnCount,
   testId,
+  imageRange,
 }) => {
+
+  const imgRange = parseInt(imageRange)
+
   const columnItems = (): React.ReactNode[][] => {
-    const cols: React.ReactNode[][] = new Array(columnCount)
+    const cols: React.ReactNode[][] = new Array(imgRange)
     const items = Children.toArray(children)
     for (let i = 0; i < items.length; i++) {
-      const columnIndex = i % columnCount
+      const columnIndex = i % imgRange
       if (!cols[columnIndex]) {
         cols[columnIndex] = []
       }
@@ -56,6 +60,7 @@ const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
     </div>
   )
 
+  
   const renderColumns = () => {
     const cols = columnItems()
     const columnWidth = `${100 / cols.length}%`
