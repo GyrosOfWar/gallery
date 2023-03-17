@@ -2,20 +2,14 @@ package com.github.gyrosofwar.imagehive.service;
 
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
+import com.github.gyrosofwar.imagehive.service.thumbnails.ThumbnailService;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.http.MediaType;
 import jakarta.inject.Singleton;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
-import net.coobird.thumbnailator.ThumbnailParameter;
-import net.coobird.thumbnailator.Thumbnails;
-import net.coobird.thumbnailator.name.Rename;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,13 +18,14 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class MediaService {
 
-  private static final RenameStrategy RENAME_STRATEGY = new RenameStrategy();
   private static final Logger log = LoggerFactory.getLogger(MediaService.class);
 
   private final ImageHiveConfiguration configuration;
+  private final ThumbnailService thumbnailService;
 
-  public MediaService(ImageHiveConfiguration configuration) {
+  public MediaService(ImageHiveConfiguration configuration, ThumbnailService thumbnailService) {
     this.configuration = configuration;
+    this.thumbnailService = thumbnailService;
   }
 
   // exposed for testing
@@ -94,22 +89,15 @@ public class MediaService {
       return null;
     }
 
-    var fileName = Path.of(
-      RENAME_STRATEGY.getName(originalImage.getFileName().toString(), width, height)
+    return thumbnailService.getThumbnail(
+      new ThumbnailService.Request(
+        originalImage,
+        width,
+        height,
+        ThumbnailService.FileType.JPEG,
+        false
+      )
     );
-    var existingFile = originalImage.getParent().resolve(fileName);
-    if (Files.isRegularFile(existingFile)) {
-      return ImageData.from(existingFile);
-    }
-
-    var image = Thumbnails
-      .of(originalImage.toFile())
-      .outputFormat("jpg")
-      .size(width, height)
-      .asFiles(RENAME_STRATEGY)
-      .get(0);
-
-    return ImageData.from(image.toPath());
   }
 
   private Path findFileInFolder(Path prefix) throws IOException {
@@ -130,37 +118,6 @@ public class MediaService {
         log.error("deleting file {}", path);
         Files.delete(path);
       }
-    }
-  }
-
-  public record ImageData(
-    InputStream inputStream,
-    MediaType contentType,
-    FileTime lastModified,
-    long contentLength
-  ) {
-    public static ImageData from(Path path) throws IOException {
-      var inputStream = Files.newInputStream(path);
-      var attributes = Files.readAttributes(path, BasicFileAttributes.class);
-      var contentLength = attributes.size();
-      var lastModified = attributes.lastModifiedTime();
-      var contentType = MediaType.forFilename(path.getFileName().toString());
-
-      return new ImageData(inputStream, contentType, lastModified, contentLength);
-    }
-  }
-
-  private static class RenameStrategy extends Rename {
-
-    public String getName(String name, long width, long height) {
-      return appendSuffix(name, String.format(".thumbnail-%s-%s", width, height));
-    }
-
-    @Override
-    public String apply(String name, ThumbnailParameter param) {
-      var width = Math.round(param.getSize().getWidth());
-      var height = Math.round(param.getSize().getHeight());
-      return getName(name, width, height);
     }
   }
 }

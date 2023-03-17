@@ -1,5 +1,5 @@
 const UserSettingsPage = () => {
-    return <>TODO</>
+  return <>TODO</>
 }
-  
+
 export default UserSettingsPage

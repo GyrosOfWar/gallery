@@ -15,6 +15,7 @@ import {useEffect, useState} from "react"
 import http from "~/util/http"
 import Masonry from "~/components/Masonry"
 import useInfiniteScroll from "react-infinite-scroll-hook"
+import type {ImageSize} from "~/components/ThumbnailImage"
 import ThumbnailImage from "~/components/ThumbnailImage"
 import Slider from "~/components/Slider"
 interface Data {
@@ -25,6 +26,18 @@ type ClientImageList = ReturnType<
   typeof useLoaderData<Data>
 >["images"]["content"]
 export type ClientImage = ClientImageList[0]
+
+function imageSizeForColumns(columns: number): ImageSize {
+  if (columns === 1) {
+    return "xl"
+  } else if (columns === 2) {
+    return "lg"
+  } else if (columns <= 4) {
+    return "md"
+  } else {
+    return "sm"
+  }
+}
 
 export const loader: LoaderFunction = async ({request}) => {
   const user = await requireUser(request)
@@ -96,23 +109,26 @@ export default function Index() {
     <div className="relative flex flex-col grow">
       {!noImages && (
         <>
-        <form onSubmit={onSubmit} className="my-4 flex" method="get">
-          <TextInput
-            className="mr-2 grow"
-            name="query"
-            placeholder="Search..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <Button type="submit">
-            <MagnifyingGlassIcon className="w-4 h-4 mr-2" />
-            Search
-          </Button>
-        </form>
-        <Slider max={8} onSetImageRange={setImageRange} />
+          <form
+            onSubmit={onSubmit}
+            className="my-4 flex gap-2 items-center"
+            method="get"
+          >
+            <TextInput
+              className="mr-2 grow"
+              name="query"
+              placeholder="Search..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <Slider min={1} max={8} onSetImageRange={setImageRange} />
+            <Button type="submit">
+              <MagnifyingGlassIcon className="w-4 h-4 mr-2" />
+              Search
+            </Button>
+          </form>
         </>
       )}
-      {!noImages &&  }
       {noImages && (
         <div className="grow flex justify-center items-center text-xl">
           <div className="text-center">
@@ -143,7 +159,11 @@ export default function Index() {
         imageRange={imageRange}
       >
         {images.map((image) => (
-          <ThumbnailImage imageRange={imageRange} image={image} key={image.id} />
+          <ThumbnailImage
+            size={imageSizeForColumns(imageRange)}
+            image={image}
+            key={image.id}
+          />
         ))}
         {(loading || hasNextPage) && <div ref={sentryRef}>Loading...</div>}
       </Masonry>

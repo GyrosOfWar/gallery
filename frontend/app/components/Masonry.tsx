@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import type {CSSProperties} from "react";
+import type {CSSProperties} from "react"
 import {Children} from "react"
 
 export interface RenderProps {
@@ -36,8 +36,6 @@ const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
   testId,
   imageRange,
 }) => {
-
-
   const columnItems = (): React.ReactNode[][] => {
     const cols: React.ReactNode[][] = new Array(imageRange)
     const items = Children.toArray(children)
@@ -58,7 +56,6 @@ const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
       {content}
     </div>
   )
-
 
   const renderColumns = () => {
     const cols = columnItems()
