@@ -21,6 +21,7 @@ import {
   HiStar,
   HiPencil,
   HiDownload,
+  HiTrash
 } from "react-icons/hi"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
 import produce from "immer"
@@ -117,6 +118,10 @@ const ImageDetailsPage: React.FC = () => {
     )
   )
 
+  const deleteImage = () => {
+    // todo
+  }
+
   return (
     <>
       <img
@@ -125,7 +130,7 @@ const ImageDetailsPage: React.FC = () => {
         alt={image.title || "no title"}
       />
 
-      <div className="my-4 flex items-start gap-2">
+      <div className="my-4 flex items-start gap-1">
         <Button
           color="success"
           href={originalImageUrl(image.id, image.extension, true)}
@@ -137,6 +142,11 @@ const ImageDetailsPage: React.FC = () => {
         <Button onClick={toggleFavorite}>
           <HiStar className="w-4 h-4 mr-2" />
           {image.favorite ? "Unfavorite" : "Favorite"}
+        </Button>
+
+        <Button color="failure" onClick={deleteImage}>
+          <HiTrash className="w-4 h-4 mr-2" />
+          Delete
         </Button>
       </div>
 

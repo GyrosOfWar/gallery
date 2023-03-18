@@ -7,13 +7,6 @@ export interface RenderProps {
   className?: string
 }
 
-export const defaultBreakpoints = {
-  default: 4,
-  1536: 4,
-  1024: 2,
-  640: 1,
-}
-
 type RenderColumnFn = (
   content: React.ReactNode[],
   props: RenderProps,
@@ -75,7 +68,7 @@ const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
   }
 
   return (
-    <div className={className} data-test-id={testId}>
+    <div className={className} data-testid={testId}>
       {renderColumns()}
     </div>
   )
