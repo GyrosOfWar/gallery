@@ -1,7 +1,7 @@
-import {CheckIcon} from "@heroicons/react/24/outline"
 import {redirect} from "@remix-run/node"
 import {Form} from "@remix-run/react"
 import {Button, Label, TextInput} from "flowbite-react"
+import {HiCheck} from "react-icons/hi"
 import type {AlbumDetailsDTO} from "imagehive-client"
 import type {ActionFunction} from "react-router"
 import {requireUser} from "~/services/auth.server"
@@ -46,7 +46,7 @@ const AlbumCreatePage: React.FC = () => {
         </div>
 
         <Button type="submit" color="success">
-          <CheckIcon className="w-4 h-4 mr-2" />
+          <HiCheck className="w-4 h-4 mr-2" />
           Submit
         </Button>
       </Form>

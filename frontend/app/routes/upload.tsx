@@ -1,4 +1,4 @@
-import {ArrowUpTrayIcon} from "@heroicons/react/24/outline"
+import {HiUpload} from "react-icons/hi"
 import type {LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {useLoaderData, useNavigate} from "@remix-run/react"
@@ -49,7 +49,7 @@ const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
         {...getRootProps()}
       >
         <input {...getInputProps()} />
-        <ArrowUpTrayIcon className="w-16 h-16" />
+        <HiUpload className="w-16 h-16" />
         Drag & drop files here!
       </div>
     </section>
@@ -81,7 +81,7 @@ const InfoBar: React.FC<InfoBarProps> = ({count, formattedSize, uploading}) => (
       type="submit"
       disabled={uploading}
     >
-      <ArrowUpTrayIcon className="w-6 h-6 mr-2" />
+      <HiUpload className="w-6 h-6 mr-2" />
       Upload
     </Button>
   </div>

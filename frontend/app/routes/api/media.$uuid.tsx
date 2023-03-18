@@ -7,6 +7,7 @@ export const loader: LoaderFunction = async ({request, params}) => {
   const {uuid} = params
   const queryParams = new URL(request.url).searchParams
   const extension = queryParams.get("extension")
+  const download = queryParams.get("download") === "true"
   if (!uuid || !extension) {
     return new Response("missing parameters", {status: 400})
   }
@@ -15,5 +16,11 @@ export const loader: LoaderFunction = async ({request, params}) => {
     `/api/media/${uuid}?extension=${extension}`,
     user.accessToken
   )
+  if (download) {
+    response.headers.append(
+      "content-disposition",
+      'attachment; filename="image.jpeg"'
+    )
+  }
   return response
 }

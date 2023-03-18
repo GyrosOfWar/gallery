@@ -16,5 +16,14 @@ export const thumbnailUrl = (
   return url
 }
 
-export const originalImageUrl = (uuid: string, extension: string) =>
-  `/api/media/${uuid}?extension=${extension}`
+export const originalImageUrl = (
+  uuid: string,
+  extension: string,
+  download?: true
+) => {
+  let url = `/api/media/${uuid}?extension=${extension}`
+  if (download) {
+    url += `&download=true`
+  }
+  return url
+}

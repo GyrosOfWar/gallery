@@ -8,7 +8,6 @@ import {
 import type {LoaderFunction} from "react-router"
 import type {ImageDTO, PageImageDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
-import {MagnifyingGlassIcon, PlusIcon} from "@heroicons/react/24/outline"
 import {Button, TextInput} from "flowbite-react"
 import type {FormEvent} from "react"
 import {useEffect, useState} from "react"
@@ -20,6 +19,7 @@ import ThumbnailImage from "~/components/ThumbnailImage"
 import Slider from "~/components/Slider"
 import {useLocalStorage} from "usehooks-ts"
 import {produce} from "immer"
+import {HiPlus, HiSearch} from "react-icons/hi"
 
 interface Data {
   images: PageImageDTO
@@ -149,7 +149,7 @@ export default function Index() {
               value={numColumns}
             />
             <Button type="submit">
-              <MagnifyingGlassIcon className="w-4 h-4 mr-2" />
+              <HiSearch className="w-4 h-4 mr-2" />
               Search
             </Button>
           </form>
@@ -199,7 +199,7 @@ export default function Index() {
         title="Upload new photos"
         className="fixed bottom-8 right-8 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-xl hover:bg-gray-200 transition p-4"
       >
-        <PlusIcon className="w-10 h-10" />
+        <HiPlus className="w-10 h-10" />
       </Link>
     </div>
   )

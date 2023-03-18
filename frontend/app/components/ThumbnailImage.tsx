@@ -1,9 +1,10 @@
-import {StarIcon} from "@heroicons/react/24/outline"
 import {Link} from "@remix-run/react"
 import clsx from "clsx"
 import type {ImageDTO} from "imagehive-client"
+import useToggleFavorite from "~/hooks/useToggleFavorite"
 import type {ClientImage} from "~/routes"
 import {thumbnailUrl} from "~/util/consts"
+import {HiStar} from "react-icons/hi"
 
 export type ImageSize = "sm" | "md" | "lg" | "xl"
 
@@ -42,23 +43,10 @@ const Overlay: React.FC<Pick<Props, "image" | "onImageFavorited">> = ({
   image,
   onImageFavorited,
 }) => {
-  const toggleFavorite = async (event: React.MouseEvent) => {
-    event.preventDefault()
-    const response = await fetch(`/api/image/${image.id}/favorite`, {
-      method: "POST",
-    })
-    if (!response.ok) {
-      // todo better error handling, show a toast or something
-      console.error(`request failed with status code ${response.status}`)
-    }
-    if (onImageFavorited) {
-      const imageDto: ImageDTO = await response.json()
-      onImageFavorited(imageDto)
-    }
-  }
+  const toggleFavorite = useToggleFavorite(image.id, onImageFavorited)
 
   return (
-    <StarIcon
+    <HiStar
       onClick={toggleFavorite}
       data-testid={`favorite-button-${image.id}`}
       className={clsx(

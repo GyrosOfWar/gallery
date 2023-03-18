@@ -1,13 +1,15 @@
 import {Link, NavLink} from "@remix-run/react"
 import {Navbar, Dropdown, useTheme} from "flowbite-react"
 import type {User} from "~/services/auth.server"
+
 import {
-  MoonIcon,
-  PhotoIcon,
-  SunIcon,
-  Cog6ToothIcon,
-} from "@heroicons/react/24/outline"
-import {HiCog, HiUserAdd, HiLogout} from "react-icons/hi"
+  HiCog,
+  HiUserAdd,
+  HiLogout,
+  HiMoon,
+  HiPhotograph,
+  HiSun,
+} from "react-icons/hi"
 import {useEffect} from "react"
 import Avatar from "react-avatar"
 
@@ -125,9 +127,9 @@ const DarkThemeToggle = () => {
       className="px-2"
     >
       {mode === "dark" ? (
-        <SunIcon aria-label="Currently dark mode" className="w-4 h-4" />
+        <HiSun aria-label="Currently dark mode" className="w-4 h-4" />
       ) : (
-        <MoonIcon aria-label="Currently light mode" className="w-4 h-4" />
+        <HiMoon aria-label="Currently light mode" className="w-4 h-4" />
       )}
     </button>
   )
@@ -141,7 +143,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
     <>
       <Navbar className="mb-4">
         <Navbar.Brand as={Link} to="/">
-          <PhotoIcon className="w-8 h-8 mr-1" />
+          <HiPhotograph className="w-8 h-8 mr-1" />
           Imagehive
         </Navbar.Brand>
         <Navbar.Toggle />
@@ -154,7 +156,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
           </NavbarLink>
           <DarkThemeToggle />
           <DynamicDropdown
-            label={<Cog6ToothIcon className="w-7 h-7" />}
+            label={<HiCog className="w-8 h-8" />}
             user={user}
             visibleFor="admin"
           >

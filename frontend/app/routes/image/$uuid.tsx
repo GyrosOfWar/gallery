@@ -7,19 +7,23 @@ import {originalImageUrl} from "~/util/consts"
 import {formatRelative, parseISO} from "date-fns"
 import {useMemo, useState} from "react"
 import {ClientOnly} from "remix-utils"
-import {
-  CalendarIcon,
-  CameraIcon,
-  CheckIcon,
-  PencilIcon,
-  PhotoIcon,
-  TagIcon,
-} from "@heroicons/react/24/outline"
 import {Button} from "flowbite-react"
 import OpenStreetMapEmbed from "~/components/OpenStreetMapEmbed.client"
 import http from "~/util/http"
 import type {ActionFunction} from "@remix-run/node"
 import ToggleableInput from "~/components/ToggleableInput"
+import {
+  HiPhotograph,
+  HiTag,
+  HiCalendar,
+  HiCamera,
+  HiCheck,
+  HiStar,
+  HiPencil,
+  HiDownload,
+} from "react-icons/hi"
+import useToggleFavorite from "~/hooks/useToggleFavorite"
+import produce from "immer"
 
 const RelativeDate: React.FC<{timestamp: string | null | undefined}> = ({
   timestamp,
@@ -99,37 +103,60 @@ const Tags: React.FC<{tags: string[]}> = ({tags}) => {
 }
 
 const ImageDetailsPage: React.FC = () => {
-  const {data} = useLoaderData<Data>()
+  const {data: initial} = useLoaderData<Data>()
+  const [image, setImage] = useState(initial)
   const [editMode, setEditMode] = useState(false)
   const toggleEditMode = () => {
     setEditMode((mode) => !mode)
   }
+  const toggleFavorite = useToggleFavorite(image.id, (newImage) =>
+    setImage(
+      produce(image, (draft) => {
+        draft.favorite = newImage.favorite
+      })
+    )
+  )
 
   return (
     <>
       <img
         className="max-h-[90vh] flex self-center"
-        src={originalImageUrl(data.id, data.extension)}
-        alt={data.title || "no title"}
+        src={originalImageUrl(image.id, image.extension)}
+        alt={image.title || "no title"}
       />
 
+      <div className="my-4 flex items-start gap-2">
+        <Button
+          color="success"
+          href={originalImageUrl(image.id, image.extension, true)}
+        >
+          <HiDownload className="w-4 h-4 mr-2" />
+          Download
+        </Button>
+
+        <Button onClick={toggleFavorite}>
+          <HiStar className="w-4 h-4 mr-2" />
+          {image.favorite ? "Unfavorite" : "Favorite"}
+        </Button>
+      </div>
+
       <Form onSubmit={toggleEditMode} method="post" className="max-w-2xl">
-        <input type="hidden" name="uuid" value={data.id} />
+        <input type="hidden" name="uuid" value={image.id} />
         <ul className="flex w-full flex-col gap-4 my-4">
           <li className="flex gap-4 items-center">
-            <PhotoIcon className="w-8 h-8" />
+            <HiPhotograph className="w-8 h-8" />
             <div className="flex flex-col grow">
               <ToggleableInput
                 editMode={editMode}
-                defaultValue={data.title || ""}
+                defaultValue={image.title || ""}
                 name="title"
                 placeholder="Title"
                 className="font-semibold"
               />
-              {(data.description || editMode) && (
+              {(image.description || editMode) && (
                 <ToggleableInput
                   editMode={editMode}
-                  defaultValue={data.description || ""}
+                  defaultValue={image.description || ""}
                   name="description"
                   placeholder="Description"
                   className="text-gray-600 dark:text-gray-200 font-light"
@@ -137,50 +164,50 @@ const ImageDetailsPage: React.FC = () => {
               )}
             </div>
           </li>
-          {data.tags && (
+          {image.tags && (
             <li className="flex gap-4 items-center">
-              <TagIcon className="w-8 h-8" />
-              <Tags tags={data.tags} />
+              <HiTag className="w-8 h-8" />
+              <Tags tags={image.tags} />
             </li>
           )}
 
           <li className="flex gap-4 items-center">
-            <CalendarIcon className="w-8 h-8" />
-            <RelativeDate timestamp={data.capturedOn} />
+            <HiCalendar className="w-8 h-8" />
+            <RelativeDate timestamp={image.capturedOn} />
           </li>
-          {data.metadata && (
+          {image.metadata && (
             <li className="flex gap-4 items-center">
-              <CameraIcon className="w-8 h-8" />
+              <HiCamera className="w-8 h-8" />
               <FormattedMetadata
-                meta={data.metadata}
-                width={data.width}
-                height={data.height}
+                meta={image.metadata}
+                width={image.width}
+                height={image.height}
               />
             </li>
           )}
           <div className="mt-1">
             {!editMode && (
               <Button onClick={toggleEditMode} color="info">
-                <PencilIcon className="w-4 h-4 mr-2" />
+                <HiPencil className="w-4 h-4 mr-2" />
                 Edit
               </Button>
             )}
             {editMode && (
               <Button type="submit" color="success">
-                <CheckIcon className="w-4 h-4 mr-2" />
+                <HiCheck className="w-4 h-4 mr-2" />
                 Save
               </Button>
             )}
           </div>
         </ul>
       </Form>
-      {data.latitude && data.longitude && (
+      {image.latitude && image.longitude && (
         <ClientOnly>
           {() => (
             <OpenStreetMapEmbed
-              lat={data.latitude!}
-              lon={data.longitude!}
-              name={data.title}
+              lat={image.latitude!}
+              lon={image.longitude!}
+              name={image.title}
             />
           )}
         </ClientOnly>

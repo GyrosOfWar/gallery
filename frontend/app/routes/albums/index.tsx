@@ -1,9 +1,9 @@
-import {PhotoIcon, PlusIcon} from "@heroicons/react/24/outline"
 import type {LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {Link, useLoaderData} from "@remix-run/react"
 import type {AlbumListDTO} from "imagehive-client"
 import Card from "~/components/Card"
+import {HiPlus, HiPhotograph} from "react-icons/hi"
 import {requireUser} from "~/services/auth.server"
 import {thumbnailUrl} from "~/util/consts"
 import http from "~/util/http"
@@ -30,7 +30,7 @@ const AlbumListPage: React.FC = () => {
       <header className="flex justify-between items-center">
         <h1 className="text-3xl font-bold mb-4">Albums</h1>
         <Link to="/albums/create" className={buttonStyles}>
-          <PlusIcon className="w-4 h-4 mr-2" /> New
+          <HiPlus className="w-4 h-4 mr-2" /> New
         </Link>
       </header>
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -44,7 +44,7 @@ const AlbumListPage: React.FC = () => {
                 />
               )}
               {!album.thumbnailImage && (
-                <PhotoIcon className="w-[400px] h-[250px] max-w-full max-h-full" />
+                <HiPhotograph className="w-[400px] h-[250px] max-w-full max-h-full" />
               )}
               <p className="text-xl p-2">{album.name}</p>
             </Card>
