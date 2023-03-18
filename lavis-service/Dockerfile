@@ -1,10 +1,12 @@
-FROM python:3.10-alpine
+FROM python:3.10
 
-RUN apk update && \
-    apk add build-essential python3-dev python3-setuptools make cmake && \
-    apk add ffmpeg libavcodec-dev libavfilter-dev libavformat-dev libavutil-dev
+WORKDIR /app
 
-COPY requirements.txt ./
+RUN apt-get update && \
+    apt-get install -y build-essential python3-dev python3-setuptools make cmake && \
+    ffmpeg libavcodec-dev libavfilter-dev libavformat-dev libavutil-dev
+
+COPY requirements.txt .
 RUN pip install -r ./requirements.txt
 
 COPY . .
