@@ -52,6 +52,16 @@ public class ImageController {
     return HttpResponse.noContent();
   }
 
+  @Post("/{uuid}/favorite")
+  public HttpResponse<ImageDTO> toggleFavorite(
+    @PathVariable UUID uuid,
+    Authentication authentication
+  ) {
+    var userId = getUserId(authentication);
+    var result = imageService.toggleFavorite(uuid, userId);
+    return HttpResponse.ok(result);
+  }
+
   @Patch
   public HttpResponse<Void> patchImage(
     @Body @Valid ImageUpdateDTO imageUpdate,

@@ -1,13 +1,16 @@
 import {StarIcon} from "@heroicons/react/24/outline"
 import {Link} from "@remix-run/react"
 import clsx from "clsx"
+import type {ImageDTO} from "imagehive-client"
 import type {ClientImage} from "~/routes"
 import {thumbnailUrl} from "~/util/consts"
 
 export type ImageSize = "sm" | "md" | "lg" | "xl"
+
 export interface Props {
   image: ClientImage
   size: ImageSize
+  onImageFavorited?: (image: ImageDTO) => void
 }
 
 function getResolution(sizeType: ImageSize): number {
@@ -23,7 +26,7 @@ function getResolution(sizeType: ImageSize): number {
   }
 }
 
-function getImageSize(
+export function getImageSize(
   sizeType: ImageSize,
   originalWidth: number,
   originalHeight: number
@@ -35,15 +38,29 @@ function getImageSize(
   return [w, h]
 }
 
-const Overlay: React.FC<{image: ClientImage}> = ({image}) => {
+const Overlay: React.FC<Pick<Props, "image" | "onImageFavorited">> = ({
+  image,
+  onImageFavorited,
+}) => {
   const toggleFavorite = async (event: React.MouseEvent) => {
-    // TODO send request
     event.preventDefault()
+    const response = await fetch(`/api/image/${image.id}/favorite`, {
+      method: "POST",
+    })
+    if (!response.ok) {
+      // todo better error handling, show a toast or something
+      console.error(`request failed with status code ${response.status}`)
+    }
+    if (onImageFavorited) {
+      const imageDto: ImageDTO = await response.json()
+      onImageFavorited(imageDto)
+    }
   }
 
   return (
     <StarIcon
       onClick={toggleFavorite}
+      data-testid={`favorite-button-${image.id}`}
       className={clsx(
         "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200",
         image.favorite && "fill-yellow-300"
@@ -52,7 +69,7 @@ const Overlay: React.FC<{image: ClientImage}> = ({image}) => {
   )
 }
 
-const ThumbnailImage: React.FC<Props> = ({image, size}) => {
+const ThumbnailImage: React.FC<Props> = ({image, size, onImageFavorited}) => {
   const [width, height] = getImageSize(size, image.width, image.height)
 
   return (
@@ -61,7 +78,7 @@ const ThumbnailImage: React.FC<Props> = ({image, size}) => {
       to={`/image/${image.id}`}
       data-testid={`image-${image.id}`}
     >
-      <Overlay image={image} />
+      <Overlay image={image} onImageFavorited={onImageFavorited} />
       <img
         className="w-full"
         alt={image.title || "<no title>"}

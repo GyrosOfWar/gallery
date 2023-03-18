@@ -161,4 +161,19 @@ public class ImageService {
       setGeneratedDescription(image);
     });
   }
+
+  @Transactional
+  public ImageDTO toggleFavorite(UUID uuid, Long userId) {
+    if (!isOwner(uuid, userId)) {
+      return null;
+    }
+    var image = dsl
+      .update(IMAGE)
+      .set(IMAGE.FAVORITE, DSL.not(IMAGE.FAVORITE))
+      .where(IMAGE.ID.eq(uuid))
+      .returningResult()
+      .fetchOneInto(Image.class);
+
+    return imageDTOConverter.convert(image);
+  }
 }

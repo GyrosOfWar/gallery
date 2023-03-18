@@ -33,6 +33,10 @@ public class ImageDTOConverter implements Converter<Image, ImageDTO> {
 
   @Override
   public ImageDTO convert(Image image) {
+    if (image == null) {
+      return null;
+    }
+
     return new ImageDTO(
       image.id(),
       image.title(),

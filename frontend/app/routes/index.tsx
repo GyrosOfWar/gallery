@@ -6,7 +6,7 @@ import {
   useSearchParams,
 } from "@remix-run/react"
 import type {LoaderFunction} from "react-router"
-import type {PageImageDTO} from "imagehive-client"
+import type {ImageDTO, PageImageDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
 import {MagnifyingGlassIcon, PlusIcon} from "@heroicons/react/24/outline"
 import {Button, TextInput} from "flowbite-react"
@@ -19,6 +19,8 @@ import type {ImageSize} from "~/components/ThumbnailImage"
 import ThumbnailImage from "~/components/ThumbnailImage"
 import Slider from "~/components/Slider"
 import {useLocalStorage} from "usehooks-ts"
+import {produce} from "immer"
+
 interface Data {
   images: PageImageDTO
 }
@@ -106,6 +108,20 @@ export default function Index() {
     fetcher.load(`/?index&query=${encodeURIComponent(query)}`)
   }
 
+  const onImageFavorited = (image: ImageDTO) => {
+    setPages((pages) =>
+      produce(pages, (draft) => {
+        draft.forEach((page) => {
+          page.content.forEach((img) => {
+            if (img.id == image.id) {
+              img.favorite = image.favorite
+            }
+          })
+        })
+      })
+    )
+  }
+
   const images = pages.flatMap((p) => p.content).filter(Boolean)
   const noImages = !query && page?.empty
   const nothingForQuery = query && page?.empty
@@ -173,6 +189,7 @@ export default function Index() {
             size={imageSizeForColumns(numColumns)}
             image={image}
             key={image.id}
+            onImageFavorited={onImageFavorited}
           />
         ))}
         {(loading || hasNextPage) && <div ref={sentryRef}>Loading...</div>}
