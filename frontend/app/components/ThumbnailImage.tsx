@@ -4,7 +4,7 @@ import type {ImageDTO} from "imagehive-client"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
 import type {ClientImage} from "~/routes"
 import {thumbnailUrl} from "~/util/consts"
-import {HiStar} from "react-icons/hi"
+import {HiOutlineStar} from "react-icons/hi"
 
 export type ImageSize = "sm" | "md" | "lg" | "xl"
 
@@ -46,12 +46,12 @@ const Overlay: React.FC<Pick<Props, "image" | "onImageFavorited">> = ({
   const toggleFavorite = useToggleFavorite(image.id, onImageFavorited)
 
   return (
-    <HiStar
+    <HiOutlineStar
       onClick={toggleFavorite}
       data-testid={`favorite-button-${image.id}`}
       className={clsx(
         "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200",
-        image.favorite && "fill-yellow-300"
+        image.favorite && "fill-yellow-300 hover:fill-yellow-200"
       )}
     />
   )
