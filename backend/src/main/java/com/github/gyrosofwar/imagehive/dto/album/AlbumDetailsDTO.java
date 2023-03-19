@@ -12,17 +12,15 @@ public record AlbumDetailsDTO(
   String description,
   OffsetDateTime createdOn,
   List<String> tags,
-  List<UUID> imageIds,
   UUID thumbnailImage
 ) {
-  public static AlbumDetailsDTO from(Album album, List<UUID> imageIds) {
+  public static AlbumDetailsDTO from(Album album) {
     return new AlbumDetailsDTO(
       album.id(),
       album.name(),
       album.description(),
       album.createdOn(),
       Arrays.asList(album.tags()),
-      imageIds,
       album.thumbnailId()
     );
   }

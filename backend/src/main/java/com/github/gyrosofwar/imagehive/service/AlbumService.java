@@ -2,11 +2,14 @@ package com.github.gyrosofwar.imagehive.service;
 
 import static com.github.gyrosofwar.imagehive.sql.Tables.*;
 
+import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
 import com.github.gyrosofwar.imagehive.dto.album.AlbumDetailsDTO;
 import com.github.gyrosofwar.imagehive.dto.album.AlbumListDTO;
 import com.github.gyrosofwar.imagehive.dto.album.CreateAlbumDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Album;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage;
+import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
@@ -24,9 +27,11 @@ public class AlbumService {
   private static final Logger log = LoggerFactory.getLogger(AlbumService.class);
 
   private final DSLContext dsl;
+  private final ImageDTOConverter imageDTOConverter;
 
-  public AlbumService(DSLContext dsl) {
+  public AlbumService(DSLContext dsl, ImageDTOConverter imageDTOConverter) {
     this.dsl = dsl;
+    this.imageDTOConverter = imageDTOConverter;
   }
 
   @Transactional
@@ -58,11 +63,11 @@ public class AlbumService {
       .returningResult()
       .fetchOneInto(Album.class);
 
-    return AlbumDetailsDTO.from(album, List.of());
+    return AlbumDetailsDTO.from(album);
   }
 
   @Transactional
-  public AlbumDetailsDTO getAlbumWithImages(long id, Long userId) {
+  public AlbumDetailsDTO getAlbum(long id, Long userId) {
     if (userId == null) {
       return null;
     }
@@ -76,21 +81,12 @@ public class AlbumService {
       return null;
     }
 
-    var albumImages = dsl
-      .select(IMAGE.ID)
-      .from(ALBUM_IMAGE)
-      .innerJoin(IMAGE)
-      .on(ALBUM_IMAGE.IMAGE_ID.eq(IMAGE.ID))
-      .where(ALBUM_IMAGE.ALBUM_ID.eq(id))
-      .fetch(IMAGE.ID);
-
     return new AlbumDetailsDTO(
       album.id(),
       album.name(),
       album.description(),
       album.createdOn(),
       List.of(album.tags()),
-      albumImages,
       album.thumbnailId()
     );
   }
@@ -119,5 +115,17 @@ public class AlbumService {
       .toList();
 
     dsl.batchInsert(records).execute();
+  }
+
+  public List<ImageDTO> getImages(long id, Long userId) {
+    return dsl
+      .select(IMAGE.asterisk())
+      .from(ALBUM_IMAGE)
+      .innerJoin(IMAGE)
+      .on(ALBUM_IMAGE.IMAGE_ID.eq(IMAGE.ID))
+      .where(ALBUM_IMAGE.ALBUM_ID.eq(id).and(IMAGE.OWNER_ID.eq(userId)))
+      .fetchStreamInto(Image.class)
+      .map(imageDTOConverter::convert)
+      .toList();
   }
 }

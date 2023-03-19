@@ -21,7 +21,7 @@ import {
   HiStar,
   HiPencil,
   HiDownload,
-  HiTrash
+  HiTrash,
 } from "react-icons/hi"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
 import produce from "immer"
