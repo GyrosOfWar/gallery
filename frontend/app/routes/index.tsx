@@ -12,14 +12,12 @@ import {Button, TextInput} from "flowbite-react"
 import type {FormEvent} from "react"
 import {useEffect, useState} from "react"
 import http from "~/util/http"
-import Masonry from "~/components/Masonry"
 import useInfiniteScroll from "react-infinite-scroll-hook"
-import type {ImageSize} from "~/components/ThumbnailImage"
-import ThumbnailImage from "~/components/ThumbnailImage"
 import Slider from "~/components/Slider"
 import {useLocalStorage} from "usehooks-ts"
 import {produce} from "immer"
 import {HiPlus, HiSearch} from "react-icons/hi"
+import ImageGrid from "~/components/ImageGrid"
 
 interface Data {
   images: PageImageDTO
@@ -29,18 +27,6 @@ type ClientImageList = ReturnType<
   typeof useLoaderData<Data>
 >["images"]["content"]
 export type ClientImage = ClientImageList[0]
-
-function imageSizeForColumns(columns: number): ImageSize {
-  if (columns === 1) {
-    return "xl"
-  } else if (columns === 2) {
-    return "lg"
-  } else if (columns <= 4) {
-    return "md"
-  } else {
-    return "sm"
-  }
-}
 
 export const loader: LoaderFunction = async ({request}) => {
   const user = await requireUser(request)
@@ -178,22 +164,16 @@ export default function Index() {
           </div>
         </div>
       )}
-      <Masonry
-        className="flex -ml-1"
-        columnClassName="pl-1"
-        testId="main-grid"
-        columnCount={numColumns}
-      >
-        {images.map((image) => (
-          <ThumbnailImage
-            size={imageSizeForColumns(numColumns)}
-            image={image}
-            key={image.id}
-            onImageFavorited={onImageFavorited}
-          />
-        ))}
-        {(loading || hasNextPage) && <div ref={sentryRef}>Loading...</div>}
-      </Masonry>
+      <ImageGrid
+        images={images}
+        numColumns={numColumns}
+        onImageFavorited={onImageFavorited}
+        sentryRef={sentryRef}
+        hasNextPage={hasNextPage}
+        loading={loading}
+        overlay="favorite"
+      />
+
       <Link
         to="/upload"
         title="Upload new photos"

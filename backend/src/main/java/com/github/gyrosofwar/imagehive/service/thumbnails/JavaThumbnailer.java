@@ -10,7 +10,7 @@ import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
 
 @Singleton
-public class JavaThumbnailService implements ThumbnailService {
+public class JavaThumbnailer implements Thumbnailer {
 
   private static final RenameStrategy RENAME_STRATEGY = new RenameStrategy();
 

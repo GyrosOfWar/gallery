@@ -67,11 +67,14 @@ flyway:
       locations: classpath:db/migration
 
 imagehive:
-  application:
-    image-base-path: "images"
+  image-base-path: "images"
   lavis:
     enabled: true
     url: "http://localhost:5000"
+  #img-proxy:
+  #  enabled: true
+  #  uri: ""
+
   smtpmail:
     host: "localhost"
     port: "25"

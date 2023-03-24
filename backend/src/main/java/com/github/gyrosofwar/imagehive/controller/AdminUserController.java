@@ -30,7 +30,7 @@ public class AdminUserController {
       return HttpResponse.ok();
     } catch (Exception e) {
       log.error("Error creating user", e);
+      return HttpResponse.serverError();
     }
-    return HttpResponse.serverError();
   }
 }

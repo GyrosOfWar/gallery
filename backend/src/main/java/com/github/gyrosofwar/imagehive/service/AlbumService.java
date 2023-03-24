@@ -49,7 +49,7 @@ public class AlbumService {
   }
 
   @Transactional
-  public AlbumDetailsDTO createAlbum(CreateAlbumDTO albumDTO, long userId) {
+  public AlbumDetailsDTO createAlbum(CreateAlbumDTO albumDTO, Long userId) {
     var album = dsl
       .insertInto(ALBUM)
       .columns(ALBUM.NAME, ALBUM.DESCRIPTION, ALBUM.OWNER_ID, ALBUM.TAGS, ALBUM.CREATED_ON)
@@ -117,6 +117,7 @@ public class AlbumService {
     dsl.batchInsert(records).execute();
   }
 
+  @Transactional
   public List<ImageDTO> getImages(long id, Long userId) {
     return dsl
       .select(IMAGE.asterisk())

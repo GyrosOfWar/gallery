@@ -69,6 +69,7 @@ public class MediaController {
       extension,
       width,
       height,
+      null,
       userId
     );
     if (imageData == null) {

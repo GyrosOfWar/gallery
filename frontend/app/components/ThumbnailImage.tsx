@@ -1,17 +1,17 @@
 import {Link} from "@remix-run/react"
 import clsx from "clsx"
 import type {ImageDTO} from "imagehive-client"
-import useToggleFavorite from "~/hooks/useToggleFavorite"
 import type {ClientImage} from "~/routes"
 import {thumbnailUrl} from "~/util/consts"
-import {HiOutlineStar} from "react-icons/hi"
 
 export type ImageSize = "sm" | "md" | "lg" | "xl"
 
 export interface Props {
-  image: ClientImage
+  image: ClientImage | ImageDTO
   size: ImageSize
-  onImageFavorited?: (image: ImageDTO) => void
+  className?: string
+  link?: string
+  overlay?: React.ComponentClass
 }
 
 function getResolution(sizeType: ImageSize): number {
@@ -39,34 +39,41 @@ export function getImageSize(
   return [w, h]
 }
 
-const Overlay: React.FC<Pick<Props, "image" | "onImageFavorited">> = ({
+// const Overlay: React.FC<
+//   Pick<Props, "image" | "onImageFavorited" | "overlay">
+// > = ({image, onImageFavorited, overlay}) => {
+//   const toggleFavorite = useToggleFavorite(image.id, onImageFavorited)
+
+//   return (
+//     <>
+//       {overlay === "favorite" && (
+//         <HiOutlineStar
+//           onClick={toggleFavorite}
+//           data-testid={`favorite-button-${image.id}`}
+//           className={clsx(
+//             "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200",
+//             image.favorite && "fill-yellow-300 hover:fill-yellow-200"
+//           )}
+//         />
+//       )}
+//       {overlay === "checkbox" && (
+//         <Checkbox className="absolute bottom-2 right-2 w-6 h-6" />
+//       )}
+//     </>
+//   )
+// }
+
+const ThumbnailImage: React.FC<Props> = ({
   image,
-  onImageFavorited,
+  size,
+  overlay: Overlay,
+  className,
+  link,
 }) => {
-  const toggleFavorite = useToggleFavorite(image.id, onImageFavorited)
-
-  return (
-    <HiOutlineStar
-      onClick={toggleFavorite}
-      data-testid={`favorite-button-${image.id}`}
-      className={clsx(
-        "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200",
-        image.favorite && "fill-yellow-300 hover:fill-yellow-200"
-      )}
-    />
-  )
-}
-
-const ThumbnailImage: React.FC<Props> = ({image, size, onImageFavorited}) => {
   const [width, height] = getImageSize(size, image.width, image.height)
-
-  return (
-    <Link
-      className={clsx("mb-1 flex relative", size === "xl" && "justify-center")}
-      to={`/image/${image.id}`}
-      data-testid={`image-${image.id}`}
-    >
-      <Overlay image={image} onImageFavorited={onImageFavorited} />
+  const children = (
+    <>
+      {Overlay && <Overlay />}
       <img
         className="w-full"
         alt={image.title || "<no title>"}
@@ -74,8 +81,24 @@ const ThumbnailImage: React.FC<Props> = ({image, size, onImageFavorited}) => {
         height={width}
         width={height}
       />
-    </Link>
+    </>
   )
+
+  const classes = clsx(
+    "mb-1 flex relative",
+    size === "xl" && "justify-center",
+    className
+  )
+
+  if (link) {
+    return (
+      <Link className={classes} to={link} data-testid={`image-${image.id}`}>
+        {children}
+      </Link>
+    )
+  } else {
+    return <article className={classes}>{children}</article>
+  }
 }
 
 export default ThumbnailImage

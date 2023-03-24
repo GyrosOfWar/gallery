@@ -5,7 +5,7 @@ import io.micronaut.core.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public interface ThumbnailService {
+public interface Thumbnailer {
   ImageData getThumbnail(Request request) throws IOException;
 
   record Request(
@@ -13,7 +13,8 @@ public interface ThumbnailService {
     int width,
     int height,
     @Nullable FileType fileType,
-    @Nullable Boolean crop
+    @Nullable Boolean crop,
+    @Nullable Integer dpr
   ) {}
 
   enum FileType {
