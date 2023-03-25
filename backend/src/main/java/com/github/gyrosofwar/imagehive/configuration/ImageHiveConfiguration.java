@@ -10,7 +10,9 @@ public record ImageHiveConfiguration(
   @Nullable LavisServiceConfiguration lavis,
   @Nullable ImgProxyConfiguration imgProxy
 ) {
+  @ConfigurationProperties("lavis")
   public record LavisServiceConfiguration(boolean enabled, @Nullable URI url) {}
 
+  @ConfigurationProperties("img-proxy")
   public record ImgProxyConfiguration(boolean enabled, URI uri, String key, String salt) {}
 }

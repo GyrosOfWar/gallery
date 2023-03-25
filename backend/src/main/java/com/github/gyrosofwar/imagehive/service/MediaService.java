@@ -4,10 +4,12 @@ import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
 import com.github.gyrosofwar.imagehive.service.thumbnails.Thumbnailer;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.http.HttpHeaders;
 import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.io.FilenameUtils;
@@ -83,6 +85,7 @@ public class MediaService {
     int width,
     int height,
     Integer dpr,
+    HttpHeaders headers,
     Long userId
   ) throws IOException {
     var originalImage = getImagePath(ulid, extension, userId);
@@ -97,7 +100,8 @@ public class MediaService {
         height,
         Thumbnailer.FileType.JPEG,
         false,
-        dpr == null ? 1 : dpr
+        dpr == null ? 1 : dpr,
+        headers
       )
     );
   }
