@@ -11,7 +11,7 @@ export interface Props {
   size: ImageSize
   className?: string
   link?: string
-  overlay?: React.ComponentClass
+  overlay?: React.ReactElement
 }
 
 function getResolution(sizeType: ImageSize): number {
@@ -39,41 +39,17 @@ export function getImageSize(
   return [w, h]
 }
 
-// const Overlay: React.FC<
-//   Pick<Props, "image" | "onImageFavorited" | "overlay">
-// > = ({image, onImageFavorited, overlay}) => {
-//   const toggleFavorite = useToggleFavorite(image.id, onImageFavorited)
-
-//   return (
-//     <>
-//       {overlay === "favorite" && (
-//         <HiOutlineStar
-//           onClick={toggleFavorite}
-//           data-testid={`favorite-button-${image.id}`}
-//           className={clsx(
-//             "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200",
-//             image.favorite && "fill-yellow-300 hover:fill-yellow-200"
-//           )}
-//         />
-//       )}
-//       {overlay === "checkbox" && (
-//         <Checkbox className="absolute bottom-2 right-2 w-6 h-6" />
-//       )}
-//     </>
-//   )
-// }
-
 const ThumbnailImage: React.FC<Props> = ({
   image,
   size,
-  overlay: Overlay,
+  overlay,
   className,
   link,
 }) => {
   const [width, height] = getImageSize(size, image.width, image.height)
   const children = (
     <>
-      {Overlay && <Overlay />}
+      {overlay}
       <img
         className="w-full"
         alt={image.title || "<no title>"}

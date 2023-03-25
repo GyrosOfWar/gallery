@@ -1,13 +1,13 @@
 import type {LoaderFunction} from "@remix-run/node"
 import {useLoaderData} from "@remix-run/react"
+import clsx from "clsx"
+import {Checkbox} from "flowbite-react"
 import type {ImageDTO, PageImageDTO} from "imagehive-client"
+import {useState} from "react"
 import {json} from "react-router"
 import ImageGrid from "~/components/ImageGrid"
 import {requireUser} from "~/services/auth.server"
 import http from "~/util/http"
-
-// Needs: List of image IDs for the album
-//        List of images (same as image list page)
 
 interface Data {
   albumImages: ImageDTO[]
@@ -16,7 +16,21 @@ interface Data {
 }
 
 const Overlay = () => {
-  return <div></div>
+  const [selected, setSelected] = useState(false)
+  const onToggle = () => setSelected((s) => !s)
+
+  return (
+    <div
+      onClick={onToggle}
+      className={clsx("w-full h-full absolute cursor-pointer")}
+    >
+      <Checkbox
+        checked={selected}
+        onChange={onToggle}
+        className="absolute bottom-2 right-2 w-8 h-8"
+      />
+    </div>
+  )
 }
 
 export const loader: LoaderFunction = async ({params, request}) => {
@@ -46,7 +60,7 @@ const AddImagesPage: React.FC = () => {
         loading={false}
         hasNextPage={false}
         numColumns={4}
-        imageOverlay={<Overlay />}
+        renderOverlay={(image) => <Overlay />}
       />
     </>
   )

@@ -16,8 +16,10 @@ import useInfiniteScroll from "react-infinite-scroll-hook"
 import Slider from "~/components/Slider"
 import {useLocalStorage} from "usehooks-ts"
 import {produce} from "immer"
-import {HiPlus, HiSearch} from "react-icons/hi"
+import {HiOutlineStar, HiPlus, HiSearch} from "react-icons/hi"
 import ImageGrid from "~/components/ImageGrid"
+import useToggleFavorite from "~/hooks/useToggleFavorite"
+import clsx from "clsx"
 
 interface Data {
   images: PageImageDTO
@@ -46,6 +48,26 @@ export const loader: LoaderFunction = async ({request}) => {
 
   const data = {images} satisfies Data
   return json(data)
+}
+
+interface OverlayProps {
+  image: ImageDTO
+  onImageFavorited: (image: ImageDTO) => void
+}
+
+const Overlay: React.FC<OverlayProps> = ({image, onImageFavorited}) => {
+  const toggleFavorite = useToggleFavorite(image.id, onImageFavorited)
+
+  return (
+    <HiOutlineStar
+      onClick={toggleFavorite}
+      data-testid={`favorite-button-${image.id}`}
+      className={clsx(
+        "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200",
+        image.favorite && "fill-yellow-300 hover:fill-yellow-200"
+      )}
+    />
+  )
 }
 
 export default function Index() {
@@ -167,11 +189,16 @@ export default function Index() {
       <ImageGrid
         images={images}
         numColumns={numColumns}
-        onImageFavorited={onImageFavorited}
         sentryRef={sentryRef}
         hasNextPage={hasNextPage}
         loading={loading}
-        overlay="favorite"
+        withLinks
+        renderOverlay={(image) => (
+          <Overlay
+            image={image as ImageDTO}
+            onImageFavorited={onImageFavorited}
+          />
+        )}
       />
 
       <Link

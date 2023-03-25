@@ -10,7 +10,8 @@ export interface Props {
   hasNextPage: boolean
   loading?: boolean
   sentryRef?: React.Ref<HTMLDivElement>
-  imageOverlay?: React.ReactElement
+  renderOverlay?: (image: ImageDTO | ClientImage) => React.ReactElement
+  withLinks?: boolean
 }
 
 function imageSizeForColumns(columns: number): ImageSize {
@@ -31,7 +32,8 @@ const ImageGrid: React.FC<Props> = ({
   sentryRef,
   loading,
   hasNextPage,
-  imageOverlay,
+  renderOverlay,
+  withLinks,
 }) => {
   return (
     <Masonry
@@ -45,7 +47,8 @@ const ImageGrid: React.FC<Props> = ({
           size={imageSizeForColumns(numColumns)}
           image={image}
           key={image.id}
-          overlay={imageOverlay}
+          overlay={renderOverlay && renderOverlay(image)}
+          link={withLinks ? `/image/${image.id}` : undefined}
         />
       ))}
       {(loading || hasNextPage) && sentryRef && (
