@@ -8,11 +8,17 @@ import java.net.URI;
 public record ImageHiveConfiguration(
   String imageBasePath,
   @Nullable LavisServiceConfiguration lavis,
-  @Nullable ImgProxyConfiguration imgProxy
+  @Nullable ImgProxyConfiguration imgProxy,
+  ThumbnailerType thumbnailer
 ) {
   @ConfigurationProperties("lavis")
   public record LavisServiceConfiguration(boolean enabled, @Nullable URI url) {}
 
   @ConfigurationProperties("img-proxy")
-  public record ImgProxyConfiguration(boolean enabled, URI uri, String key, String salt) {}
+  public record ImgProxyConfiguration(URI uri, String key, String salt) {}
+
+  public enum ThumbnailerType {
+    JAVA,
+    IMG_PROXY
+  }
 }

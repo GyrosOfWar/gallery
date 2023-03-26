@@ -3,6 +3,7 @@ package com.github.gyrosofwar.imagehive.service.thumbnails;
 import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
 import com.github.gyrosofwar.imagehive.service.ImageData;
 import io.micronaut.context.annotation.Primary;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
@@ -18,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Primary
+@Requires(property = "imagehive.thumbnailer", value = "IMG_PROXY")
 public class ImgProxyThumbnailer implements Thumbnailer {
 
   private static final Logger log = LoggerFactory.getLogger(ImgProxyThumbnailer.class);
