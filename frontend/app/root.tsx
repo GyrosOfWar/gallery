@@ -46,7 +46,7 @@ export default function App() {
       <head>
         <Meta />
         <Links />
-        <meta http-equiv="Accept-CH" content="DPR, Viewport-Width, Width" />
+        <meta httpEquiv="Accept-CH" content="DPR, Viewport-Width, Width" />
       </head>
       <body className="bg-white dark:bg-gray-900 dark:text-white">
         <Flowbite>

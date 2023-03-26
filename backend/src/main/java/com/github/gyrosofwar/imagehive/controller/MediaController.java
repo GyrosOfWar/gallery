@@ -5,6 +5,7 @@ import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUse
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.service.MediaService;
 import io.micronaut.http.HttpHeaders;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.server.types.files.StreamedFile;
 import io.micronaut.security.annotation.Secured;
@@ -54,7 +55,7 @@ public class MediaController {
 
   @Get("/thumbnail/{width}/{height}/{uuid}")
   @Hidden
-  public StreamedFile getThumbnail(
+  public HttpResponse<StreamedFile> getThumbnail(
     @PathVariable int width,
     @PathVariable int height,
     @PathVariable UUID uuid,
@@ -76,14 +77,15 @@ public class MediaController {
     );
     if (imageData == null) {
       log.info("no image found for uuid {}", uuid);
-      return null;
+      return HttpResponse.notFound();
     } else {
-      return new StreamedFile(
+      var file = new StreamedFile(
         imageData.inputStream(),
         imageData.contentType(),
         imageData.lastModified(),
         imageData.contentLength()
       );
+      return HttpResponse.ok(file).headers(imageData.headers());
     }
   }
 }

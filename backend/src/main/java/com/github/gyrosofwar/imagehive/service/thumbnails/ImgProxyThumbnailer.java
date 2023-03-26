@@ -3,12 +3,14 @@ package com.github.gyrosofwar.imagehive.service.thumbnails;
 import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
 import com.github.gyrosofwar.imagehive.service.ImageData;
 import io.micronaut.context.annotation.Primary;
+import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.client.HttpClient;
 import jakarta.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,12 +23,16 @@ public class ImgProxyThumbnailer implements Thumbnailer {
 
   private static final Logger log = LoggerFactory.getLogger(ImgProxyThumbnailer.class);
 
-  private static final Set<CharSequence> FORWARDED_HEADERS = Set.of(
+  private static final Set<CharSequence> FORWARDED_REQUEST_HEADERS = Set.of(
     "Accept",
     "Width",
     "Viewport-Width",
     "DPR"
   );
+
+  private static final Set<CharSequence> FORWARDED_RESPONSE_HEADERS = Set.of(
+          "Cache-Control", "Etag", "Expires", "Vary"
+);
 
   private final ImgProxy imgProxy;
   private final HttpClient httpClient;
@@ -46,7 +52,7 @@ public class ImgProxyThumbnailer implements Thumbnailer {
 
     Map<CharSequence, CharSequence> allowedHeaders = new HashMap<>();
     for (var header : headers.asMap().entrySet()) {
-      if (FORWARDED_HEADERS.contains(header.getKey())) {
+      if (FORWARDED_REQUEST_HEADERS.contains(header.getKey())) {
         allowedHeaders.put(header.getKey(), header.getValue().get(0));
       }
     }
@@ -55,13 +61,19 @@ public class ImgProxyThumbnailer implements Thumbnailer {
 
     var response = httpClient.toBlocking().exchange(httpRequest, byte[].class);
     long lastModified = response.getHeaders().findInt("Last-Modified").orElse(0);
-    log.info("response headers: {}", response.getHeaders().asMap());
+    Map<CharSequence, CharSequence> responseHeaders = new HashMap<>();
+    for (var header: response.getHeaders().asMap().entrySet()) {
+      if (FORWARDED_RESPONSE_HEADERS.contains(header.getKey())) {
+        responseHeaders.put(header.getKey(), header.getValue().get(0));
+      }
+    }
 
     return new ImageData(
       new ByteArrayInputStream(response.body()),
       response.getContentType().orElse(MediaType.APPLICATION_OCTET_STREAM_TYPE),
       lastModified,
-      response.getContentLength()
+      response.getContentLength(),
+      responseHeaders
     );
   }
 }

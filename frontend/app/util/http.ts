@@ -11,6 +11,14 @@ function getUrl(path: string): string {
 
 export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 
+const forwardedHeadrs = [
+  "accept",
+  "accept-encoding",
+  "dpr",
+  "viewport-width",
+  "width",
+]
+
 class Http {
   async getJson<T>(path: string, accessToken?: string): Promise<T> {
     const response = await this.get(path, accessToken)
@@ -18,8 +26,12 @@ class Http {
     return await response.json()
   }
 
-  async get(path: string, accessToken?: string): Promise<Response> {
-    return this.#request(path, "GET", undefined, accessToken)
+  async get(
+    path: string,
+    accessToken?: string,
+    headers?: Headers
+  ): Promise<Response> {
+    return this.#request(path, "GET", undefined, accessToken, headers)
   }
 
   async patchJson(
@@ -42,7 +54,8 @@ class Http {
     path: string,
     method: Method,
     payload?: unknown,
-    accessToken?: string
+    accessToken?: string,
+    requestHeaders?: Headers
   ): Promise<Response> {
     const url = getUrl(path)
     try {
@@ -56,6 +69,16 @@ class Http {
         requestInit.body = json
         headers["content-type"] = "application/json"
       }
+
+      if (requestHeaders) {
+        forwardedHeadrs.forEach((name) => {
+          const headerValue = requestHeaders.get(name)
+          if (headerValue) {
+            headers[name] = headerValue
+          }
+        })
+      }
+
       const response = await fetch(url, requestInit)
       if (response.ok) {
         return response
