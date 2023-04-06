@@ -17,3 +17,13 @@ def caption_image(file):
         caption = generated_captions[0]
     
     return caption
+
+def caption_images(files):
+    names = []
+    captions = []
+
+    for image in files:
+        names.append(image.filename)
+        captions.append(caption_image(image))
+
+    return list(zip(names,captions))
