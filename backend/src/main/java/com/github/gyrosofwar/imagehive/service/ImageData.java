@@ -22,6 +22,12 @@ public record ImageData(
     var lastModified = attributes.lastModifiedTime();
     var contentType = MediaType.forFilename(path.getFileName().toString());
 
-    return new ImageData(inputStream, contentType, lastModified.toMillis(), contentLength, Map.of());
+    return new ImageData(
+      inputStream,
+      contentType,
+      lastModified.toMillis(),
+      contentLength,
+      Map.of()
+    );
   }
 }

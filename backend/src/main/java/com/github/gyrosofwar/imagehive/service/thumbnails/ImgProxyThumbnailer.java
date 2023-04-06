@@ -32,8 +32,11 @@ public class ImgProxyThumbnailer implements Thumbnailer {
   );
 
   private static final Set<CharSequence> FORWARDED_RESPONSE_HEADERS = Set.of(
-          "Cache-Control", "Etag", "Expires", "Vary"
-);
+    "Cache-Control",
+    "Etag",
+    "Expires",
+    "Vary"
+  );
 
   private final ImgProxy imgProxy;
   private final HttpClient httpClient;
@@ -63,11 +66,12 @@ public class ImgProxyThumbnailer implements Thumbnailer {
     var response = httpClient.toBlocking().exchange(httpRequest, byte[].class);
     long lastModified = response.getHeaders().findInt("Last-Modified").orElse(0);
     Map<CharSequence, CharSequence> responseHeaders = new HashMap<>();
-    for (var header: response.getHeaders().asMap().entrySet()) {
+    for (var header : response.getHeaders().asMap().entrySet()) {
       if (FORWARDED_RESPONSE_HEADERS.contains(header.getKey())) {
         responseHeaders.put(header.getKey(), header.getValue().get(0));
       }
     }
+    log.debug("sending response with headers {}", responseHeaders);
 
     return new ImageData(
       new ByteArrayInputStream(response.body()),

@@ -19,6 +19,6 @@ public record ImageHiveConfiguration(
 
   public enum ThumbnailerType {
     JAVA,
-    IMG_PROXY
+    IMG_PROXY,
   }
 }
