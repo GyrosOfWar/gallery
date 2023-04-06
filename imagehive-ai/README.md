@@ -24,6 +24,6 @@
 
 * Run the app
 
-`flask --app lavis_service run`
+`flask --app services run`
 
 * The app should be reachable under http://localhost:5000
