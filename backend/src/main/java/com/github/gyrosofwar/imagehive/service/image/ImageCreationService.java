@@ -7,9 +7,11 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.iptc.IptcDirectory;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.service.MediaService;
+import com.github.gyrosofwar.imagehive.service.geo.GeoCodingService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
@@ -22,6 +24,7 @@ import java.time.ZoneOffset;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import mil.nga.sf.geojson.FeatureCollection;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.io.TikaInputStream;
@@ -43,17 +46,20 @@ public class ImageCreationService {
   private final ObjectMapper objectMapper;
   private final TikaConfig tikaConfig;
   private final DSLContext dsl;
+  private final GeoCodingService geoCodingService;
 
   public ImageCreationService(
     MediaService mediaService,
     ObjectMapper objectMapper,
     TikaConfig tikaConfig,
-    DSLContext dsl
+    DSLContext dsl,
+    GeoCodingService geoCodingService
   ) {
     this.mediaService = mediaService;
     this.objectMapper = objectMapper;
     this.tikaConfig = tikaConfig;
     this.dsl = dsl;
+    this.geoCodingService = geoCodingService;
   }
 
   private OffsetDateTime toOffsetDate(Date date) {
@@ -167,6 +173,8 @@ public class ImageCreationService {
     var metadata = getMetadata(destinationPath);
     var metadataJson = JSONB.jsonb(objectMapper.writeValueAsString(metadata.metadata()));
     var bufferedImage = ImageIO.read(destinationPath.toFile());
+    var geoJson = getImageLocation(metadata);
+
     var image = new Image(
       id.toUuid(),
       newImage.title(),
@@ -181,11 +189,24 @@ public class ImageCreationService {
       metadataJson,
       tags,
       false,
-      destinationPath.toString()
+      destinationPath.toString(),
+      geoJson
     );
     dsl.newRecord(IMAGE, image).insert();
     log.info("inserted new image {}", image);
     return image;
+  }
+
+  private JSONB getImageLocation(ParsedMetadata metadata) throws JsonProcessingException {
+    FeatureCollection geoJson = geoCodingService.getGeoInformation(
+      metadata.longitude(),
+      metadata.latitude()
+    );
+    if (geoJson != null) {
+      return JSONB.jsonb(objectMapper.writeValueAsString(geoJson));
+    } else {
+      return null;
+    }
   }
 
   private record ParsedMetadata(

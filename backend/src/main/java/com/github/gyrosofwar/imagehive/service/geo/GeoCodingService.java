@@ -16,10 +16,10 @@ public class GeoCodingService {
     this.apiClient = apiClient;
   }
 
-  public FeatureCollection getGeoInformation(Image image) {
+  public FeatureCollection getGeoInformation(Double longitude, Double latitude) {
     try {
-      if (image.gpsLatitude() != null && image.gpsLongitude() != null) {
-        return apiClient.reverseGeoCode(image.gpsLatitude(), image.gpsLongitude());
+      if (latitude != null && longitude != null) {
+        return apiClient.reverseGeoCode(latitude, longitude);
       } else {
         return null;
       }

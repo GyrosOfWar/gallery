@@ -22,12 +22,12 @@ const Overlay = () => {
   return (
     <div
       onClick={onToggle}
-      className={clsx("w-full h-full absolute cursor-pointer")}
+      className={clsx("w-full h-full absolute cursor-pointer z-10")}
     >
       <Checkbox
         checked={selected}
         onChange={onToggle}
-        className="absolute bottom-2 right-2 w-8 h-8"
+        className="absolute bottom-2 right-2 w-8 h-8 z-20"
       />
     </div>
   )

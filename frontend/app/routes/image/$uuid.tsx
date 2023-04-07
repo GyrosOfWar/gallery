@@ -22,6 +22,7 @@ import {
   HiPencil,
   HiDownload,
   HiTrash,
+  HiLocationMarker,
 } from "react-icons/hi"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
 import produce from "immer"
@@ -193,6 +194,18 @@ const ImageDetailsPage: React.FC = () => {
                 width={image.width}
                 height={image.height}
               />
+            </li>
+          )}
+          {image.location && (
+            <li className="flex gap-4 items-center">
+              <HiLocationMarker className="w-8 h-8" />
+              <div className="flex flex-wrap gap-x-4 lg:gap-6 ">
+                <span>{image.location.country}</span>
+                <span>{image.location.city}</span>
+                <span>{image.location.district}</span>
+                <span>{image.location.locality}</span>
+                <span>{image.location.street}</span>
+              </div>
             </li>
           )}
           <div className="mt-1">

@@ -8,7 +8,6 @@ import java.util.Base64;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-// TODO use for generating thumbnails
 public class ImgProxy {
 
   private final String key;
