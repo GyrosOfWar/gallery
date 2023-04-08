@@ -73,7 +73,11 @@ const ThumbnailImage: React.FC<Props> = ({
       </Link>
     )
   } else {
-    return <article className={classes}>{children}</article>
+    return (
+      <article data-testid={`image-${image.id}`} className={classes}>
+        {children}
+      </article>
+    )
   }
 }
 

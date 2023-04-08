@@ -32,7 +32,7 @@ describe("ThumbnailImage", () => {
   it("should render an image with a link", () => {
     const {getByTestId} = render(
       <MemoryRouter>
-        <ThumbnailImage image={image} size="md" />
+        <ThumbnailImage link="/images/test" image={image} size="md" />
       </MemoryRouter>
     )
     const node = getByTestId(`image-${image.id}`)
@@ -41,20 +41,7 @@ describe("ThumbnailImage", () => {
     expect(img).toHaveAttribute("height")
     expect(img).toHaveAttribute("width")
     expect(img).toHaveAttribute("src")
-
-    expect(node).toHaveAttribute("href")
-  })
-
-  it.skip("should send a request when the favorite button is clicked", async () => {
-    const mockFn = vi.fn()
-    const {getByTestId} = render(
-      <MemoryRouter>
-        <ThumbnailImage image={image} size="md" onImageFavorited={mockFn} />
-      </MemoryRouter>
-    )
-    const button = getByTestId(`favorite-button-${image.id}`)
-    expect(button).toBeInTheDocument()
-    await userEvent.click(button)
+    expect(node).toHaveAttribute("href", "/images/test")
   })
 })
 
