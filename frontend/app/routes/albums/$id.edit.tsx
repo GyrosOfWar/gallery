@@ -8,6 +8,7 @@ import {useState} from "react"
 import {HiCheck} from "react-icons/hi"
 import {json} from "react-router"
 import ImageGrid from "~/components/ImageGrid"
+import useImages from "~/hooks/useImages"
 import {requireUser} from "~/services/auth.server"
 import http from "~/util/http"
 
@@ -28,7 +29,7 @@ const Overlay: React.FC<OverlayProps> = ({selected, setSelected}) => {
   return (
     <div
       onClick={onToggle}
-      className={clsx("w-full h-full absolute cursor-pointer z-10 transition hover:bg-black hover:bg-opacity-25")}
+      className="w-full h-full absolute cursor-pointer z-10 transition hover:bg-black hover:bg-opacity-25"
     >
       <Checkbox
         checked={selected}
@@ -68,6 +69,7 @@ export const action: ActionFunction = async ({request, params}) => {
 
 const AddImagesPage: React.FC = () => {
   const data = useLoaderData<Data>()
+  const props = useImages({initialPage: data.images})
   const [selection, setSelection] = useState(
     data.albumImages.map((image) => image.id)
   )
@@ -86,9 +88,7 @@ const AddImagesPage: React.FC = () => {
       </div>
 
       <ImageGrid
-        images={data.images.content}
-        loading={false}
-        hasNextPage={false}
+        {...props}
         numColumns={4}
         renderOverlay={(image) => (
           <Overlay

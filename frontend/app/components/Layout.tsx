@@ -134,8 +134,11 @@ const DarkThemeToggle = () => {
   )
 }
 
-function getInitials(name: string) {
-  const tokens = name.split(' ')
+function getInitials(name?: string) {
+  if (!name) {
+    return ""
+  }
+  const tokens = name.split(" ")
   if (tokens.length > 1) {
     return (tokens[0][0] + tokens[1][0]).toUpperCase()
   } else {
@@ -147,7 +150,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
   children,
   user,
 }) => {
-  const initials = getInitials(user!.username)
+  const initials = getInitials(user?.username)
 
   return (
     <>
@@ -181,7 +184,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
             </Dropdown.Item>
           </DynamicDropdown>
           <DynamicDropdown
-            label={<Avatar placeholderInitials={initials} rounded  />}
+            label={<Avatar placeholderInitials={initials} rounded />}
             user={user}
             visibleFor="user"
           >

@@ -1,4 +1,5 @@
-import {LoaderFunction, json} from "@remix-run/node"
+import type {LoaderFunction} from "@remix-run/node"
+import {json} from "@remix-run/node"
 import type {useLoaderData} from "@remix-run/react"
 import type {PageImageDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
@@ -8,9 +9,8 @@ export interface Data {
   images: PageImageDTO
 }
 
-export type ClientImageList = ReturnType<
-  typeof useLoaderData<Data>
->["images"]["content"]
+export type ClientImagePage = ReturnType<typeof useLoaderData<Data>>["images"]
+export type ClientImageList = ClientImagePage["content"]
 export type ClientImage = ClientImageList[0]
 
 export const loader: LoaderFunction = async ({request}) => {
