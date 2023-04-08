@@ -1,5 +1,6 @@
-import {ActionFunction, LoaderFunction, redirect} from "@remix-run/node"
-import {Form, useLoaderData, useSubmit} from "@remix-run/react"
+import type {ActionFunction, LoaderFunction} from "@remix-run/node"
+import {redirect} from "@remix-run/node"
+import {Form, useLoaderData} from "@remix-run/react"
 import clsx from "clsx"
 import {Button, Checkbox} from "flowbite-react"
 import type {ImageDTO, PageImageDTO} from "imagehive-client"

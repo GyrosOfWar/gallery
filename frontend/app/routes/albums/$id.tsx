@@ -4,8 +4,9 @@ import {Link, useLoaderData} from "@remix-run/react"
 import type {AlbumDetailsDTO, ImageDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
 import http from "~/util/http"
-import {HiPlus} from "react-icons/hi"
+import {HiPencil, HiPlus} from "react-icons/hi"
 import ImageGrid from "~/components/ImageGrid"
+import {Button} from "flowbite-react"
 
 interface Data {
   album: AlbumDetailsDTO
@@ -33,14 +34,15 @@ const AlbumDetailsPage = () => {
 
   return (
     <>
-      <h1 className="text-3xl font-bold mb-4">{album.name}</h1>
-      <Link
-        to="add"
-        title="Upload new photos"
-        className="fixed bottom-8 right-8 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-xl hover:bg-gray-200 transition p-4"
-      >
-        <HiPlus className="w-10 h-10" />
-      </Link>
+      <div className="flex justify-between">
+        <h1 className="text-3xl font-bold mb-4">{album.name}</h1>
+        <Link to={`/albums/${album.id}/edit`}>
+          <Button color="success">
+            <HiPencil className="w-4 h-4 mr-2" />
+            Edit
+          </Button>
+        </Link>
+      </div>
 
       <ImageGrid withLinks images={images} hasNextPage={false} numColumns={4} />
     </>
