@@ -54,7 +54,7 @@ public class AlbumController {
   }
 
   @Post("/{id}/images")
-  public void addImagesToAlbum(
+  public void updateAlbumImages(
     @PathVariable long id,
     @Body Set<UUID> albumImages,
     Authentication authentication

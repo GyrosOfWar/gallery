@@ -109,16 +109,21 @@ public class AlbumService {
       // todo throw the right exception
       return;
     }
+    log.info("updating album {} with images {}", id, albumImages);
+
     Set<UUID> existingImages = getImages(id, userId)
       .stream()
       .map(ImageDTO::id)
       .collect(Collectors.toSet());
+    log.info("found {} existing images", existingImages.size());
 
     Set<UUID> idsToAdd = new HashSet<>(albumImages);
     idsToAdd.removeAll(existingImages);
+    log.info("adding {} new images", idsToAdd.size());
 
     Set<UUID> idsToDelete = new HashSet<>(existingImages);
     idsToDelete.removeAll(albumImages);
+    log.info("deleting {} existing images", idsToDelete.size());
 
     for (UUID imageId : idsToAdd) {
       dsl

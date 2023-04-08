@@ -72,7 +72,7 @@ class AlbumServiceTest extends BaseTest {
     assertEquals("cool description", dto.description());
     assertEquals(List.of("tag1", "tag2"), dto.tags());
 
-    albumService.addImages(dto.id(), Set.copyOf(images), userId);
+    albumService.updateAlbumImages(dto.id(), Set.copyOf(images), userId);
 
     var result = albumService.getImages(album.id(), userId);
     assertThat(result).hasSize(imageCount);
