@@ -1,9 +1,10 @@
-import type {LoaderFunction} from "@remix-run/node"
-import {useLoaderData} from "@remix-run/react"
+import {ActionFunction, LoaderFunction, redirect} from "@remix-run/node"
+import {Form, useLoaderData, useSubmit} from "@remix-run/react"
 import clsx from "clsx"
-import {Checkbox} from "flowbite-react"
+import {Button, Checkbox} from "flowbite-react"
 import type {ImageDTO, PageImageDTO} from "imagehive-client"
 import {useState} from "react"
+import {HiSave} from "react-icons/hi"
 import {json} from "react-router"
 import ImageGrid from "~/components/ImageGrid"
 import {requireUser} from "~/services/auth.server"
@@ -15,9 +16,13 @@ interface Data {
   albumId: string
 }
 
-const Overlay = () => {
-  const [selected, setSelected] = useState(false)
-  const onToggle = () => setSelected((s) => !s)
+interface OverlayProps {
+  selected: boolean
+  setSelected: (checked: boolean) => void
+}
+
+const Overlay: React.FC<OverlayProps> = ({selected, setSelected}) => {
+  const onToggle = () => setSelected(!selected)
 
   return (
     <div
@@ -48,19 +53,54 @@ export const loader: LoaderFunction = async ({params, request}) => {
   } satisfies Data)
 }
 
+export const action: ActionFunction = async ({request, params}) => {
+  const {accessToken} = await requireUser(request)
+  const payload = await request.formData()
+  const idList = payload.get("ids") as string
+  const ids = idList.split(",")
+
+  const albumId = params.id
+  await http.postJson(`/api/albums/${albumId}/images`, ids, accessToken)
+
+  return redirect(`/albums/${albumId}`)
+}
+
 const AddImagesPage: React.FC = () => {
   const data = useLoaderData<Data>()
+  const [selection, setSelection] = useState(
+    data.albumImages.map((image) => image.id)
+  )
 
   return (
     <>
-      <h1 className="font-bold text-3xl mb-4">Add images to album</h1>
+      <div className="flex justify-between">
+        <h1 className="font-bold text-3xl mb-4">Add images to album</h1>
+        <Form method="post">
+          <input type="hidden" name="ids" value={selection.join(",")} />
+          <Button color="success" type="submit">
+            <HiSave className="w-4 h-4 mr-2" />
+            Save
+          </Button>
+        </Form>
+      </div>
 
       <ImageGrid
         images={data.images.content}
         loading={false}
         hasNextPage={false}
         numColumns={4}
-        renderOverlay={(image) => <Overlay />}
+        renderOverlay={(image) => (
+          <Overlay
+            selected={selection.includes(image.id)}
+            setSelected={(selected) => {
+              if (selected) {
+                setSelection((sel) => [...sel, image.id])
+              } else {
+                setSelection((sel) => sel.filter((id) => id !== image.id))
+              }
+            }}
+          />
+        )}
       />
     </>
   )

@@ -1,13 +1,15 @@
 import type {LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {Link, useLoaderData} from "@remix-run/react"
-import type {AlbumDetailsDTO} from "imagehive-client"
+import type {AlbumDetailsDTO, ImageDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
 import http from "~/util/http"
 import {HiPlus} from "react-icons/hi"
+import ImageGrid from "~/components/ImageGrid"
 
 interface Data {
   album: AlbumDetailsDTO
+  images: ImageDTO[]
 }
 
 export const loader: LoaderFunction = async ({request, params}) => {
@@ -19,11 +21,15 @@ export const loader: LoaderFunction = async ({request, params}) => {
     `/api/albums/${params.id}`,
     accessToken
   )
-  return json({album} satisfies Data)
+  const images: ImageDTO[] = await http.getJson(
+    `/api/albums/${params.id}/images`,
+    accessToken
+  )
+  return json({album, images} satisfies Data)
 }
 
 const AlbumDetailsPage = () => {
-  const {album} = useLoaderData<Data>()
+  const {album, images} = useLoaderData<Data>()
 
   return (
     <>
@@ -35,6 +41,8 @@ const AlbumDetailsPage = () => {
       >
         <HiPlus className="w-10 h-10" />
       </Link>
+
+      <ImageGrid withLinks images={images} hasNextPage={false} numColumns={4} />
     </>
   )
 }
