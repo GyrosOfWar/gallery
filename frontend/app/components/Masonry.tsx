@@ -13,7 +13,7 @@ type RenderColumnFn = (
   idx: number
 ) => React.ReactNode
 
-export interface Props {
+export interface GridProps {
   className?: string
   columnClassName?: string
   renderColumn?: RenderColumnFn
@@ -21,7 +21,7 @@ export interface Props {
   columnCount: number
 }
 
-const Masonry: React.FC<React.PropsWithChildren<Props>> = ({
+const Masonry: React.FC<React.PropsWithChildren<GridProps>> = ({
   className,
   columnClassName,
   children,

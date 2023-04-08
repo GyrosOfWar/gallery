@@ -10,10 +10,7 @@ import com.github.gyrosofwar.imagehive.service.image.ImageCreationService;
 import com.github.gyrosofwar.imagehive.service.image.NewImage;
 import jakarta.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 
 class AlbumServiceTest extends BaseTest {
@@ -72,7 +69,7 @@ class AlbumServiceTest extends BaseTest {
     assertEquals("cool description", dto.description());
     assertEquals(List.of("tag1", "tag2"), dto.tags());
 
-    albumService.updateAlbumImages(dto.id(), Set.copyOf(images), userId);
+    albumService.updateAlbumImages(dto.id(), new TreeSet<>(images), userId);
 
     var result = albumService.getImages(album.id(), userId);
     assertThat(result).hasSize(imageCount);

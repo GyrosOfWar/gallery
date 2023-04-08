@@ -89,6 +89,7 @@ const AddImagesPage: React.FC = () => {
 
       <ImageGrid
         {...props}
+        square
         numColumns={4}
         renderOverlay={(image) => (
           <Overlay

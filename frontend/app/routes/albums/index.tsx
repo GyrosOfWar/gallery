@@ -33,18 +33,19 @@ const AlbumListPage: React.FC = () => {
           <HiPlus className="w-4 h-4 mr-2" /> New
         </Link>
       </header>
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {albums.map((album) => (
           <Link key={album.id} to={`/albums/${album.id}`}>
             <Card>
               {album.thumbnailImage && (
                 <img
                   alt={album.name}
-                  src={thumbnailUrl(album.thumbnailImage, 400, 400)}
+                  className="aspect-square object-cover"
+                  src={thumbnailUrl(album.thumbnailImage, 400, 400, "jpg")}
                 />
               )}
               {!album.thumbnailImage && (
-                <HiPhotograph className="w-[400px] h-[250px] max-w-full max-h-full" />
+                <HiPhotograph className="w-full h-full" />
               )}
               <p className="text-xl p-2">{album.name}</p>
             </Card>

@@ -8,14 +8,13 @@ import com.github.gyrosofwar.imagehive.dto.album.AlbumListDTO;
 import com.github.gyrosofwar.imagehive.dto.album.CreateAlbumDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Album;
+import com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
+import com.github.gyrosofwar.imagehive.sql.tables.records.AlbumImageRecord;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.jooq.DSLContext;
@@ -104,7 +103,7 @@ public class AlbumService {
   }
 
   @Transactional
-  public void updateAlbumImages(long id, Set<UUID> albumImages, Long userId) {
+  public void updateAlbumImages(long id, SortedSet<UUID> albumImages, Long userId) {
     if (userId == null || !isAlbumOwner(id, userId)) {
       // todo throw the right exception
       return;
@@ -125,19 +124,21 @@ public class AlbumService {
     idsToDelete.removeAll(albumImages);
     log.info("deleting {} existing images", idsToDelete.size());
 
-    for (UUID imageId : idsToAdd) {
-      dsl
-        .insertInto(ALBUM_IMAGE)
-        .columns(ALBUM_IMAGE.IMAGE_ID, ALBUM_IMAGE.ALBUM_ID)
-        .values(imageId, id)
-        .onConflictDoNothing()
-        .execute();
-    }
+    List<AlbumImageRecord> records = idsToAdd
+      .stream()
+      .map(imageId -> dsl.newRecord(ALBUM_IMAGE, new AlbumImage(id, imageId)))
+      .toList();
+    dsl.batchInsert(records).execute();
 
     dsl
       .deleteFrom(ALBUM_IMAGE)
       .where(ALBUM_IMAGE.IMAGE_ID.in(idsToDelete).and(ALBUM_IMAGE.ALBUM_ID.eq(id)))
       .execute();
+
+    if (!albumImages.isEmpty()) {
+      var first = albumImages.first();
+      dsl.update(ALBUM).set(ALBUM.THUMBNAIL_ID, first).where(ALBUM.ID.eq(id)).execute();
+    }
   }
 
   @Transactional

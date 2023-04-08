@@ -12,9 +12,7 @@ import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Controller("/api/albums")
 @Secured({ SecurityRule.IS_AUTHENTICATED })
@@ -59,6 +57,6 @@ public class AlbumController {
     @Body Set<UUID> albumImages,
     Authentication authentication
   ) {
-    albumService.updateAlbumImages(id, albumImages, getUserId(authentication));
+    albumService.updateAlbumImages(id, new TreeSet<>(albumImages), getUserId(authentication));
   }
 }

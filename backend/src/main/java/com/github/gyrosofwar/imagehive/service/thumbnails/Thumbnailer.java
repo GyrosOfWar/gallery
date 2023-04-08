@@ -5,7 +5,6 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpHeaders;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Map;
 
 public interface Thumbnailer {
   ImageData getThumbnail(Request request) throws IOException;

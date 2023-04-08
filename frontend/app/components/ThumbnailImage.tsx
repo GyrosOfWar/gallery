@@ -12,6 +12,7 @@ export interface Props {
   className?: string
   link?: string
   overlay?: React.ReactElement
+  square?: boolean
 }
 
 function getResolution(sizeType: ImageSize): number {
@@ -30,13 +31,14 @@ function getResolution(sizeType: ImageSize): number {
 export function getImageSize(
   sizeType: ImageSize,
   originalWidth: number,
-  originalHeight: number
+  originalHeight: number,
+  square?: boolean
 ): [number, number] {
   const resolution = getResolution(sizeType)
   const aspectRatio = originalWidth / originalHeight
   const w = resolution
   const h = Math.round(w * (1.0 / aspectRatio))
-  return [w, h]
+  return square ? [w, w] : [w, h]
 }
 
 const ThumbnailImage: React.FC<Props> = ({
@@ -45,13 +47,14 @@ const ThumbnailImage: React.FC<Props> = ({
   overlay,
   className,
   link,
+  square,
 }) => {
-  const [width, height] = getImageSize(size, image.width, image.height)
+  const [width, height] = getImageSize(size, image.width, image.height, square)
   const children = (
     <>
       {overlay}
       <img
-        className="w-full"
+        className={clsx("w-full", square && "object-contain")}
         alt={image.title || "<no title>"}
         src={thumbnailUrl(image.id, width, height, image.extension)}
         height={width}
@@ -63,6 +66,7 @@ const ThumbnailImage: React.FC<Props> = ({
   const classes = clsx(
     "mb-1 flex relative",
     size === "xl" && "justify-center",
+    square && "aspect-square",
     className
   )
 
