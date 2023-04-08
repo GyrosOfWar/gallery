@@ -10,16 +10,16 @@ import type {ImageDTO, PageImageDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
 import {Button, TextInput} from "flowbite-react"
 import type {FormEvent} from "react"
-import {useEffect, useState} from "react"
+import {useState} from "react"
 import http from "~/util/http"
-import Masonry from "~/components/Masonry"
-import useInfiniteScroll from "react-infinite-scroll-hook"
-import type {ImageSize} from "~/components/ThumbnailImage"
-import ThumbnailImage from "~/components/ThumbnailImage"
 import Slider from "~/components/Slider"
 import {useLocalStorage} from "usehooks-ts"
 import {produce} from "immer"
-import {HiPlus, HiSearch} from "react-icons/hi"
+import {HiOutlineStar, HiPlus, HiSearch} from "react-icons/hi"
+import ImageGrid from "~/components/ImageGrid"
+import useToggleFavorite from "~/hooks/useToggleFavorite"
+import clsx from "clsx"
+import useImages from "~/hooks/useImages"
 
 interface Data {
   images: PageImageDTO
@@ -29,18 +29,6 @@ type ClientImageList = ReturnType<
   typeof useLoaderData<Data>
 >["images"]["content"]
 export type ClientImage = ClientImageList[0]
-
-function imageSizeForColumns(columns: number): ImageSize {
-  if (columns === 1) {
-    return "xl"
-  } else if (columns === 2) {
-    return "lg"
-  } else if (columns <= 4) {
-    return "md"
-  } else {
-    return "sm"
-  }
-}
 
 export const loader: LoaderFunction = async ({request}) => {
   const user = await requireUser(request)
@@ -62,44 +50,39 @@ export const loader: LoaderFunction = async ({request}) => {
   return json(data)
 }
 
+interface OverlayProps {
+  image: ImageDTO
+  onImageFavorited: (image: ImageDTO) => void
+}
+
+const Overlay: React.FC<OverlayProps> = ({image, onImageFavorited}) => {
+  const toggleFavorite = useToggleFavorite(image.id, onImageFavorited)
+
+  return (
+    <HiOutlineStar
+      onClick={toggleFavorite}
+      data-testid={`favorite-button-${image.id}`}
+      className={clsx(
+        "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200",
+        image.favorite && "fill-yellow-300 hover:fill-yellow-200"
+      )}
+    />
+  )
+}
+
 export default function Index() {
   const [queryParams, setQueryParams] = useSearchParams()
   const [query, setQuery] = useState(queryParams.get("query") || "")
   const fetcher = useFetcher<Data>()
   const {images: initialPage} = useLoaderData<Data>()
-  const [pages, setPages] = useState([initialPage])
-  const page = pages[pages.length - 1]
-  const loading = fetcher.state !== "idle"
-  const total = page?.totalPages || 0
-  const number = page?.pageNumber || 0
-  const hasNextPage = number < total - 1
+  const {setPages, images, loading, sentryRef, hasNextPage, lastPage} =
+    useImages({
+      initialPage,
+    })
   const [numColumns, setNumColumns] = useLocalStorage(
     "image-library-columns",
     4
   )
-
-  const loadMore = () => {
-    const nextPage = (page.pageNumber || 0) + 1
-    fetcher.load(`/?index&page=${nextPage}`)
-  }
-
-  const [sentryRef] = useInfiniteScroll({
-    loading,
-    hasNextPage,
-    onLoadMore: loadMore,
-  })
-
-  useEffect(() => {
-    if (fetcher.data) {
-      setPages((oldPages) => {
-        if (fetcher.data && !fetcher.data.images.empty) {
-          return [...oldPages, fetcher.data.images]
-        } else {
-          return oldPages
-        }
-      })
-    }
-  }, [fetcher.data])
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -122,9 +105,8 @@ export default function Index() {
     )
   }
 
-  const images = pages.flatMap((p) => p.content).filter(Boolean)
-  const noImages = !query && page?.empty
-  const nothingForQuery = query && page?.empty
+  const noImages = !query && lastPage?.empty
+  const nothingForQuery = query && lastPage?.empty
 
   return (
     <div className="relative flex flex-col grow">
@@ -178,22 +160,21 @@ export default function Index() {
           </div>
         </div>
       )}
-      <Masonry
-        className="flex -ml-1"
-        columnClassName="pl-1"
-        testId="main-grid"
-        columnCount={numColumns}
-      >
-        {images.map((image) => (
-          <ThumbnailImage
-            size={imageSizeForColumns(numColumns)}
-            image={image}
-            key={image.id}
+      <ImageGrid
+        images={images}
+        numColumns={numColumns}
+        sentryRef={sentryRef}
+        hasNextPage={hasNextPage}
+        loading={loading}
+        withLinks
+        renderOverlay={(image) => (
+          <Overlay
+            image={image as ImageDTO}
             onImageFavorited={onImageFavorited}
           />
-        ))}
-        {(loading || hasNextPage) && <div ref={sentryRef}>Loading...</div>}
-      </Masonry>
+        )}
+      />
+
       <Link
         to="/upload"
         title="Upload new photos"

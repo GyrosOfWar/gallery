@@ -19,6 +19,7 @@ export const loader: LoaderFunction = async ({request, params}) => {
   if (download) {
     response.headers.append(
       "content-disposition",
+      // todo
       'attachment; filename="image.jpeg"'
     )
   }

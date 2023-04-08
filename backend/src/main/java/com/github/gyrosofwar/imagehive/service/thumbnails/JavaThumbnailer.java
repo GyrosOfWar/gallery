@@ -1,6 +1,7 @@
 package com.github.gyrosofwar.imagehive.service.thumbnails;
 
 import com.github.gyrosofwar.imagehive.service.ImageData;
+import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +11,8 @@ import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
 
 @Singleton
-public class JavaThumbnailService implements ThumbnailService {
+@Requires(property = "imagehive.thumbnailer", value = "JAVA")
+public class JavaThumbnailer implements Thumbnailer {
 
   private static final RenameStrategy RENAME_STRATEGY = new RenameStrategy();
 

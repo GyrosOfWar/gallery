@@ -30,6 +30,7 @@ CREATE TABLE image
     tags            VARCHAR[]        NOT NULL,
     favorite        BOOLEAN          NOT NULL DEFAULT false,
     file_path       VARCHAR          NOT NULL,
+    geo_json        JSONB,
     ts_vec          tsvector         NOT NULL GENERATED ALWAYS AS (
         to_tsvector('english', coalesce(title, '') || ' ' || coalesce(description, '') || ' ' || immutable_array_to_string(tags))) STORED
 );

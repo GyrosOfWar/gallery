@@ -8,14 +8,15 @@ import com.github.gyrosofwar.imagehive.dto.album.AlbumListDTO;
 import com.github.gyrosofwar.imagehive.dto.album.CreateAlbumDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Album;
-import com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ public class AlbumService {
   }
 
   @Transactional
-  public AlbumDetailsDTO createAlbum(CreateAlbumDTO albumDTO, long userId) {
+  public AlbumDetailsDTO createAlbum(CreateAlbumDTO albumDTO, Long userId) {
     var album = dsl
       .insertInto(ALBUM)
       .columns(ALBUM.NAME, ALBUM.DESCRIPTION, ALBUM.OWNER_ID, ALBUM.TAGS, ALBUM.CREATED_ON)
@@ -103,20 +104,43 @@ public class AlbumService {
   }
 
   @Transactional
-  public void addImages(long id, Set<UUID> imageIds, Long userId) {
+  public void updateAlbumImages(long id, Set<UUID> albumImages, Long userId) {
     if (userId == null || !isAlbumOwner(id, userId)) {
       // todo throw the right exception
       return;
     }
+    log.info("updating album {} with images {}", id, albumImages);
 
-    var records = imageIds
+    Set<UUID> existingImages = getImages(id, userId)
       .stream()
-      .map(imageId -> dsl.newRecord(ALBUM_IMAGE, new AlbumImage(id, imageId)))
-      .toList();
+      .map(ImageDTO::id)
+      .collect(Collectors.toSet());
+    log.info("found {} existing images", existingImages.size());
 
-    dsl.batchInsert(records).execute();
+    Set<UUID> idsToAdd = new HashSet<>(albumImages);
+    idsToAdd.removeAll(existingImages);
+    log.info("adding {} new images", idsToAdd.size());
+
+    Set<UUID> idsToDelete = new HashSet<>(existingImages);
+    idsToDelete.removeAll(albumImages);
+    log.info("deleting {} existing images", idsToDelete.size());
+
+    for (UUID imageId : idsToAdd) {
+      dsl
+        .insertInto(ALBUM_IMAGE)
+        .columns(ALBUM_IMAGE.IMAGE_ID, ALBUM_IMAGE.ALBUM_ID)
+        .values(imageId, id)
+        .onConflictDoNothing()
+        .execute();
+    }
+
+    dsl
+      .deleteFrom(ALBUM_IMAGE)
+      .where(ALBUM_IMAGE.IMAGE_ID.in(idsToDelete).and(ALBUM_IMAGE.ALBUM_ID.eq(id)))
+      .execute();
   }
 
+  @Transactional
   public List<ImageDTO> getImages(long id, Long userId) {
     return dsl
       .select(IMAGE.asterisk())

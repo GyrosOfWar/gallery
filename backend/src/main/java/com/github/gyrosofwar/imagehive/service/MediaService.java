@@ -2,12 +2,14 @@ package com.github.gyrosofwar.imagehive.service;
 
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
-import com.github.gyrosofwar.imagehive.service.thumbnails.ThumbnailService;
+import com.github.gyrosofwar.imagehive.service.thumbnails.Thumbnailer;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.http.HttpHeaders;
 import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.io.FilenameUtils;
@@ -21,11 +23,11 @@ public class MediaService {
   private static final Logger log = LoggerFactory.getLogger(MediaService.class);
 
   private final ImageHiveConfiguration configuration;
-  private final ThumbnailService thumbnailService;
+  private final Thumbnailer thumbnailer;
 
-  public MediaService(ImageHiveConfiguration configuration, ThumbnailService thumbnailService) {
+  public MediaService(ImageHiveConfiguration configuration, Thumbnailer thumbnailer) {
     this.configuration = configuration;
-    this.thumbnailService = thumbnailService;
+    this.thumbnailer = thumbnailer;
   }
 
   // exposed for testing
@@ -82,6 +84,8 @@ public class MediaService {
     @Nullable String extension,
     int width,
     int height,
+    Integer dpr,
+    HttpHeaders headers,
     Long userId
   ) throws IOException {
     var originalImage = getImagePath(ulid, extension, userId);
@@ -89,13 +93,15 @@ public class MediaService {
       return null;
     }
 
-    return thumbnailService.getThumbnail(
-      new ThumbnailService.Request(
+    return thumbnailer.getThumbnail(
+      new Thumbnailer.Request(
         originalImage,
         width,
         height,
-        ThumbnailService.FileType.JPEG,
-        false
+        Thumbnailer.FileType.JPEG,
+        false,
+        dpr == null ? 1 : dpr,
+        headers
       )
     );
   }

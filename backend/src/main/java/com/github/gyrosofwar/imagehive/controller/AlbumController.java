@@ -54,11 +54,11 @@ public class AlbumController {
   }
 
   @Post("/{id}/images")
-  public void addImagesToAlbum(
+  public void updateAlbumImages(
     @PathVariable long id,
-    @Body Set<UUID> imageIds,
+    @Body Set<UUID> albumImages,
     Authentication authentication
   ) {
-    albumService.addImages(id, imageIds, getUserId(authentication));
+    albumService.updateAlbumImages(id, albumImages, getUserId(authentication));
   }
 }

@@ -10,7 +10,8 @@ export const loader: LoaderFunction = async ({request, params}) => {
 
   const response = await http.get(
     `/api/media/thumbnail/${width}/${height}/${uuid}?extension=${extension}`,
-    user.accessToken
+    user.accessToken,
+    request.headers
   )
   return response
 }

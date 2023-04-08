@@ -32,8 +32,10 @@ class AlbumServiceTest extends BaseTest {
     );
     assertNotNull(album);
 
-    var dto = albumService.getAlbumWithImages(album.id(), userId);
-    assertThat(dto.imageIds()).isEmpty();
+    var dto = albumService.getAlbum(album.id(), userId);
+    assertEquals("test", dto.name());
+    assertEquals("cool description", dto.description());
+    assertEquals(List.of("tag1", "tag2"), dto.tags());
   }
 
   @Test
@@ -65,12 +67,14 @@ class AlbumServiceTest extends BaseTest {
     );
     assertNotNull(album);
 
-    var dto = albumService.getAlbumWithImages(album.id(), userId);
-    assertThat(dto.imageIds()).isEmpty();
+    var dto = albumService.getAlbum(album.id(), userId);
+    assertEquals("test", dto.name());
+    assertEquals("cool description", dto.description());
+    assertEquals(List.of("tag1", "tag2"), dto.tags());
 
-    albumService.addImages(dto.id(), Set.copyOf(images), userId);
+    albumService.updateAlbumImages(dto.id(), Set.copyOf(images), userId);
 
-    var result = albumService.getAlbumWithImages(album.id(), userId);
-    assertThat(result.imageIds()).hasSize(imageCount);
+    var result = albumService.getImages(album.id(), userId);
+    assertThat(result).hasSize(imageCount);
   }
 }

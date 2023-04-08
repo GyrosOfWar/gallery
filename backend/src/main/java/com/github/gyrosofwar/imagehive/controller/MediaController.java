@@ -4,17 +4,18 @@ import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUse
 
 import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.service.MediaService;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.http.HttpHeaders;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.*;
 import io.micronaut.http.server.types.files.StreamedFile;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Hidden;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
+import me.desair.tus.server.HttpHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ public class MediaController {
       return new StreamedFile(
         imageData.inputStream(),
         imageData.contentType(),
-        imageData.lastModified().toMillis(),
+        imageData.lastModified(),
         imageData.contentLength()
       );
     }
@@ -54,11 +55,12 @@ public class MediaController {
 
   @Get("/thumbnail/{width}/{height}/{uuid}")
   @Hidden
-  public StreamedFile getThumbnail(
+  public HttpResponse<StreamedFile> getThumbnail(
     @PathVariable int width,
     @PathVariable int height,
     @PathVariable UUID uuid,
     @QueryValue String extension,
+    HttpHeaders httpHeaders,
     Authentication authentication
   ) throws IOException {
     log.debug("getting image thumbnail {}, ({}x{} px)", uuid, width, height);
@@ -69,18 +71,21 @@ public class MediaController {
       extension,
       width,
       height,
+      null,
+      httpHeaders,
       userId
     );
     if (imageData == null) {
       log.info("no image found for uuid {}", uuid);
-      return null;
+      return HttpResponse.notFound();
     } else {
-      return new StreamedFile(
+      var file = new StreamedFile(
         imageData.inputStream(),
         imageData.contentType(),
-        imageData.lastModified().toMillis(),
+        imageData.lastModified(),
         imageData.contentLength()
       );
+      return HttpResponse.ok(file).headers(imageData.headers());
     }
   }
 }
