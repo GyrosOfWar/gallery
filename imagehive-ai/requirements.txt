@@ -1,4 +1,4 @@
-Flask
-salesforce-lavis
-Pillow
-nltk
+Flask==2.2.3
+salesforce-lavis==1.0.2
+Pillow==9.4.0
+nltk==3.8.1
