@@ -1,5 +1,5 @@
 import {Link, NavLink} from "@remix-run/react"
-import {Navbar, Dropdown, useTheme} from "flowbite-react"
+import {Navbar, Dropdown, useTheme, Avatar} from "flowbite-react"
 import type {User} from "~/services/auth.server"
 
 import {
@@ -11,7 +11,6 @@ import {
   HiSun,
 } from "react-icons/hi"
 import {useEffect} from "react"
-import Avatar from "react-avatar"
 
 const navlinkStyle =
   "self-center block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
@@ -135,10 +134,21 @@ const DarkThemeToggle = () => {
   )
 }
 
+function getInitials(name: string) {
+  const tokens = name.split(' ')
+  if (tokens.length > 1) {
+    return (tokens[0][0] + tokens[1][0]).toUpperCase()
+  } else {
+    return name.substring(0, 2).toUpperCase()
+  }
+}
+
 const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
   children,
   user,
 }) => {
+  const initials = getInitials(user!.username)
+
   return (
     <>
       <Navbar className="mb-4">
@@ -171,7 +181,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
             </Dropdown.Item>
           </DynamicDropdown>
           <DynamicDropdown
-            label={<Avatar name={user?.username} round={true} size="30px" />}
+            label={<Avatar placeholderInitials={initials} rounded  />}
             user={user}
             visibleFor="user"
           >

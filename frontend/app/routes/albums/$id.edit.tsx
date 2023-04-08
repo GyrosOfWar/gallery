@@ -5,7 +5,7 @@ import clsx from "clsx"
 import {Button, Checkbox} from "flowbite-react"
 import type {ImageDTO, PageImageDTO} from "imagehive-client"
 import {useState} from "react"
-import {HiSave} from "react-icons/hi"
+import {HiCheck} from "react-icons/hi"
 import {json} from "react-router"
 import ImageGrid from "~/components/ImageGrid"
 import {requireUser} from "~/services/auth.server"
@@ -28,7 +28,7 @@ const Overlay: React.FC<OverlayProps> = ({selected, setSelected}) => {
   return (
     <div
       onClick={onToggle}
-      className={clsx("w-full h-full absolute cursor-pointer z-10")}
+      className={clsx("w-full h-full absolute cursor-pointer z-10 transition hover:bg-black hover:bg-opacity-25")}
     >
       <Checkbox
         checked={selected}
@@ -75,11 +75,11 @@ const AddImagesPage: React.FC = () => {
   return (
     <>
       <div className="flex justify-between">
-        <h1 className="font-bold text-3xl mb-4">Add images to album</h1>
+        <h1 className="font-bold text-3xl mb-4">Edit album</h1>
         <Form method="post">
           <input type="hidden" name="ids" value={selection.join(",")} />
           <Button color="success" type="submit">
-            <HiSave className="w-4 h-4 mr-2" />
+            <HiCheck className="w-4 h-4 mr-2" />
             Save
           </Button>
         </Form>
