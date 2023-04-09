@@ -4,7 +4,6 @@ import io.micronaut.core.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import mil.nga.sf.geojson.FeatureCollection;
 
 public record ImageDTO(
   UUID id,

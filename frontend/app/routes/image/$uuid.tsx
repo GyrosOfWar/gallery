@@ -23,6 +23,7 @@ import {
   HiDownload,
   HiTrash,
   HiLocationMarker,
+  HiShare,
 } from "react-icons/hi"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
 import produce from "immer"
@@ -123,6 +124,20 @@ const ImageDetailsPage: React.FC = () => {
     // todo
   }
 
+  const shareImage = async () => {
+    const response = await fetch(originalImageUrl(image.id, image.extension))
+    const blob = await response.blob()
+    const file = new File([blob], `shared.${image.extension}`, {
+      type: "image/jpeg",
+      lastModified: new Date().getTime(),
+    })
+
+    await navigator.share({
+      title: image.title || "Shared image",
+      files: [file],
+    })
+  }
+
   return (
     <>
       <img
@@ -131,7 +146,11 @@ const ImageDetailsPage: React.FC = () => {
         alt={image.title || "no title"}
       />
 
-      <div className="my-4 flex items-start gap-1">
+      <div className="my-4 grid self-center md:self-start grid-cols-2 md:grid-cols-4 gap-1 w-fit">
+        <Button onClick={shareImage}>
+          <HiShare className="w-f h-4 mr-2" />
+          Share
+        </Button>
         <Button
           color="success"
           href={originalImageUrl(image.id, image.extension, true)}

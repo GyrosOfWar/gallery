@@ -1,6 +1,5 @@
 package com.github.gyrosofwar.imagehive.service.geo;
 
-import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import jakarta.inject.Singleton;
 import mil.nga.sf.geojson.FeatureCollection;
 import org.slf4j.Logger;

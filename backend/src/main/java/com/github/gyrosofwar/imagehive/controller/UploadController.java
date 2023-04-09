@@ -3,7 +3,6 @@ package com.github.gyrosofwar.imagehive.controller;
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 import static com.github.gyrosofwar.imagehive.factory.ImageHiveFactory.IMAGE_UPLOAD_SERVICE;
 
-import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.service.image.ImageCreationService;
 import com.github.gyrosofwar.imagehive.service.image.ImageService;
 import com.github.gyrosofwar.imagehive.service.image.NewImage;

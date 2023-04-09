@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import type {CSSProperties} from "react"
 import {Children} from "react"
+import type {ColumnCount} from "./ImageGrid"
+import type {Device} from "~/services/device.server"
 
 export interface RenderProps {
   style: CSSProperties
@@ -18,7 +20,19 @@ export interface GridProps {
   columnClassName?: string
   renderColumn?: RenderColumnFn
   testId: string
-  columnCount: number
+  columnCount: ColumnCount
+  device: Device
+}
+
+export function getColumnCountFromDevice(device: Device): number {
+  switch (device) {
+    case "pc":
+      return 4
+    case "phone":
+      return 1
+    case "tablet":
+      return 2
+  }
 }
 
 const Masonry: React.FC<React.PropsWithChildren<GridProps>> = ({
@@ -27,8 +41,12 @@ const Masonry: React.FC<React.PropsWithChildren<GridProps>> = ({
   children,
   renderColumn,
   testId,
-  columnCount,
+  columnCount: columns,
+  device,
 }) => {
+  const columnCount =
+    columns === "auto" ? getColumnCountFromDevice(device) : columns
+
   const columnItems = (): React.ReactNode[][] => {
     const cols: React.ReactNode[][] = new Array(columnCount)
     const items = Children.toArray(children)

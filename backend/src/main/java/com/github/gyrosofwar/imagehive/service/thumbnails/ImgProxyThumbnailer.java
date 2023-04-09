@@ -2,16 +2,13 @@ package com.github.gyrosofwar.imagehive.service.thumbnails;
 
 import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
 import com.github.gyrosofwar.imagehive.service.ImageData;
-import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.client.HttpClient;
 import jakarta.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

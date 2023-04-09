@@ -1,13 +1,13 @@
 import type {ActionFunction, LoaderFunction} from "@remix-run/node"
 import {redirect} from "@remix-run/node"
 import {Form, useLoaderData} from "@remix-run/react"
-import clsx from "clsx"
 import {Button, Checkbox} from "flowbite-react"
 import type {ImageDTO, PageImageDTO} from "imagehive-client"
 import {useState} from "react"
 import {HiCheck} from "react-icons/hi"
 import {json} from "react-router"
 import ImageGrid from "~/components/ImageGrid"
+import useDevice from "~/hooks/useDevice"
 import useImages from "~/hooks/useImages"
 import {requireUser} from "~/services/auth.server"
 import http from "~/util/http"
@@ -68,6 +68,7 @@ export const action: ActionFunction = async ({request, params}) => {
 }
 
 const AddImagesPage: React.FC = () => {
+  const device = useDevice()
   const data = useLoaderData<Data>()
   const props = useImages({initialPage: data.images})
   const [selection, setSelection] = useState(
@@ -89,6 +90,7 @@ const AddImagesPage: React.FC = () => {
 
       <ImageGrid
         {...props}
+        device={device}
         square
         numColumns={4}
         renderOverlay={(image) => (

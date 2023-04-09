@@ -13,9 +13,7 @@ import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Hidden;
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
-import me.desair.tus.server.HttpHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

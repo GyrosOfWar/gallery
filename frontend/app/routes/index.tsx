@@ -20,6 +20,7 @@ import ImageGrid from "~/components/ImageGrid"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
 import clsx from "clsx"
 import useImages from "~/hooks/useImages"
+import useDevice from "~/hooks/useDevice"
 
 interface Data {
   images: PageImageDTO
@@ -71,6 +72,7 @@ const Overlay: React.FC<OverlayProps> = ({image, onImageFavorited}) => {
 }
 
 export default function Index() {
+  const device = useDevice()
   const [queryParams, setQueryParams] = useSearchParams()
   const [query, setQuery] = useState(queryParams.get("query") || "")
   const fetcher = useFetcher<Data>()
@@ -94,7 +96,7 @@ export default function Index() {
   const onImageFavorited = (image: ImageDTO) => {
     setPages((pages) =>
       produce(pages, (draft) => {
-        draft.forEach((page) => {
+        draft.forEach((page: PageImageDTO) => {
           page.content.forEach((img) => {
             if (img.id == image.id) {
               img.favorite = image.favorite
@@ -167,6 +169,7 @@ export default function Index() {
         hasNextPage={hasNextPage}
         loading={loading}
         withLinks
+        device={device}
         renderOverlay={(image) => (
           <Overlay
             image={image as ImageDTO}
