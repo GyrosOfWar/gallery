@@ -13,6 +13,7 @@ import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Hidden;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -20,12 +21,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.exception.TusException;
+import me.desair.tus.server.upload.UploadInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Controller("/api/images/upload")
 @Secured({ SecurityRule.IS_AUTHENTICATED })
-public class UploadController {
+public class UploadController extends AbstractUploadController {
 
   private static final Logger log = LoggerFactory.getLogger(UploadController.class);
 
@@ -38,6 +40,7 @@ public class UploadController {
     ImageCreationService imageCreationService,
     ImageService imageService
   ) {
+    super(fileUploadService);
     this.fileUploadService = fileUploadService;
     this.imageCreationService = imageCreationService;
     this.imageService = imageService;
@@ -56,39 +59,27 @@ public class UploadController {
     }
   }
 
-  private void handleTusUpload(
-    HttpServletRequest request,
-    HttpServletResponse response,
+  @Override
+  protected void handleUploadedFile(
+    InputStream inputStream,
+    UploadInfo uploadInfo,
     Authentication authentication
-  ) throws IOException, TusException {
-    fileUploadService.process(request, response);
-
-    var uploadUri = request.getRequestURI();
-    try {
-      var uploadInfo = fileUploadService.getUploadInfo(uploadUri);
-      if (uploadInfo != null && !uploadInfo.isUploadInProgress()) {
-        var inputStream = fileUploadService.getUploadedBytes(uploadUri);
-        var title = uploadInfo.getMetadata().get("title");
-        var description = uploadInfo.getMetadata().get("description");
-        var tagString = uploadInfo.getMetadata().get("tags");
-        var tags = parseTags(tagString);
-        var newImage = new NewImage(
-          inputStream,
-          getUserId(authentication),
-          uploadInfo.getFileName(),
-          uploadInfo.getFileMimeType(),
-          title,
-          description,
-          tags
-        );
-        var image = imageCreationService.create(newImage);
-        imageService.setGeneratedDescriptionAsync(image);
-      }
-    } catch (IOException | TusException | ImageProcessingException e) {
-      log.error("encountered upload error", e);
-    } finally {
-      fileUploadService.deleteUpload(uploadUri);
-    }
+  ) throws Exception {
+    var title = uploadInfo.getMetadata().get("title");
+    var description = uploadInfo.getMetadata().get("description");
+    var tagString = uploadInfo.getMetadata().get("tags");
+    var tags = parseTags(tagString);
+    var newImage = new NewImage(
+      inputStream,
+      getUserId(authentication),
+      uploadInfo.getFileName(),
+      uploadInfo.getFileMimeType(),
+      title,
+      description,
+      tags
+    );
+    var image = imageCreationService.create(newImage);
+    imageService.setGeneratedDescriptionAsync(image);
   }
 
   @Post

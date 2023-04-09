@@ -1,13 +1,17 @@
 package com.github.gyrosofwar.imagehive.service.importer;
 
+import com.drew.imaging.ImageProcessingException;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.gyrosofwar.imagehive.service.image.ImageCreationService;
+import com.github.gyrosofwar.imagehive.service.image.NewImage;
 import jakarta.inject.Singleton;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,35 +23,14 @@ public class GoogleTakeoutImporter {
   private static final Logger log = LoggerFactory.getLogger(GoogleTakeoutImporter.class);
 
   private final ImageCreationService imageCreationService;
+  private final ObjectMapper objectMapper;
 
-  public GoogleTakeoutImporter(ImageCreationService imageCreationService) {
+  public GoogleTakeoutImporter(
+    ImageCreationService imageCreationService,
+    ObjectMapper objectMapper
+  ) {
     this.imageCreationService = imageCreationService;
-  }
-
-  private static void unzip(Path zipFilePath, Path destDir) throws IOException {
-    log.info("Unzipping archive {} to {}", zipFilePath, destDir);
-    if (!Files.isDirectory(destDir)) {
-      Files.createDirectories(destDir);
-    }
-
-    try (
-      var inputStream = Files.newInputStream(zipFilePath);
-      var zipInputStream = new ZipInputStream(inputStream)
-    ) {
-      ZipEntry entry;
-
-      while ((entry = zipInputStream.getNextEntry()) != null) {
-        var fileName = entry.getName();
-        var newFile = destDir.resolve(fileName);
-        Files.createDirectories(newFile.getParent());
-
-        try (var outputStream = Files.newOutputStream(newFile)) {
-          zipInputStream.transferTo(outputStream);
-        }
-      }
-
-      zipInputStream.closeEntry();
-    }
+    this.objectMapper = objectMapper;
   }
 
   private boolean isSupportedFile(Path path) {
@@ -59,23 +42,67 @@ public class GoogleTakeoutImporter {
     }
   }
 
-  public void importBatch(Path uploadedFile) throws IOException {
+  public void importBatch(Path uploadedFile, long userId) throws IOException {
     var destinationDirectory = Files.createTempDirectory("google-takeout-import");
-    unzip(uploadedFile, destinationDirectory);
+    ZipHelper.unzip(uploadedFile, destinationDirectory);
     try (var stream = Files.walk(destinationDirectory)) {
       stream
         .filter(this::isSupportedFile)
         .forEach(path -> {
-          // todo
-          // var metadata = loadMetadataForImage(path);
-          // imageService.create();
+          try {
+            var metadata = loadMetadataForImage(path);
+            var newImage = newImage(path, userId, metadata);
+            imageCreationService.create(newImage);
+          } catch (IOException | ImageProcessingException e) {
+            log.error("failed to create image " + path, e);
+          }
         });
     }
   }
 
   private TakeoutMetadata loadMetadataForImage(Path path) {
-    return null;
+    var fileName = path.getFileName().toString();
+    fileName += ".json";
+
+    var jsonPath = path.resolveSibling(fileName);
+    try {
+      return objectMapper.readValue(jsonPath.toFile(), TakeoutMetadata.class);
+    } catch (IOException e) {
+      log.warn("unable to read takeout metadata at" + jsonPath, e);
+      return null;
+    }
   }
 
-  record TakeoutMetadata() {}
+  private NewImage newImage(Path path, long userId, TakeoutMetadata metadata) throws IOException {
+    var inputStream = Files.newInputStream(path);
+    return new NewImage(
+      inputStream,
+      userId,
+      path.getFileName().toString(),
+      null,
+      metadata.title(),
+      metadata.description(),
+      List.of()
+    );
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  record TakeoutMetadata(
+    String title,
+    String description,
+    Timestamp creationTime,
+    Timestamp photoTakenTime,
+    GeoData geoData,
+    GeoData geoDataExif
+  ) {}
+
+  record Timestamp(String timestamp, String formatted) {}
+
+  record GeoData(
+    double latitude,
+    double longitude,
+    double altitude,
+    double latitudeSpan,
+    double longitudeSpan
+  ) {}
 }

@@ -4,6 +4,8 @@ import com.github.gyrosofwar.imagehive.service.mail.EmailService;
 import com.github.gyrosofwar.imagehive.service.mail.LoggingEmailService;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import me.desair.tus.server.TusFileUploadService;
 import org.apache.tika.config.TikaConfig;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -32,5 +34,10 @@ public class ImageHiveFactory {
     return new TusFileUploadService()
       .withStoragePath("temp-images")
       .withUploadURI("/api/images/upload");
+  }
+
+  @Bean
+  public ExecutorService singleThreadedExecutor() {
+    return Executors.newSingleThreadExecutor();
   }
 }

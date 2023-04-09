@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
@@ -33,18 +32,20 @@ public class ImageService {
   private final MediaService mediaService;
   private final ImageDTOConverter imageDTOConverter;
   private final ImageLabeler imageLabeler;
-  private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+  private final ExecutorService executorService;
 
   public ImageService(
     DSLContext dsl,
     MediaService mediaService,
     ImageDTOConverter imageDTOConverter,
-    ImageLabeler imageLabeler
+    ImageLabeler imageLabeler,
+    ExecutorService executorService
   ) {
     this.dsl = dsl;
     this.mediaService = mediaService;
     this.imageDTOConverter = imageDTOConverter;
     this.imageLabeler = imageLabeler;
+    this.executorService = executorService;
   }
 
   @Transactional
