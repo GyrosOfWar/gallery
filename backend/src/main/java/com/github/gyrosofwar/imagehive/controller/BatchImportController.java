@@ -7,7 +7,9 @@ import com.github.gyrosofwar.imagehive.helper.TaskHelper;
 import com.github.gyrosofwar.imagehive.service.importer.GoogleTakeoutImporter;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.inject.Named;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import me.desair.tus.server.exception.TusException;
 import me.desair.tus.server.upload.UploadInfo;
 
 @Controller("/api/batch-import")
+@Secured({ SecurityRule.IS_AUTHENTICATED })
 public class BatchImportController extends AbstractUploadController {
 
   private final GoogleTakeoutImporter googleTakeoutImporter;
@@ -41,7 +44,7 @@ public class BatchImportController extends AbstractUploadController {
   ) {
     TaskHelper.runInBackground(() -> {
       try {
-        var tempFile = Files.createTempFile("takeout-import", "zip");
+        var tempFile = Files.createTempFile("takeout-import", ".zip");
         try (var outputStream = Files.newOutputStream(tempFile); inputStream) {
           inputStream.transferTo(outputStream);
         }

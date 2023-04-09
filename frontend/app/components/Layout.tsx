@@ -1,15 +1,8 @@
 import {Link, NavLink} from "@remix-run/react"
-import {Navbar, Dropdown, useTheme, Avatar} from "flowbite-react"
+import {Navbar, Dropdown, useTheme} from "flowbite-react"
 import type {User} from "~/services/auth.server"
 
-import {
-  HiCog,
-  HiUserAdd,
-  HiLogout,
-  HiMoon,
-  HiPhotograph,
-  HiSun,
-} from "react-icons/hi"
+import {HiMoon, HiPhotograph, HiSun} from "react-icons/hi"
 import {useEffect} from "react"
 
 const navlinkStyle =
@@ -166,6 +159,9 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
           </NavbarLink>
           <NavbarLink to="/albums" user={user} visibleFor="user">
             Albums
+          </NavbarLink>
+          <NavbarLink to="/image/import" user={user} visibleFor="user">
+            Import
           </NavbarLink>
           <Navbar.Link className="text-center">
             <DarkThemeToggle />

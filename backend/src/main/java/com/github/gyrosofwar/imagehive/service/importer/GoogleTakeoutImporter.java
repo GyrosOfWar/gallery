@@ -51,8 +51,11 @@ public class GoogleTakeoutImporter {
         .forEach(path -> {
           try {
             var metadata = loadMetadataForImage(path);
-            var newImage = newImage(path, userId, metadata);
-            imageCreationService.create(newImage);
+            // TODO deal with -edited.jpeg files
+            if (metadata != null) {
+              var newImage = newImage(path, userId, metadata);
+              imageCreationService.create(newImage);
+            }
           } catch (IOException | ImageProcessingException e) {
             log.error("failed to create image " + path, e);
           }
@@ -67,7 +70,7 @@ public class GoogleTakeoutImporter {
     var jsonPath = path.resolveSibling(fileName);
     try {
       return objectMapper.readValue(jsonPath.toFile(), TakeoutMetadata.class);
-    } catch (IOException e) {
+    } catch (Exception e) {
       log.warn("unable to read takeout metadata at" + jsonPath, e);
       return null;
     }
@@ -82,7 +85,7 @@ public class GoogleTakeoutImporter {
       null,
       metadata.title(),
       metadata.description(),
-      List.of()
+      List.of("takeout-import")
     );
   }
 

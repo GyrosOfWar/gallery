@@ -2,18 +2,17 @@ import {HiUpload} from "react-icons/hi"
 import type {LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {useLoaderData, useNavigate} from "@remix-run/react"
-import clsx from "clsx"
 import {Button, TextInput} from "flowbite-react"
 import produce from "immer"
-import type {Dispatch, SetStateAction} from "react"
 import {useCallback, useState} from "react"
 import type {DropzoneOptions} from "react-dropzone"
-import {useDropzone} from "react-dropzone"
-import {Upload} from "tus-js-client"
 import Card from "~/components/Card"
 import type {User} from "~/services/auth.server"
 import {requireUser} from "~/services/auth.server"
 import {backendUrl} from "~/util/consts"
+import type {Progress} from "~/services/upload.client"
+import {uploadFile} from "~/services/upload.client"
+import FileDrop from "~/components/FileDrop"
 
 const MEGABYTES = 1000 * 1000
 
@@ -31,27 +30,13 @@ interface FileWithUrl {
 const UploadStep: React.FC<{onDrop: DropzoneOptions["onDrop"]}> = ({
   onDrop,
 }) => {
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({
-    onDrop,
-    multiple: true,
-    accept: {
-      "image/*": [".jpg", ".jpeg", ".png"],
-    },
-  })
-
   return (
     <section className="self-center mt-8">
-      <div
-        className={clsx(
-          "p-16 text-xl border border-gray-500 border-dashed flex items-center flex-col gap-4 cursor-pointer",
-          isDragActive && "bg-green-400 text-white"
-        )}
-        {...getRootProps()}
-      >
-        <input {...getInputProps()} />
-        <HiUpload className="w-16 h-16" />
-        Drag & drop files here!
-      </div>
+      <FileDrop
+        onDrop={onDrop}
+        multiple
+        accept={{"image/*": [".jpg", ".jpeg", ".png"]}}
+      />
     </section>
   )
 }
@@ -86,72 +71,6 @@ const InfoBar: React.FC<InfoBarProps> = ({count, formattedSize, uploading}) => (
     </Button>
   </div>
 )
-
-function uploadFile(
-  file: File,
-  info: FieldData,
-  accessToken: string,
-  endpoint: string,
-  setProgress: Dispatch<SetStateAction<Progress>>
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    setProgress((oldProgress) => ({
-      ...oldProgress,
-      currentFileTotal: file.size,
-    }))
-
-    const upload = new Upload(file, {
-      endpoint,
-      metadata: {
-        filename: file.name,
-        filetype: file.type,
-        tags: info.tags,
-        title: info.title,
-        description: info.description,
-      },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      onProgress(bytesUploaded, bytesTotal) {
-        setProgress((oldProgress) => ({
-          ...oldProgress,
-          currentFileCompleted: bytesUploaded,
-          currentFileTotal: bytesTotal,
-        }))
-      },
-      onBeforeRequest(req) {
-        const xhr = req.getUnderlyingObject() as XMLHttpRequest
-        xhr.withCredentials = true
-      },
-      onSuccess() {
-        setProgress((oldProgress) => ({
-          filesCompleted: oldProgress.filesCompleted + 1,
-          filesTotal: oldProgress.filesTotal,
-          currentFileCompleted: 0,
-          currentFileTotal: 0,
-        }))
-        resolve()
-      },
-      onError(error) {
-        reject(error)
-      },
-    })
-    upload.start()
-    // upload.findPreviousUploads().then((uploads) => {
-    //   if (uploads.length) {
-    //     upload.resumeFromPreviousUpload(uploads[0])
-    //   }
-    //   upload.start()
-    // })
-  })
-}
-
-interface Progress {
-  filesTotal: number
-  filesCompleted: number
-  currentFileTotal: number
-  currentFileCompleted: number
-}
 
 const ProgressBar: React.FC<{
   completed: number
