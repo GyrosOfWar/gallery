@@ -6,6 +6,7 @@ import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
 import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageUpdateDTO;
+import com.github.gyrosofwar.imagehive.helper.TaskHelper;
 import com.github.gyrosofwar.imagehive.service.MediaService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.core.annotation.Nullable;
@@ -15,7 +16,6 @@ import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
@@ -32,20 +32,17 @@ public class ImageService {
   private final MediaService mediaService;
   private final ImageDTOConverter imageDTOConverter;
   private final ImageLabeler imageLabeler;
-  private final ExecutorService executorService;
 
   public ImageService(
     DSLContext dsl,
     MediaService mediaService,
     ImageDTOConverter imageDTOConverter,
-    ImageLabeler imageLabeler,
-    ExecutorService executorService
+    ImageLabeler imageLabeler
   ) {
     this.dsl = dsl;
     this.mediaService = mediaService;
     this.imageDTOConverter = imageDTOConverter;
     this.imageLabeler = imageLabeler;
-    this.executorService = executorService;
   }
 
   @Transactional
@@ -158,7 +155,7 @@ public class ImageService {
 
   public void setGeneratedDescriptionAsync(Image image) {
     log.info("generating description for file {}", image.id());
-    executorService.submit(() -> {
+    TaskHelper.runInBackground(() -> {
       setGeneratedDescription(image);
     });
   }

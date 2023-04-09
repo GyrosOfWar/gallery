@@ -5,6 +5,7 @@ import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
+import java.util.List;
 import me.desair.tus.server.TusFileUploadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,22 +16,22 @@ public class CleanupService {
 
   private static final Logger log = LoggerFactory.getLogger(CleanupService.class);
 
-  private final TusFileUploadService fileUploadService;
+  private final List<TusFileUploadService> fileUploadServices;
 
-  public CleanupService(TusFileUploadService fileUploadService) {
-    this.fileUploadService = fileUploadService;
+  public CleanupService(List<TusFileUploadService> fileUploadServices) {
+    this.fileUploadServices = fileUploadServices;
   }
 
   @Scheduled(fixedRate = "10m")
   public void cleanupUploadedFiles() throws IOException {
     log.info("Cleaning up temporary image uploads");
     try {
-      fileUploadService.cleanup();
+      for (var service : fileUploadServices) {
+        service.cleanup();
+      }
     } catch (NoSuchFileException e) {
       // This happens if no files have been uploaded yet, but log it in debug so it won't get lost
-      if (log.isDebugEnabled()) {
-        log.debug("There was an error cleaning up temporary image uploads", e);
-      }
+      log.debug("There was an error cleaning up temporary image uploads", e);
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.github.gyrosofwar.imagehive.controller;
 
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
+import static com.github.gyrosofwar.imagehive.factory.ImageHiveFactory.IMAGE_UPLOAD_SERVICE;
 
 import com.drew.imaging.ImageProcessingException;
 import com.github.gyrosofwar.imagehive.service.image.ImageCreationService;
@@ -12,6 +13,7 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,11 +38,10 @@ public class UploadController extends AbstractUploadController {
   private final ImageService imageService;
 
   public UploadController(
-    TusFileUploadService fileUploadService,
+    @Named(IMAGE_UPLOAD_SERVICE) TusFileUploadService fileUploadService,
     ImageCreationService imageCreationService,
     ImageService imageService
   ) {
-    super(fileUploadService);
     this.fileUploadService = fileUploadService;
     this.imageCreationService = imageCreationService;
     this.imageService = imageService;
@@ -80,6 +81,11 @@ public class UploadController extends AbstractUploadController {
     );
     var image = imageCreationService.create(newImage);
     imageService.setGeneratedDescriptionAsync(image);
+  }
+
+  @Override
+  protected TusFileUploadService uploadService() {
+    return fileUploadService;
   }
 
   @Post

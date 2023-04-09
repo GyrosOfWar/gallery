@@ -1,4 +1,4 @@
-package com.github.gyrosofwar.imagehive.service.importer;
+package com.github.gyrosofwar.imagehive.helper;
 
 import java.io.IOException;
 import java.nio.file.Files;

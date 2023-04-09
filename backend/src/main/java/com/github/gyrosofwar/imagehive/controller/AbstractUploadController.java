@@ -1,9 +1,5 @@
 package com.github.gyrosofwar.imagehive.controller;
 
-import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
-
-import com.drew.imaging.ImageProcessingException;
-import com.github.gyrosofwar.imagehive.service.image.NewImage;
 import io.micronaut.security.authentication.Authentication;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,23 +15,20 @@ public abstract class AbstractUploadController {
 
   private static final Logger log = LoggerFactory.getLogger(UploadController.class);
 
-  private final TusFileUploadService fileUploadService;
-
-  public AbstractUploadController(TusFileUploadService fileUploadService) {
-    this.fileUploadService = fileUploadService;
-  }
-
   protected abstract void handleUploadedFile(
     InputStream inputStream,
     UploadInfo uploadInfo,
     Authentication authentication
   ) throws Exception;
 
+  protected abstract TusFileUploadService uploadService();
+
   protected final void handleTusUpload(
     HttpServletRequest request,
     HttpServletResponse response,
     Authentication authentication
   ) throws IOException, TusException {
+    var fileUploadService = uploadService();
     fileUploadService.process(request, response);
 
     var uploadUri = request.getRequestURI();

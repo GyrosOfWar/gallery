@@ -1,16 +1,18 @@
 package com.github.gyrosofwar.imagehive.controller;
 
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
+import static com.github.gyrosofwar.imagehive.factory.ImageHiveFactory.ZIP_UPLOAD_SERVICE;
 
+import com.github.gyrosofwar.imagehive.helper.TaskHelper;
 import com.github.gyrosofwar.imagehive.service.importer.GoogleTakeoutImporter;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.authentication.Authentication;
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.concurrent.ExecutorService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import me.desair.tus.server.TusFileUploadService;
@@ -21,17 +23,14 @@ import me.desair.tus.server.upload.UploadInfo;
 public class BatchImportController extends AbstractUploadController {
 
   private final GoogleTakeoutImporter googleTakeoutImporter;
-
-  private final ExecutorService executorService;
+  private final TusFileUploadService fileUploadService;
 
   public BatchImportController(
     GoogleTakeoutImporter googleTakeoutImporter,
-    ExecutorService executorService,
-    TusFileUploadService fileUploadService
+    @Named(ZIP_UPLOAD_SERVICE) TusFileUploadService fileUploadService
   ) {
-    super(fileUploadService);
     this.googleTakeoutImporter = googleTakeoutImporter;
-    this.executorService = executorService;
+    this.fileUploadService = fileUploadService;
   }
 
   @Override
@@ -39,8 +38,8 @@ public class BatchImportController extends AbstractUploadController {
     InputStream inputStream,
     UploadInfo uploadInfo,
     Authentication authentication
-  ) throws Exception {
-    executorService.submit(() -> {
+  ) {
+    TaskHelper.runInBackground(() -> {
       try {
         var tempFile = Files.createTempFile("takeout-import", "zip");
         try (var outputStream = Files.newOutputStream(tempFile); inputStream) {
@@ -52,6 +51,11 @@ public class BatchImportController extends AbstractUploadController {
         throw new RuntimeException(e);
       }
     });
+  }
+
+  @Override
+  protected TusFileUploadService uploadService() {
+    return fileUploadService;
   }
 
   @Post
