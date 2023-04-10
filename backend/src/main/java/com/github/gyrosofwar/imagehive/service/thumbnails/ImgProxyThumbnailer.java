@@ -9,6 +9,7 @@ import io.micronaut.http.client.HttpClient;
 import jakarta.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +49,12 @@ public class ImgProxyThumbnailer implements Thumbnailer {
   public ImageData getThumbnail(Request request) throws IOException {
     var path = request.imagePath().toString().replace('\\', '/');
     var url = String.format("local://%s", path);
-    var thumbnailUrl = imgProxy.generateUrl(url, request.width(), request.height(), 1, "");
+    URI thumbnailUrl = imgProxy
+      .builder(url)
+      .width(request.width())
+      .height(request.height())
+      .dpr(1)
+      .build();
     var headers = request.headers();
 
     Map<CharSequence, CharSequence> allowedHeaders = new HashMap<>();
