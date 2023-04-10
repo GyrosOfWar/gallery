@@ -27,15 +27,18 @@ public record ImageMetadata(
     var camera = String.format("%s %s", cameraMake, cameraModel);
 
     var exifSubIfd0 = metadata.get(new ExifSubIFDDirectory().getName());
-    var lensMake = exifSubIfd0.get("Lens Make");
-    var lensModel = exifSubIfd0.get("Lens Model");
-    var lens = String.format("%s %s", lensMake, lensModel);
+    if (exifSubIfd0 != null) {
+      var lensMake = exifSubIfd0.get("Lens Make");
+      var lensModel = exifSubIfd0.get("Lens Model");
+      var lens = String.format("%s %s", lensMake, lensModel);
 
-    var exposure = exifSubIfd0.get("Exposure Time");
-    var focalLength = exifSubIfd0.get("Focal Length");
-    var aperture = exifSubIfd0.get("Aperture Value");
-    var iso = exifSubIfd0.get("ISO Speed Ratings");
-
-    return new ImageMetadata(camera, lens, exposure, focalLength, aperture, iso);
+      var exposure = exifSubIfd0.get("Exposure Time");
+      var focalLength = exifSubIfd0.get("Focal Length");
+      var aperture = exifSubIfd0.get("Aperture Value");
+      var iso = exifSubIfd0.get("ISO Speed Ratings");
+      return new ImageMetadata(camera, lens, exposure, focalLength, aperture, iso);
+    } else {
+      return new ImageMetadata(camera, null, null, null, null, null);
+    }
   }
 }

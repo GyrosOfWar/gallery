@@ -45,22 +45,29 @@ public class GoogleTakeoutImporter {
   public void importBatch(Path uploadedFile, long userId) throws IOException {
     var destinationDirectory = Files.createTempDirectory("google-takeout-import");
     ZipHelper.unzip(uploadedFile, destinationDirectory);
+
     try (var stream = Files.walk(destinationDirectory)) {
-      stream
-        .filter(this::isSupportedFile)
-        .forEach(path -> {
-          try {
-            var metadata = loadMetadataForImage(path);
-            // TODO deal with -edited.jpeg files
-            if (metadata != null) {
-              var newImage = newImage(path, userId, metadata);
-              imageCreationService.create(newImage);
-            }
-          } catch (IOException | ImageProcessingException e) {
-            log.error("failed to create image " + path, e);
+      var allFiles = stream.filter(this::isSupportedFile).toList();
+      log.info("found {} supported files in archive", allFiles.size());
+      int count = 0;
+      for (var path : allFiles) {
+        try {
+          var metadata = loadMetadataForImage(path);
+          // TODO deal with -edited.jpeg files
+          if (metadata != null) {
+            var newImage = newImage(path, userId, metadata);
+            imageCreationService.create(newImage);
+            Files.delete(path);
           }
-        });
+        } catch (IOException | ImageProcessingException e) {
+          log.error("failed to create image " + path, e);
+        }
+        count += 1;
+        log.info("processed file {} / {}", count, allFiles.size());
+      }
     }
+
+    Files.delete(uploadedFile);
   }
 
   private TakeoutMetadata loadMetadataForImage(Path path) {

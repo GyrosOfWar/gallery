@@ -137,7 +137,7 @@ public class ImageCreationService {
       }
 
       var detectedMime = tikaConfig.getDetector().detect(inputStream, meta);
-      log.info(
+      log.debug(
         "detected mime type {} for mime type hint {} and file name {}",
         detectedMime,
         contentTypeHint,
@@ -166,10 +166,10 @@ public class ImageCreationService {
     var description = newImage.description();
 
     var extension = getExtension(tempFile.toFile(), newImage.mimeType(), newImage.fileName());
-    log.info("determined extension {} for filename {}", extension, newImage.fileName());
+    log.debug("determined extension {} for filename {}", extension, newImage.fileName());
     var destinationPath = mediaService.persistImage(tempFile, id, extension, userId);
 
-    log.info("moved temp file {} to {}", tempFile, destinationPath);
+    log.debug("moved temp file {} to {}", tempFile, destinationPath);
     var metadata = getMetadata(destinationPath);
     var metadataJson = JSONB.jsonb(objectMapper.writeValueAsString(metadata.metadata()));
     var bufferedImage = ImageIO.read(destinationPath.toFile());
@@ -193,7 +193,8 @@ public class ImageCreationService {
       geoJson
     );
     dsl.newRecord(IMAGE, image).insert();
-    log.info("inserted new image {}", image);
+    log.info("inserted new image with ID {}", image.id());
+    log.debug("inserted new image {}", image);
     return image;
   }
 

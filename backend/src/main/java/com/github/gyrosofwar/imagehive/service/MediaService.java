@@ -50,7 +50,7 @@ public class MediaService {
   public Path persistImage(Path tempFilePath, Ulid ulid, String extension, long userId)
     throws IOException {
     var path = getImagePath(ulid, extension, userId);
-    log.info("moving file {} -> {}", tempFilePath, path);
+    log.debug("moving file {} -> {}", tempFilePath, path);
     if (!Files.isDirectory(path.getParent())) {
       Files.createDirectories(path.getParent());
     }

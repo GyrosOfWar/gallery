@@ -1,6 +1,6 @@
 package com.github.gyrosofwar.imagehive;
 
-import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDetailsDTO;
 import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
@@ -23,7 +23,10 @@ public interface AppClient {
   );
 
   @Put(value = "/api/images", produces = MediaType.MULTIPART_FORM_DATA)
-  HttpResponse<ImageDTO> uploadImage(@Body MultipartBody files, @Header String authorization);
+  HttpResponse<ImageDetailsDTO> uploadImage(
+    @Body MultipartBody files,
+    @Header String authorization
+  );
 
   @Get("/api/media/{uuid}")
   HttpResponse<byte[]> getImageBytes(

@@ -5,7 +5,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public record ImageDTO(
+public record ImageDetailsDTO(
   UUID id,
   @Nullable String title,
   @Nullable String description,
