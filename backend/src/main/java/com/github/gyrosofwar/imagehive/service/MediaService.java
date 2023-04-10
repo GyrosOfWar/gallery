@@ -91,17 +91,27 @@ public class MediaService {
     if (!Files.isRegularFile(originalImage)) {
       return null;
     }
+    Thumbnailer.FileType fileType = Thumbnailer.FileType.JPEG;
+    if (!headers.accept().isEmpty()) {
+      var mediaType = headers.accept().get(0);
+      switch (mediaType.toString()) {
+        case "image/webp" -> fileType = Thumbnailer.FileType.WEBP;
+        case "image/avif" -> fileType = Thumbnailer.FileType.AVIF;
+      }
+    }
+
+    var widthHeader = headers.getInt("Width");
+    if (widthHeader != null) {
+      width = widthHeader;
+    }
+
+    var dprHeader = headers.getInt("DPR");
+    if (dprHeader != null) {
+      dpr = dprHeader;
+    }
 
     return thumbnailer.getThumbnail(
-      new Thumbnailer.Request(
-        originalImage,
-        width,
-        height,
-        Thumbnailer.FileType.JPEG,
-        false,
-        dpr == null ? 1 : dpr,
-        headers
-      )
+      new Thumbnailer.Request(originalImage, width, height, fileType, false, dpr == null ? 1 : dpr)
     );
   }
 

@@ -46,6 +46,7 @@ public class JavaThumbnailer implements Thumbnailer {
 
     var image = Thumbnails
       .of(request.imagePath().toFile())
+      // webp and avif aren't supported
       .outputFormat("jpg")
       .size(request.width(), request.height())
       .asFiles(RENAME_STRATEGY)

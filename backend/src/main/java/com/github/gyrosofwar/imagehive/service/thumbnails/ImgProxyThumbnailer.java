@@ -21,14 +21,6 @@ import org.slf4j.LoggerFactory;
 public class ImgProxyThumbnailer implements Thumbnailer {
 
   private static final Logger log = LoggerFactory.getLogger(ImgProxyThumbnailer.class);
-
-  private static final Set<CharSequence> FORWARDED_REQUEST_HEADERS = Set.of(
-    "Accept",
-    "Width",
-    "Viewport-Width",
-    "DPR"
-  );
-
   private static final Set<CharSequence> FORWARDED_RESPONSE_HEADERS = Set.of(
     "Cache-Control",
     "Etag",
@@ -47,25 +39,19 @@ public class ImgProxyThumbnailer implements Thumbnailer {
 
   @Override
   public ImageData getThumbnail(Request request) throws IOException {
+    log.info("generating thumbnail w={} h={}", request.width(), request.height());
+
     var path = request.imagePath().toString().replace('\\', '/');
     var url = String.format("local://%s", path);
     URI thumbnailUrl = imgProxy
       .builder(url)
       .width(request.width())
       .height(request.height())
-      .dpr(1)
+      .dpr(request.dpr())
+      .format(request.fileType().name().toLowerCase())
       .build();
-    var headers = request.headers();
-
-    Map<CharSequence, CharSequence> allowedHeaders = new HashMap<>();
-    for (var header : headers.asMap().entrySet()) {
-      if (FORWARDED_REQUEST_HEADERS.contains(header.getKey())) {
-        allowedHeaders.put(header.getKey(), header.getValue().get(0));
-      }
-    }
-
-    var httpRequest = HttpRequest.GET(thumbnailUrl).headers(allowedHeaders);
-
+    log.info("generated url {}", thumbnailUrl);
+    var httpRequest = HttpRequest.GET(thumbnailUrl);
     var response = httpClient.toBlocking().exchange(httpRequest, byte[].class);
     long lastModified = response.getHeaders().findInt("Last-Modified").orElse(0);
     Map<CharSequence, CharSequence> responseHeaders = new HashMap<>();

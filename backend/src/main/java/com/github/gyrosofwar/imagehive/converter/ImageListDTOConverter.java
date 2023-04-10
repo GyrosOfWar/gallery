@@ -1,6 +1,5 @@
 package com.github.gyrosofwar.imagehive.converter;
 
-import com.github.gyrosofwar.imagehive.dto.image.ImageDetailsDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageListDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import jakarta.inject.Singleton;

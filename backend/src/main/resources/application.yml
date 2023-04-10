@@ -68,10 +68,12 @@ flyway:
 
 imagehive:
   image-base-path: "images"
-  thumbnailer: JAVA
+  thumbnailer: IMG_PROXY
+
   lavis:
     enabled: true
     url: "http://localhost:5000"
+
   img-proxy:
     uri: "http://localhost:8081"
     key: "70755b84bc80f295977454"

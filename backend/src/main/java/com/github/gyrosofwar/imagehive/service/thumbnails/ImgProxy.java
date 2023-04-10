@@ -1,6 +1,5 @@
 package com.github.gyrosofwar.imagehive.service.thumbnails;
 
-import com.github.gyrosofwar.imagehive.sql.tables.Image;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -138,9 +137,7 @@ public class ImgProxy {
 
     public URI build() {
       final var algorithm = "HmacSHA256";
-      var encodedUrl = Base64
-        .getUrlEncoder()
-        .encodeToString(sourceUrl.getBytes(StandardCharsets.UTF_8));
+
       var components = new ArrayList<String>();
 
       if (resizingType != null) {
@@ -175,7 +172,11 @@ public class ImgProxy {
         components.add("f:" + format);
       }
 
-      var path = "/" + String.join("/", components);
+      var encodedUrl = Base64
+        .getUrlEncoder()
+        .encodeToString(sourceUrl.getBytes(StandardCharsets.UTF_8));
+
+      var path = "/" + String.join("/", components) + "/" + encodedUrl;
       byte[] key = hexStringToByteArray(ImgProxy.this.key);
       byte[] salt = hexStringToByteArray(ImgProxy.this.salt);
 

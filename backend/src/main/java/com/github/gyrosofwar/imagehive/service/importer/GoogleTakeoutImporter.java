@@ -71,14 +71,15 @@ public class GoogleTakeoutImporter {
   }
 
   private TakeoutMetadata loadMetadataForImage(Path path) {
-    var fileName = path.getFileName().toString();
+    var fileName = path.getFileName().toString().replace("-edited", "");
     fileName += ".json";
 
     var jsonPath = path.resolveSibling(fileName);
     try {
       return objectMapper.readValue(jsonPath.toFile(), TakeoutMetadata.class);
     } catch (Exception e) {
-      log.warn("unable to read takeout metadata at" + jsonPath, e);
+      log.info("unable to read takeout metadata at" + jsonPath);
+      log.debug("full exception:", e);
       return null;
     }
   }
