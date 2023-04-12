@@ -22,13 +22,12 @@ import clsx from "clsx"
 import useImages from "~/hooks/useImages"
 import useDevice from "~/hooks/useDevice"
 
-interface Data {
+export interface Data {
   images: PageImageDTO
 }
 
-type ClientImageList = ReturnType<
-  typeof useLoaderData<Data>
->["images"]["content"]
+export type ClientImagePage = ReturnType<typeof useLoaderData<Data>>["images"]
+export type ClientImageList = ClientImagePage["content"]
 export type ClientImage = ClientImageList[0]
 
 export const loader: LoaderFunction = async ({request}) => {
@@ -96,7 +95,7 @@ export default function Index() {
   const onImageFavorited = (image: ImageDTO) => {
     setPages((pages) =>
       produce(pages, (draft) => {
-        draft.forEach((page: PageImageDTO) => {
+        draft.forEach((page) => {
           page.content.forEach((img) => {
             if (img.id == image.id) {
               img.favorite = image.favorite

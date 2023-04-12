@@ -39,17 +39,21 @@ public class ImgProxyThumbnailer implements Thumbnailer {
 
   @Override
   public ImageData getThumbnail(Request request) throws IOException {
-    log.info("generating thumbnail w={} h={}", request.width(), request.height());
+    log.info("generating thumbnail for {}", request);
 
     var path = request.imagePath().toString().replace('\\', '/');
     var url = String.format("local://%s", path);
-    URI thumbnailUrl = imgProxy
+    var builder = imgProxy
       .builder(url)
       .width(request.width())
-      .height(request.height())
       .dpr(request.dpr())
-      .format(request.fileType().name().toLowerCase())
-      .build();
+      .format(request.fileType().name().toLowerCase());
+
+    if (request.height() != null) {
+      builder.height(request.height());
+    }
+
+    var thumbnailUrl = builder.build();
     log.info("generated url {}", thumbnailUrl);
     var httpRequest = HttpRequest.GET(thumbnailUrl);
     var response = httpClient.toBlocking().exchange(httpRequest, byte[].class);

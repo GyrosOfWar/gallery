@@ -1,15 +1,14 @@
 // TODO read from environment variable
-const BACKEND = "http://localhost:8080"
+const BACKEND = "http://localhost:8040"
 
 export const backendUrl = (rest: string) => `${BACKEND}${rest}`
 
 export const thumbnailUrl = (
   uuid: string,
   width: number,
-  height: number,
   extension?: string
 ) => {
-  let url = `/api/thumbnail/${width}/${height}/${uuid}`
+  let url = `/api/thumbnail/${width}/${uuid}`
   if (extension) {
     url += `?extension=${extension}`
   }

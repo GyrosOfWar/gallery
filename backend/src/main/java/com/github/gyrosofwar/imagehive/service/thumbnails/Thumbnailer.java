@@ -11,7 +11,7 @@ public interface Thumbnailer {
   record Request(
     Path imagePath,
     int width,
-    int height,
+    @Nullable Integer height,
     FileType fileType,
     @Nullable Boolean crop,
     int dpr

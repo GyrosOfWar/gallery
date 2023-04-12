@@ -82,7 +82,7 @@ public class MediaService {
     Ulid ulid,
     @Nullable String extension,
     int width,
-    int height,
+    Integer height,
     Integer dpr,
     HttpHeaders headers,
     Long userId

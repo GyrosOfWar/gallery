@@ -20,7 +20,7 @@ function getResolution(sizeType: ImageSize): number {
     case "sm":
       return 300
     case "md":
-      return 650
+      return 380
     case "lg":
       return 800
     case "xl":
@@ -55,7 +55,7 @@ const ThumbnailImage: React.FC<Props> = ({
       <img
         className={clsx("w-full", square && "object-contain")}
         alt={image.title || "<no title>"}
-        src={thumbnailUrl(image.id, width, height, image.extension)}
+        src={thumbnailUrl(image.id, width, image.extension)}
         height={width}
         width={height}
       />

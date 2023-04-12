@@ -41,7 +41,7 @@ const AlbumListPage: React.FC = () => {
                 <img
                   alt={album.name}
                   className="aspect-square object-cover"
-                  src={thumbnailUrl(album.thumbnailImage, 400, 400, "jpg")}
+                  src={thumbnailUrl(album.thumbnailImage, 400, "jpg")}
                 />
               )}
               {!album.thumbnailImage && (
