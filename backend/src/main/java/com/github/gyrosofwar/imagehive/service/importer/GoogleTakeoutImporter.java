@@ -16,10 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class GoogleTakeoutImporter {
-
-  // TODO support webp, avif, heic, mp4
-  private static final Set<String> SUPPORTED_EXTENSIONS = Set.of(".jpeg", ".jpg", ".png");
+public class GoogleTakeoutImporter implements Importer {
+  private static final Set<String> SUPPORTED_EXTENSIONS = Set.of(".jpeg", ".jpg", ".png", ".heic", ".webp", ".tiff", ".tif");
   private static final Logger log = LoggerFactory.getLogger(GoogleTakeoutImporter.class);
 
   private final ImageCreationService imageCreationService;
@@ -33,15 +31,7 @@ public class GoogleTakeoutImporter {
     this.objectMapper = objectMapper;
   }
 
-  private boolean isSupportedFile(Path path) {
-    if (path.getFileName() != null) {
-      var fileName = path.getFileName().toString();
-      return SUPPORTED_EXTENSIONS.stream().anyMatch(fileName::endsWith);
-    } else {
-      return false;
-    }
-  }
-
+  @Override
   public void importBatch(Path uploadedFile, long userId) throws IOException {
     var destinationDirectory = Files.createTempDirectory("google-takeout-import");
     ZipHelper.unzip(uploadedFile, destinationDirectory);
@@ -53,7 +43,6 @@ public class GoogleTakeoutImporter {
       for (var path : allFiles) {
         try {
           var metadata = loadMetadataForImage(path);
-          // TODO deal with -edited.jpeg files
           if (metadata != null) {
             var newImage = newImage(path, userId, metadata);
             imageCreationService.create(newImage);
@@ -68,6 +57,16 @@ public class GoogleTakeoutImporter {
     }
 
     Files.delete(uploadedFile);
+    log.info("finished importing archive");
+  }
+
+  private boolean isSupportedFile(Path path) {
+    if (path.getFileName() != null) {
+      var fileName = path.getFileName().toString();
+      return SUPPORTED_EXTENSIONS.stream().anyMatch(fileName::endsWith);
+    } else {
+      return false;
+    }
   }
 
   private TakeoutMetadata loadMetadataForImage(Path path) {

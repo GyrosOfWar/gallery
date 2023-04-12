@@ -27,7 +27,7 @@ const AlbumListPage: React.FC = () => {
 
   return (
     <>
-      <header className="flex justify-between items-center">
+      <header className="flex justify-between items-baseline">
         <h1 className="text-3xl font-bold mb-4">Albums</h1>
         <Link to="/albums/create" className={buttonStyles}>
           <HiPlus className="w-4 h-4 mr-2" /> New

@@ -15,7 +15,7 @@ import http from "~/util/http"
 import Slider from "~/components/Slider"
 import {useLocalStorage} from "usehooks-ts"
 import {produce} from "immer"
-import {HiOutlineStar, HiPlus, HiSearch} from "react-icons/hi"
+import {HiOutlineStar, HiPlus, HiMagnifyingGlass} from "react-icons/hi2"
 import ImageGrid from "~/components/ImageGrid"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
 import clsx from "clsx"
@@ -121,7 +121,7 @@ export default function Index() {
             <TextInput
               className="mr-2 grow"
               name="query"
-              placeholder="Search..."
+              placeholder="`Search`..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -132,7 +132,7 @@ export default function Index() {
               value={numColumns}
             />
             <Button type="submit">
-              <HiSearch className="w-4 h-4 mr-2" />
+              <HiMagnifyingGlass className="w-4 h-4 mr-2" />
               Search
             </Button>
           </form>

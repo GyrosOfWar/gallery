@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
-import {HiUpload} from "react-icons/hi"
+import {HiOutlineArrowUpTray} from "react-icons/hi2"
 
 export interface Props extends DropzoneOptions {
   className?: string
@@ -20,7 +20,7 @@ const FileDrop: React.FC<Props> = ({className, ...rest}) => {
       {...getRootProps()}
     >
       <input {...getInputProps()} />
-      <HiUpload className="w-16 h-16" />
+      <HiOutlineArrowUpTray className="w-16 h-16" />
       Click here or drag & drop files!
     </div>
   )

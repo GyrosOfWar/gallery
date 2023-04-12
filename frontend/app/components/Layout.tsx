@@ -2,7 +2,7 @@ import {Link, NavLink} from "@remix-run/react"
 import {Navbar, Dropdown, useTheme} from "flowbite-react"
 import type {User} from "~/services/auth.server"
 
-import {HiMoon, HiPhotograph, HiSun} from "react-icons/hi"
+import {HiMoon, HiPhoto, HiSun} from "react-icons/hi2"
 import {useEffect} from "react"
 
 const navlinkStyle =
@@ -149,7 +149,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
     <>
       <Navbar className="mb-4">
         <Navbar.Brand as={Link} to="/">
-          <HiPhotograph className="w-8 h-8 mr-1" />
+          <HiPhoto className="w-8 h-8 mr-1" />
           Imagehive
         </Navbar.Brand>
         <Navbar.Toggle />

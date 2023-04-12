@@ -13,18 +13,18 @@ import http from "~/util/http"
 import type {ActionFunction} from "@remix-run/node"
 import ToggleableInput from "~/components/ToggleableInput"
 import {
-  HiPhotograph,
+  HiPhoto,
   HiTag,
   HiCalendar,
   HiCamera,
   HiCheck,
   HiStar,
   HiPencil,
-  HiDownload,
+  HiArrowDownTray,
   HiTrash,
-  HiLocationMarker,
+  HiMapPin,
   HiShare,
-} from "react-icons/hi"
+} from "react-icons/hi2"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
 import produce from "immer"
 
@@ -109,6 +109,8 @@ const ImageDetailsPage: React.FC = () => {
   const {data: initial} = useLoaderData<Data>()
   const [image, setImage] = useState(initial)
   const [editMode, setEditMode] = useState(false)
+  const [sharing, setSharing] = useState(false)
+
   const toggleEditMode = () => {
     setEditMode((mode) => !mode)
   }
@@ -125,6 +127,7 @@ const ImageDetailsPage: React.FC = () => {
   }
 
   const shareImage = async () => {
+    setSharing(true)
     const response = await fetch(originalImageUrl(image.id, image.extension))
     const blob = await response.blob()
     const file = new File([blob], `shared.${image.extension}`, {
@@ -136,6 +139,8 @@ const ImageDetailsPage: React.FC = () => {
       title: image.title || "Shared image",
       files: [file],
     })
+
+    setSharing(false)
   }
 
   return (
@@ -147,7 +152,7 @@ const ImageDetailsPage: React.FC = () => {
       />
 
       <div className="my-4 grid self-center md:self-start grid-cols-2 md:grid-cols-4 gap-1 w-fit">
-        <Button onClick={shareImage}>
+        <Button onClick={shareImage} disabled={sharing}>
           <HiShare className="w-f h-4 mr-2" />
           Share
         </Button>
@@ -155,7 +160,7 @@ const ImageDetailsPage: React.FC = () => {
           color="success"
           href={originalImageUrl(image.id, image.extension, true)}
         >
-          <HiDownload className="w-4 h-4 mr-2" />
+          <HiArrowDownTray className="w-4 h-4 mr-2" />
           Download
         </Button>
 
@@ -174,7 +179,7 @@ const ImageDetailsPage: React.FC = () => {
         <input type="hidden" name="uuid" value={image.id} />
         <ul className="flex w-full flex-col gap-4 my-4">
           <li className="flex gap-4 items-center">
-            <HiPhotograph className="w-8 h-8" />
+            <HiPhoto className="w-8 h-8" />
             <div className="flex flex-col grow">
               <ToggleableInput
                 editMode={editMode}
@@ -217,7 +222,7 @@ const ImageDetailsPage: React.FC = () => {
           )}
           {image.location && (
             <li className="flex gap-4 items-center">
-              <HiLocationMarker className="w-8 h-8" />
+              <HiMapPin className="w-8 h-8" />
               <div className="flex flex-wrap gap-x-4 lg:gap-6 ">
                 <span>{image.location.country}</span>
                 <span>{image.location.city}</span>

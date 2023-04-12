@@ -87,7 +87,7 @@ public class ImageController {
     if (userId == null) {
       return Page.empty();
     } else {
-      log.info("fetching images for user {} and page {}", userId, pageable);
+      log.info("fetching images for user '{}' and page {}", authentication.getName(), pageable);
       return imageService.listImages(query, pageable, userId);
     }
   }

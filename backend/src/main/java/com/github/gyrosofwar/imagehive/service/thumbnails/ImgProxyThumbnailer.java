@@ -9,7 +9,6 @@ import io.micronaut.http.client.HttpClient;
 import jakarta.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -37,9 +36,10 @@ public class ImgProxyThumbnailer implements Thumbnailer {
     this.httpClient = httpClient;
   }
 
+  // TODO cache thumbnails to disk
   @Override
-  public ImageData getThumbnail(Request request) throws IOException {
-    log.info("generating thumbnail for {}", request);
+  public ImageData getThumbnail(Request request) {
+    log.debug("generating thumbnail for {}", request);
 
     var path = request.imagePath().toString().replace('\\', '/');
     var url = String.format("local://%s", path);
@@ -54,7 +54,7 @@ public class ImgProxyThumbnailer implements Thumbnailer {
     }
 
     var thumbnailUrl = builder.build();
-    log.info("generated url {}", thumbnailUrl);
+    log.debug("generated url {}", thumbnailUrl);
     var httpRequest = HttpRequest.GET(thumbnailUrl);
     var response = httpClient.toBlocking().exchange(httpRequest, byte[].class);
     long lastModified = response.getHeaders().findInt("Last-Modified").orElse(0);
