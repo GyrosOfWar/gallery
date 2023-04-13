@@ -44,6 +44,6 @@ public class ImageHiveFactory {
   public TusFileUploadService tusBatchUploadService() {
     return new TusFileUploadService()
       .withStoragePath("temp-images")
-      .withUploadURI("/api/batch-import");
+      .withUploadURI("/api/batch-import/upload");
   }
 }

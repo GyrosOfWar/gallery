@@ -17,5 +17,5 @@
 <!--    <logger name="io.micronaut.context.condition" level="DEBUG"/>-->
 <!--    <logger name="org.jooq" level="debug" />-->
 <!--    <logger name="io.micronaut.http" level="TRACE" />-->
-<!--    <logger name="io.micronaut.security" level="DEBUG" />-->
+   <logger name="io.micronaut.security" level="DEBUG" />
 </configuration>

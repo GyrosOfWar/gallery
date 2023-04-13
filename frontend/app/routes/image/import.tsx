@@ -13,13 +13,28 @@ const ImportPage: React.FC = () => {
 
   const onDrop = async (files: File[]) => {
     setUploading(true)
-    await uploadFile(
-      files[0],
-      {},
-      user!.accessToken,
-      backendUrl("/api/batch-import")
-    )
-    navigate("/")
+    try {
+      const response = await fetch("/api/batch-import/start")
+      const newUpload = await response.json()
+      const id = newUpload.id
+
+      for (const file of files) {
+        await uploadFile(
+          file,
+          {id},
+          user!.accessToken,
+          backendUrl("/api/batch-import/upload")
+        )
+      }
+
+      await fetch(`/api/batch-import/${id}/finish`, {method: "POST"})
+
+      navigate("/")
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setUploading(false)
+    }
   }
 
   return (
@@ -32,7 +47,7 @@ const ImportPage: React.FC = () => {
       )}
       {uploading && (
         <p className="p-16 text-center text-xl flex items-center justify-center">
-          <Spinner className="mr-4" /> Uploading archive...
+          <Spinner className="mr-4" /> Uploading archives...
         </p>
       )}
     </div>

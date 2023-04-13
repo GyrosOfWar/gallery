@@ -11,7 +11,7 @@ function getUrl(path: string): string {
 
 export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 
-const forwardedHeadrs = [
+const forwardedHeaders = [
   "accept",
   "accept-encoding",
   "dpr",
@@ -71,7 +71,7 @@ class Http {
       }
 
       if (requestHeaders) {
-        forwardedHeadrs.forEach((name) => {
+        forwardedHeaders.forEach((name) => {
           const headerValue = requestHeaders.get(name)
           if (headerValue) {
             headers[name] = headerValue

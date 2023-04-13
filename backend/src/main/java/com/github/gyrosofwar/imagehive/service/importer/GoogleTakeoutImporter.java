@@ -16,8 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class GoogleTakeoutImporter implements Importer {
-  private static final Set<String> SUPPORTED_EXTENSIONS = Set.of(".jpeg", ".jpg", ".png", ".heic", ".webp", ".tiff", ".tif");
+public class GoogleTakeoutImporter {
+
+  private static final Set<String> SUPPORTED_EXTENSIONS = Set.of(
+    ".jpeg",
+    ".jpg",
+    ".png",
+    ".heic",
+    ".webp",
+    ".tiff",
+    ".tif"
+  );
   private static final Logger log = LoggerFactory.getLogger(GoogleTakeoutImporter.class);
 
   private final ImageCreationService imageCreationService;
@@ -31,14 +40,18 @@ public class GoogleTakeoutImporter implements Importer {
     this.objectMapper = objectMapper;
   }
 
-  @Override
-  public void importBatch(Path uploadedFile, long userId) throws IOException {
+  public FinishedImport importBatch(List<Path> zipFiles, String importId, long userId)
+    throws IOException {
     var destinationDirectory = Files.createTempDirectory("google-takeout-import");
-    ZipHelper.unzip(uploadedFile, destinationDirectory);
+    for (var zipFile : zipFiles) {
+      ZipHelper.unzip(zipFile, destinationDirectory);
+    }
 
+    var errors = 0;
+    var successfulImports = 0;
     try (var stream = Files.walk(destinationDirectory)) {
       var allFiles = stream.filter(this::isSupportedFile).toList();
-      log.info("found {} supported files in archive", allFiles.size());
+      log.info("found {} supported files in folder", allFiles.size());
       int count = 0;
       for (var path : allFiles) {
         try {
@@ -47,17 +60,22 @@ public class GoogleTakeoutImporter implements Importer {
             var newImage = newImage(path, userId, metadata);
             imageCreationService.create(newImage);
             Files.delete(path);
+            successfulImports += 1;
+          } else {
+            errors += 1;
           }
         } catch (IOException | ImageProcessingException e) {
           log.error("failed to create image " + path, e);
+          errors += 1;
         }
         count += 1;
         log.info("processed file {} / {}", count, allFiles.size());
       }
     }
 
-    Files.delete(uploadedFile);
-    log.info("finished importing archive");
+    var info = new FinishedImport(successfulImports, errors);
+    log.info("finished importing archive: {}", info);
+    return info;
   }
 
   private boolean isSupportedFile(Path path) {
