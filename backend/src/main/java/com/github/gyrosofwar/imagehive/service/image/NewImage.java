@@ -10,5 +10,6 @@ public record NewImage(
   String mimeType,
   String title,
   String description,
-  List<String> tags
+  List<String> tags,
+  boolean geoCodeLocation
 ) {}

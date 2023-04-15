@@ -166,6 +166,11 @@ public class ImageService {
   }
 
   @Transactional
+  public boolean existsByTitle(String title) {
+    return dsl.selectCount().from(IMAGE).where(IMAGE.TITLE.eq(title)).fetchOne().component1() > 0;
+  }
+
+  @Transactional
   public ImageDetailsDTO toggleFavorite(UUID uuid, Long userId) {
     if (!isOwner(uuid, userId)) {
       return null;

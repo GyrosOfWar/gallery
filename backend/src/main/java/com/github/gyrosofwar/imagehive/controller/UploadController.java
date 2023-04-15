@@ -76,7 +76,8 @@ public class UploadController extends AbstractUploadController {
       uploadInfo.getFileMimeType(),
       title,
       description,
-      tags
+      tags,
+      true
     );
     var image = imageCreationService.create(newImage);
     imageService.setGeneratedDescriptionAsync(image);

@@ -66,7 +66,9 @@ public class BatchImportController extends AbstractUploadController {
 
   private Path getUploadFolder(String uploadId) throws IOException {
     var path = Path.of("upload-temp", uploadId);
-    Files.createDirectories(path);
+    if (!Files.isDirectory(path)) {
+      Files.createDirectories(path);
+    }
     return path;
   }
 
