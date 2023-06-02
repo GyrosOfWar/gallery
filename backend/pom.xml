@@ -10,14 +10,14 @@
   <parent>
     <groupId>io.micronaut</groupId>
     <artifactId>micronaut-parent</artifactId>
-    <version>3.8.4</version>
+    <version>3.8.7</version>
   </parent>
 
   <properties>
     <packaging>jar</packaging>
     <jdk.version>17</jdk.version>
     <release.version>17</release.version>
-    <micronaut.version>3.8.5</micronaut.version>
+    <micronaut.version>3.8.7</micronaut.version>
     <micronaut.data.version>3.9.6</micronaut.data.version>
     <micronaut.runtime>jetty</micronaut.runtime>
     <jooq.version>3.15.11</jooq.version>
@@ -134,7 +134,7 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-crypto</artifactId>
-      <version>6.0.1</version>
+      <version>6.0.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
