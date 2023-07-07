@@ -15,7 +15,7 @@ const FileDrop: React.FC<Props> = ({className, ...rest}) => {
       className={clsx(
         "p-16 text-xl border border-gray-500 border-dashed flex items-center flex-col gap-4 cursor-pointer",
         isDragActive && "bg-green-400 text-white",
-        className
+        className,
       )}
       {...getRootProps()}
     >

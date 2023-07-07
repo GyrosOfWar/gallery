@@ -1,8 +1,7 @@
 import type {ImageDTO} from "imagehive-client"
 import type {ClientImage} from "~/routes"
 import type {GridProps} from "./Masonry"
-import {getColumnCountFromDevice} from "./Masonry"
-import Masonry from "./Masonry"
+import Masonry, {getColumnCountFromDevice} from "./Masonry"
 import type {ImageSize} from "./ThumbnailImage"
 import ThumbnailImage from "./ThumbnailImage"
 import type {PropsWithChildren} from "react"
@@ -46,7 +45,7 @@ const SquareGrid: React.FC<PropsWithChildren<GridProps>> = ({
       data-testid={testId}
       className={clsx(
         "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-1",
-        className
+        className,
       )}
     >
       {children}

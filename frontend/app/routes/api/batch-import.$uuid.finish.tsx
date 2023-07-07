@@ -8,6 +8,6 @@ export const action: ActionFunction = async ({request, params}) => {
   return await http.postJson(
     `/api/batch-import/${uuid}/finish`,
     null,
-    accessToken
+    accessToken,
   )
 }

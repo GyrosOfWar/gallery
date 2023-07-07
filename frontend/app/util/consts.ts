@@ -6,7 +6,7 @@ export const backendUrl = (rest: string) => `${BACKEND}${rest}`
 export const thumbnailUrl = (
   uuid: string,
   width: number,
-  extension?: string
+  extension?: string,
 ) => {
   let url = `/api/thumbnail/${width}/${uuid}`
   if (extension) {
@@ -18,7 +18,7 @@ export const thumbnailUrl = (
 export const originalImageUrl = (
   uuid: string,
   extension: string,
-  download?: true
+  download?: true,
 ) => {
   let url = `/api/media/${uuid}?extension=${extension}`
   if (download) {

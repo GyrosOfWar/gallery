@@ -12,7 +12,7 @@ export interface RenderProps {
 type RenderColumnFn = (
   content: React.ReactNode[],
   props: RenderProps,
-  idx: number
+  idx: number,
 ) => React.ReactNode
 
 export interface GridProps {
@@ -81,7 +81,7 @@ const Masonry: React.FC<React.PropsWithChildren<GridProps>> = ({
     return cols.map((content, i) =>
       renderColumn
         ? renderColumn(content, columnProps, i)
-        : renderColumnDefault(content, columnProps, i)
+        : renderColumnDefault(content, columnProps, i),
     )
   }
 

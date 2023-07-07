@@ -12,7 +12,7 @@ export const action: ActionFunction = async ({request, params}) => {
   const response = await http.postJson(
     `/api/images/${uuid}/favorite`,
     null,
-    user.accessToken
+    user.accessToken,
   )
   return response
 }

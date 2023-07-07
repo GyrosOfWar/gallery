@@ -29,7 +29,7 @@ class Http {
   async get(
     path: string,
     accessToken?: string,
-    headers?: Headers
+    headers?: Headers,
   ): Promise<Response> {
     return this.#request(path, "GET", undefined, accessToken, headers)
   }
@@ -37,7 +37,7 @@ class Http {
   async patchJson(
     path: string,
     payload: unknown,
-    accessToken?: string
+    accessToken?: string,
   ): Promise<Response> {
     return this.#request(path, "PATCH", payload, accessToken)
   }
@@ -45,7 +45,7 @@ class Http {
   async postJson(
     path: string,
     payload: unknown,
-    accessToken: string
+    accessToken: string,
   ): Promise<Response> {
     return this.#request(path, "POST", payload, accessToken)
   }
@@ -55,7 +55,7 @@ class Http {
     method: Method,
     payload?: unknown,
     accessToken?: string,
-    requestHeaders?: Headers
+    requestHeaders?: Headers,
   ): Promise<Response> {
     const url = getUrl(path)
     try {
@@ -85,7 +85,7 @@ class Http {
       } else {
         const body = await response.text()
         throw new Error(
-          `Request to ${method} ${url} failed: ${response.status}, response body: ${body}`
+          `Request to ${method} ${url} failed: ${response.status}, response body: ${body}`,
         )
       }
     } catch (e) {

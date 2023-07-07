@@ -118,8 +118,8 @@ const ImageDetailsPage: React.FC = () => {
     setImage(
       produce(image, (draft) => {
         draft.favorite = newImage.favorite
-      })
-    )
+      }),
+    ),
   )
 
   const deleteImage = () => {

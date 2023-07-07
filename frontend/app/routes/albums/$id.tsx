@@ -21,11 +21,11 @@ export const loader: LoaderFunction = async ({request, params}) => {
   }
   const album: AlbumDetailsDTO = await http.getJson(
     `/api/albums/${params.id}`,
-    accessToken
+    accessToken,
   )
   const images: ImageDTO[] = await http.getJson(
     `/api/albums/${params.id}/images`,
-    accessToken
+    accessToken,
   )
   return json({album, images} satisfies Data)
 }

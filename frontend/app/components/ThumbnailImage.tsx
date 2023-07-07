@@ -31,7 +31,7 @@ function getResolution(sizeType: ImageSize): number {
 export function getImageSize(
   sizeType: ImageSize,
   originalWidth: number,
-  originalHeight: number
+  originalHeight: number,
 ): [number, number] {
   const resolution = getResolution(sizeType)
   const aspectRatio = originalWidth / originalHeight
@@ -66,7 +66,7 @@ const ThumbnailImage: React.FC<Props> = ({
     "mb-1 flex relative",
     size === "xl" && "justify-center",
     square && "aspect-square",
-    className
+    className,
   )
 
   if (link) {

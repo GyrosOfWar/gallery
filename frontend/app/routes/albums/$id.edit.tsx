@@ -45,7 +45,7 @@ export const loader: LoaderFunction = async ({params, request}) => {
   const {accessToken} = await requireUser(request)
   const albumImages: ImageDTO[] = await http.getJson(
     `/api/albums/${albumId}/images`,
-    accessToken
+    accessToken,
   )
   const images: PageImageDTO = await http.getJson(`/api/images`, accessToken)
   return json({
@@ -72,7 +72,7 @@ const AddImagesPage: React.FC = () => {
   const data = useLoaderData<Data>()
   const props = useImages({initialPage: data.images})
   const [selection, setSelection] = useState(
-    data.albumImages.map((image) => image.id)
+    data.albumImages.map((image) => image.id),
   )
 
   return (

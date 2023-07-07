@@ -6,7 +6,7 @@ export function uploadFile<F extends object>(
   info: F,
   accessToken: string,
   endpoint: string,
-  setProgress?: Dispatch<SetStateAction<Progress>>
+  setProgress?: Dispatch<SetStateAction<Progress>>,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (setProgress) {

@@ -108,7 +108,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
   const size = files.reduce((total, {file}) => total + file.size, 0) || 0
   const formattedSize = (size / MEGABYTES).toFixed(2)
   const [formState, setFormState] = useState<FieldData[]>(
-    files.map((f) => ({tags: "", title: f.file.name, description: ""}))
+    files.map((f) => ({tags: "", title: f.file.name, description: ""})),
   )
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState({
@@ -123,7 +123,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
     setFormState((state) =>
       produce(state, (draft) => {
         draft[index][field] = value
-      })
+      }),
     )
   }
 
@@ -141,7 +141,7 @@ const PreviewStep: React.FC<{files: FileWithUrl[]; user: User}> = ({
       await Promise.all(promises)
       navigate("/")
     },
-    [files, formState, user.accessToken, navigate]
+    [files, formState, user.accessToken, navigate],
   )
 
   return (

@@ -59,6 +59,7 @@ interface DropdownProps {
   user?: User
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DynamicDropdown: React.FC<DropdownProps> = ({
   label,
   children,
@@ -127,6 +128,7 @@ const DarkThemeToggle = () => {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getInitials(name?: string) {
   if (!name) {
     return ""
@@ -143,7 +145,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
   children,
   user,
 }) => {
-  const initials = getInitials(user?.username)
+  // const initials = getInitials(user?.username)
 
   return (
     <>

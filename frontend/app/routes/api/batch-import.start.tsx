@@ -1,4 +1,4 @@
-import {ActionFunction, LoaderFunction, json} from "@remix-run/node"
+import {LoaderFunction, json} from "@remix-run/node"
 import {requireUser} from "~/services/auth.server"
 import http from "~/util/http"
 

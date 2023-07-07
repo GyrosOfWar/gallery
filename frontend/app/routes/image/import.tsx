@@ -23,7 +23,7 @@ const ImportPage: React.FC = () => {
           file,
           {id},
           user!.accessToken,
-          backendUrl("/api/batch-import/upload")
+          backendUrl("/api/batch-import/upload"),
         )
       }
 

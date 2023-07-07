@@ -14,13 +14,13 @@ export const loader: LoaderFunction = async ({request, params}) => {
 
   const response = await http.get(
     `/api/media/${uuid}?extension=${extension}`,
-    user.accessToken
+    user.accessToken,
   )
   if (download) {
     response.headers.append(
       "content-disposition",
       // todo
-      'attachment; filename="image.jpeg"'
+      'attachment; filename="image.jpeg"',
     )
   }
   return response
