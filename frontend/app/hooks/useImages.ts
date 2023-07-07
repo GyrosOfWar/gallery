@@ -2,7 +2,7 @@ import {useFetcher} from "@remix-run/react"
 import type React from "react"
 import {useEffect, useState} from "react"
 import useInfiniteScroll from "react-infinite-scroll-hook"
-import type {ClientImageList, ClientImagePage, Data} from "~/routes/api/image"
+import type {ClientImageList, ClientImagePage, Data} from "~/routes"
 
 export interface UseImagesInput {
   initialPage: ClientImagePage

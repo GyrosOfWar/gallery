@@ -9,7 +9,6 @@ import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.io.FilenameUtils;
@@ -51,7 +50,7 @@ public class MediaService {
   public Path persistImage(Path tempFilePath, Ulid ulid, String extension, long userId)
     throws IOException {
     var path = getImagePath(ulid, extension, userId);
-    log.info("moving file {} -> {}", tempFilePath, path);
+    log.debug("moving file {} -> {}", tempFilePath, path);
     if (!Files.isDirectory(path.getParent())) {
       Files.createDirectories(path.getParent());
     }
@@ -83,7 +82,7 @@ public class MediaService {
     Ulid ulid,
     @Nullable String extension,
     int width,
-    int height,
+    Integer height,
     Integer dpr,
     HttpHeaders headers,
     Long userId
@@ -92,17 +91,27 @@ public class MediaService {
     if (!Files.isRegularFile(originalImage)) {
       return null;
     }
+    Thumbnailer.FileType fileType = Thumbnailer.FileType.JPEG;
+    if (!headers.accept().isEmpty()) {
+      var mediaType = headers.accept().get(0);
+      switch (mediaType.toString()) {
+        case "image/webp" -> fileType = Thumbnailer.FileType.WEBP;
+        case "image/avif" -> fileType = Thumbnailer.FileType.AVIF;
+      }
+    }
+
+    var widthHeader = headers.getInt("Width");
+    if (widthHeader != null) {
+      width = widthHeader;
+    }
+
+    var dprHeader = headers.getInt("DPR");
+    if (dprHeader != null) {
+      dpr = dprHeader;
+    }
 
     return thumbnailer.getThumbnail(
-      new Thumbnailer.Request(
-        originalImage,
-        width,
-        height,
-        Thumbnailer.FileType.JPEG,
-        false,
-        dpr == null ? 1 : dpr,
-        headers
-      )
+      new Thumbnailer.Request(originalImage, width, height, fileType, false, dpr == null ? 1 : dpr)
     );
   }
 

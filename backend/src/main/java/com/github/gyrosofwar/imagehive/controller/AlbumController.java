@@ -5,7 +5,7 @@ import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUse
 import com.github.gyrosofwar.imagehive.dto.album.AlbumDetailsDTO;
 import com.github.gyrosofwar.imagehive.dto.album.AlbumListDTO;
 import com.github.gyrosofwar.imagehive.dto.album.CreateAlbumDTO;
-import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDetailsDTO;
 import com.github.gyrosofwar.imagehive.service.AlbumService;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.annotation.*;
@@ -38,7 +38,10 @@ public class AlbumController {
   }
 
   @Get("{id}/images")
-  public List<ImageDTO> getAlbumImages(@PathVariable long id, Authentication authentication) {
+  public List<ImageDetailsDTO> getAlbumImages(
+    @PathVariable long id,
+    Authentication authentication
+  ) {
     var userId = getUserId(authentication);
 
     return albumService.getImages(id, userId);

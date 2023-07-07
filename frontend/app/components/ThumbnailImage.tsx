@@ -20,7 +20,7 @@ function getResolution(sizeType: ImageSize): number {
     case "sm":
       return 300
     case "md":
-      return 500
+      return 380
     case "lg":
       return 800
     case "xl":
@@ -32,13 +32,12 @@ export function getImageSize(
   sizeType: ImageSize,
   originalWidth: number,
   originalHeight: number,
-  square?: boolean
 ): [number, number] {
   const resolution = getResolution(sizeType)
   const aspectRatio = originalWidth / originalHeight
   const w = resolution
   const h = Math.round(w * (1.0 / aspectRatio))
-  return square ? [w, w] : [w, h]
+  return [w, h]
 }
 
 const ThumbnailImage: React.FC<Props> = ({
@@ -49,14 +48,14 @@ const ThumbnailImage: React.FC<Props> = ({
   link,
   square,
 }) => {
-  const [width, height] = getImageSize(size, image.width, image.height, square)
+  const [width, height] = getImageSize(size, image.width, image.height)
   const children = (
     <>
       {overlay}
       <img
         className={clsx("w-full", square && "object-contain")}
         alt={image.title || "<no title>"}
-        src={thumbnailUrl(image.id, width, height, image.extension)}
+        src={thumbnailUrl(image.id, width, image.extension)}
         height={width}
         width={height}
       />
@@ -67,7 +66,7 @@ const ThumbnailImage: React.FC<Props> = ({
     "mb-1 flex relative",
     size === "xl" && "justify-center",
     square && "aspect-square",
-    className
+    className,
   )
 
   if (link) {

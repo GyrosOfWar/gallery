@@ -3,16 +3,11 @@ import {requireUser} from "~/services/auth.server"
 import http from "~/util/http"
 
 export const action: ActionFunction = async ({request, params}) => {
-  const user = await requireUser(request)
+  const {accessToken} = await requireUser(request)
   const {uuid} = params
-  if (!uuid) {
-    return new Response("missing parameters", {status: 400})
-  }
-
-  const response = await http.postJson(
-    `/api/images/${uuid}/favorite`,
+  return await http.postJson(
+    `/api/batch-import/${uuid}/finish`,
     null,
-    user.accessToken,
+    accessToken,
   )
-  return response
 }

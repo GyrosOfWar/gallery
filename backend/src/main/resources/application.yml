@@ -31,6 +31,7 @@ micronaut:
             - http://127.0.0.1:3000
 
     host: 0.0.0.0
+    port: 8040
   application:
     name: imagehive
   security:
@@ -68,10 +69,12 @@ flyway:
 
 imagehive:
   image-base-path: "images"
-  thumbnailer: JAVA
+  thumbnailer: IMG_PROXY
+
   lavis:
     enabled: true
     url: "http://localhost:5000"
+
   img-proxy:
     uri: "http://localhost:8081"
     key: "70755b84bc80f295977454"

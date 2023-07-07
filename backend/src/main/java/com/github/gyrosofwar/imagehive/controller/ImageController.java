@@ -2,8 +2,9 @@ package com.github.gyrosofwar.imagehive.controller;
 
 import static com.github.gyrosofwar.imagehive.controller.ControllerHelper.getUserId;
 
-import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
-import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
+import com.github.gyrosofwar.imagehive.converter.ImageDetailsDTOConverter;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDetailsDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageListDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageUpdateDTO;
 import com.github.gyrosofwar.imagehive.service.image.ImageService;
 import io.micronaut.core.annotation.Nullable;
@@ -28,21 +29,24 @@ public class ImageController {
   private static final Logger log = LoggerFactory.getLogger(ImageController.class);
 
   private final ImageService imageService;
-  private final ImageDTOConverter imageDTOConverter;
+  private final ImageDetailsDTOConverter imageDetailsDTOConverter;
 
-  public ImageController(ImageService imageService, ImageDTOConverter imageDTOConverter) {
+  public ImageController(
+    ImageService imageService,
+    ImageDetailsDTOConverter imageDetailsDTOConverter
+  ) {
     this.imageService = imageService;
-    this.imageDTOConverter = imageDTOConverter;
+    this.imageDetailsDTOConverter = imageDetailsDTOConverter;
   }
 
   @Get(produces = MediaType.APPLICATION_JSON, uri = "/{uuid}")
-  public ImageDTO getImage(@PathVariable UUID uuid, Authentication authentication) {
+  public ImageDetailsDTO getImage(@PathVariable UUID uuid, Authentication authentication) {
     var userId = getUserId(authentication);
     var image = imageService.getByUuid(uuid, userId);
     if (image == null) {
       return null;
     }
-    return imageDTOConverter.convert(image);
+    return imageDetailsDTOConverter.convert(image);
   }
 
   @Delete("/{uuid}")
@@ -53,7 +57,7 @@ public class ImageController {
   }
 
   @Post("/{uuid}/favorite")
-  public HttpResponse<ImageDTO> toggleFavorite(
+  public HttpResponse<ImageDetailsDTO> toggleFavorite(
     @PathVariable UUID uuid,
     Authentication authentication
   ) {
@@ -74,7 +78,7 @@ public class ImageController {
 
   @Get(produces = MediaType.APPLICATION_JSON)
   @Transactional
-  public Page<ImageDTO> getImages(
+  public Page<ImageListDTO> getImages(
     Pageable pageable,
     Authentication authentication,
     @QueryValue @Nullable String query
@@ -83,7 +87,7 @@ public class ImageController {
     if (userId == null) {
       return Page.empty();
     } else {
-      log.info("fetching images for user {} and page {}", userId, pageable);
+      log.info("fetching images for user '{}' and page {}", authentication.getName(), pageable);
       return imageService.listImages(query, pageable, userId);
     }
   }

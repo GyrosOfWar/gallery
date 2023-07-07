@@ -15,19 +15,19 @@ import http from "~/util/http"
 import Slider from "~/components/Slider"
 import {useLocalStorage} from "usehooks-ts"
 import {produce} from "immer"
-import {HiOutlineStar, HiPlus, HiSearch} from "react-icons/hi"
+import {HiOutlineStar, HiPlus, HiMagnifyingGlass} from "react-icons/hi2"
 import ImageGrid from "~/components/ImageGrid"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
 import clsx from "clsx"
 import useImages from "~/hooks/useImages"
+import useDevice from "~/hooks/useDevice"
 
-interface Data {
+export interface Data {
   images: PageImageDTO
 }
 
-type ClientImageList = ReturnType<
-  typeof useLoaderData<Data>
->["images"]["content"]
+export type ClientImagePage = ReturnType<typeof useLoaderData<Data>>["images"]
+export type ClientImageList = ClientImagePage["content"]
 export type ClientImage = ClientImageList[0]
 
 export const loader: LoaderFunction = async ({request}) => {
@@ -64,13 +64,14 @@ const Overlay: React.FC<OverlayProps> = ({image, onImageFavorited}) => {
       data-testid={`favorite-button-${image.id}`}
       className={clsx(
         "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200",
-        image.favorite && "fill-yellow-300 hover:fill-yellow-200"
+        image.favorite && "fill-yellow-300 hover:fill-yellow-200",
       )}
     />
   )
 }
 
 export default function Index() {
+  const device = useDevice()
   const [queryParams, setQueryParams] = useSearchParams()
   const [query, setQuery] = useState(queryParams.get("query") || "")
   const fetcher = useFetcher<Data>()
@@ -81,7 +82,7 @@ export default function Index() {
     })
   const [numColumns, setNumColumns] = useLocalStorage(
     "image-library-columns",
-    4
+    4,
   )
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -101,7 +102,7 @@ export default function Index() {
             }
           })
         })
-      })
+      }),
     )
   }
 
@@ -120,7 +121,7 @@ export default function Index() {
             <TextInput
               className="mr-2 grow"
               name="query"
-              placeholder="Search..."
+              placeholder="`Search`..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -131,7 +132,7 @@ export default function Index() {
               value={numColumns}
             />
             <Button type="submit">
-              <HiSearch className="w-4 h-4 mr-2" />
+              <HiMagnifyingGlass className="w-4 h-4 mr-2" />
               Search
             </Button>
           </form>
@@ -167,6 +168,7 @@ export default function Index() {
         hasNextPage={hasNextPage}
         loading={loading}
         withLinks
+        device={device}
         renderOverlay={(image) => (
           <Overlay
             image={image as ImageDTO}

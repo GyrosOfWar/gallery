@@ -1,14 +1,17 @@
 import type {ImageDTO} from "imagehive-client"
 import type {ClientImage} from "~/routes"
 import type {GridProps} from "./Masonry"
-import Masonry from "./Masonry"
+import Masonry, {getColumnCountFromDevice} from "./Masonry"
 import type {ImageSize} from "./ThumbnailImage"
 import ThumbnailImage from "./ThumbnailImage"
 import type {PropsWithChildren} from "react"
 import clsx from "clsx"
+import type {Device} from "~/services/device.server"
+
+export type ColumnCount = number | "auto"
 
 export interface Props {
-  numColumns: number
+  numColumns: ColumnCount
   images: (ImageDTO | ClientImage)[]
   hasNextPage: boolean
   loading?: boolean
@@ -16,6 +19,7 @@ export interface Props {
   renderOverlay?: (image: ImageDTO | ClientImage) => React.ReactElement
   withLinks?: boolean
   square?: boolean
+  device: Device
 }
 
 function imageSizeForColumns(columns: number): ImageSize {
@@ -39,7 +43,10 @@ const SquareGrid: React.FC<PropsWithChildren<GridProps>> = ({
   return (
     <div
       data-testid={testId}
-      className={clsx("grid grid-cols-4 gap-x-1", className)}
+      className={clsx(
+        "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-1",
+        className,
+      )}
     >
       {children}
     </div>
@@ -55,8 +62,11 @@ const ImageGrid: React.FC<Props> = ({
   renderOverlay,
   withLinks,
   square,
+  device,
 }) => {
   const Component = square ? SquareGrid : Masonry
+  const columnCount =
+    numColumns === "auto" ? getColumnCountFromDevice(device) : numColumns
 
   return (
     <Component
@@ -64,10 +74,11 @@ const ImageGrid: React.FC<Props> = ({
       columnClassName="pl-1"
       testId="main-grid"
       columnCount={numColumns}
+      device={device}
     >
       {images.map((image) => (
         <ThumbnailImage
-          size={imageSizeForColumns(numColumns)}
+          size={imageSizeForColumns(columnCount)}
           image={image}
           key={image.id}
           overlay={renderOverlay && renderOverlay(image)}

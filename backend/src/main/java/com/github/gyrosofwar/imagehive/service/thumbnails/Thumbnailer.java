@@ -2,7 +2,6 @@ package com.github.gyrosofwar.imagehive.service.thumbnails;
 
 import com.github.gyrosofwar.imagehive.service.ImageData;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.http.HttpHeaders;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -12,11 +11,10 @@ public interface Thumbnailer {
   record Request(
     Path imagePath,
     int width,
-    int height,
-    @Nullable FileType fileType,
+    @Nullable Integer height,
+    FileType fileType,
     @Nullable Boolean crop,
-    @Nullable Integer dpr,
-    HttpHeaders headers
+    int dpr
   ) {}
 
   enum FileType {

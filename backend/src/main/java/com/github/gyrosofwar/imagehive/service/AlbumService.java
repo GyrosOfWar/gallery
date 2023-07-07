@@ -2,11 +2,11 @@ package com.github.gyrosofwar.imagehive.service;
 
 import static com.github.gyrosofwar.imagehive.sql.Tables.*;
 
-import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
+import com.github.gyrosofwar.imagehive.converter.ImageDetailsDTOConverter;
 import com.github.gyrosofwar.imagehive.dto.album.AlbumDetailsDTO;
 import com.github.gyrosofwar.imagehive.dto.album.AlbumListDTO;
 import com.github.gyrosofwar.imagehive.dto.album.CreateAlbumDTO;
-import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDetailsDTO;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Album;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.AlbumImage;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
@@ -27,11 +27,11 @@ public class AlbumService {
   private static final Logger log = LoggerFactory.getLogger(AlbumService.class);
 
   private final DSLContext dsl;
-  private final ImageDTOConverter imageDTOConverter;
+  private final ImageDetailsDTOConverter imageDetailsDTOConverter;
 
-  public AlbumService(DSLContext dsl, ImageDTOConverter imageDTOConverter) {
+  public AlbumService(DSLContext dsl, ImageDetailsDTOConverter imageDetailsDTOConverter) {
     this.dsl = dsl;
-    this.imageDTOConverter = imageDTOConverter;
+    this.imageDetailsDTOConverter = imageDetailsDTOConverter;
   }
 
   @Transactional
@@ -112,7 +112,7 @@ public class AlbumService {
 
     Set<UUID> existingImages = getImages(id, userId)
       .stream()
-      .map(ImageDTO::id)
+      .map(ImageDetailsDTO::id)
       .collect(Collectors.toSet());
     log.info("found {} existing images", existingImages.size());
 
@@ -142,7 +142,7 @@ public class AlbumService {
   }
 
   @Transactional
-  public List<ImageDTO> getImages(long id, Long userId) {
+  public List<ImageDetailsDTO> getImages(long id, Long userId) {
     return dsl
       .select(IMAGE.asterisk())
       .from(ALBUM_IMAGE)
@@ -150,7 +150,7 @@ public class AlbumService {
       .on(ALBUM_IMAGE.IMAGE_ID.eq(IMAGE.ID))
       .where(ALBUM_IMAGE.ALBUM_ID.eq(id).and(IMAGE.OWNER_ID.eq(userId)))
       .fetchStreamInto(Image.class)
-      .map(imageDTOConverter::convert)
+      .map(imageDetailsDTOConverter::convert)
       .toList();
   }
 }

@@ -1,15 +1,8 @@
 import {Link, NavLink} from "@remix-run/react"
-import {Navbar, Dropdown, useTheme, Avatar} from "flowbite-react"
+import {Navbar, Dropdown, useTheme} from "flowbite-react"
 import type {User} from "~/services/auth.server"
 
-import {
-  HiCog,
-  HiUserAdd,
-  HiLogout,
-  HiMoon,
-  HiPhotograph,
-  HiSun,
-} from "react-icons/hi"
+import {HiMoon, HiPhoto, HiSun} from "react-icons/hi2"
 import {useEffect} from "react"
 
 const navlinkStyle =
@@ -66,6 +59,7 @@ interface DropdownProps {
   user?: User
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DynamicDropdown: React.FC<DropdownProps> = ({
   label,
   children,
@@ -126,14 +120,15 @@ const DarkThemeToggle = () => {
       className="px-2"
     >
       {mode === "dark" ? (
-        <HiSun aria-label="Currently dark mode" className="w-4 h-4" />
+        <HiSun aria-label="Currently dark mode" className="w-6 h-6" />
       ) : (
-        <HiMoon aria-label="Currently light mode" className="w-4 h-4" />
+        <HiMoon aria-label="Currently light mode" className="w-6 h-6" />
       )}
     </button>
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getInitials(name?: string) {
   if (!name) {
     return ""
@@ -150,13 +145,13 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
   children,
   user,
 }) => {
-  const initials = getInitials(user?.username)
+  // const initials = getInitials(user?.username)
 
   return (
     <>
       <Navbar className="mb-4">
         <Navbar.Brand as={Link} to="/">
-          <HiPhotograph className="w-8 h-8 mr-1" />
+          <HiPhoto className="w-8 h-8 mr-1" />
           Imagehive
         </Navbar.Brand>
         <Navbar.Toggle />
@@ -167,44 +162,12 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
           <NavbarLink to="/albums" user={user} visibleFor="user">
             Albums
           </NavbarLink>
-          <DarkThemeToggle />
-          <DynamicDropdown
-            label={<HiCog className="w-8 h-8" />}
-            user={user}
-            visibleFor="admin"
-          >
-            <Dropdown.Item icon={HiUserAdd}>
-              <NavbarLink
-                to="/admin/user/create"
-                user={user}
-                visibleFor="admin"
-              >
-                Create User
-              </NavbarLink>
-            </Dropdown.Item>
-          </DynamicDropdown>
-          <DynamicDropdown
-            label={<Avatar placeholderInitials={initials} rounded />}
-            user={user}
-            visibleFor="user"
-          >
-            <Dropdown.Header>
-              <span className="block text-sm">{user?.username}</span>
-              <span className="block truncate text-sm font-medium">
-                {user?.email}
-              </span>
-            </Dropdown.Header>
-            <Dropdown.Item icon={HiCog}>
-              <NavbarLink to="/user/settings" user={user} visibleFor="user">
-                Settings
-              </NavbarLink>
-            </Dropdown.Item>
-            <Dropdown.Item icon={HiLogout}>
-              <NavbarLink to="/auth/logout" user={user} visibleFor="user">
-                Logout
-              </NavbarLink>
-            </Dropdown.Item>
-          </DynamicDropdown>
+          <NavbarLink to="/image/import" user={user} visibleFor="user">
+            Import
+          </NavbarLink>
+          <Navbar.Link className="text-center">
+            <DarkThemeToggle />
+          </Navbar.Link>
         </Navbar.Collapse>
       </Navbar>
       <main

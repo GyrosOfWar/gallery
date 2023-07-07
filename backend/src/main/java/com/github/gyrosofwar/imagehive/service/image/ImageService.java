@@ -3,9 +3,12 @@ package com.github.gyrosofwar.imagehive.service.image;
 import static com.github.gyrosofwar.imagehive.sql.Tables.ALBUM_IMAGE;
 import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
-import com.github.gyrosofwar.imagehive.converter.ImageDTOConverter;
-import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
+import com.github.gyrosofwar.imagehive.converter.ImageDetailsDTOConverter;
+import com.github.gyrosofwar.imagehive.converter.ImageListDTOConverter;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDetailsDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageListDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageUpdateDTO;
+import com.github.gyrosofwar.imagehive.helper.TaskHelper;
 import com.github.gyrosofwar.imagehive.service.MediaService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.core.annotation.Nullable;
@@ -15,8 +18,6 @@ import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
@@ -31,19 +32,21 @@ public class ImageService {
 
   private final DSLContext dsl;
   private final MediaService mediaService;
-  private final ImageDTOConverter imageDTOConverter;
+  private final ImageDetailsDTOConverter imageDetailsDTOConverter;
+  private final ImageListDTOConverter imageListDTOConverter;
   private final ImageLabeler imageLabeler;
-  private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
   public ImageService(
     DSLContext dsl,
     MediaService mediaService,
-    ImageDTOConverter imageDTOConverter,
+    ImageDetailsDTOConverter imageDetailsDTOConverter,
+    ImageListDTOConverter imageListDTOConverter,
     ImageLabeler imageLabeler
   ) {
     this.dsl = dsl;
     this.mediaService = mediaService;
-    this.imageDTOConverter = imageDTOConverter;
+    this.imageDetailsDTOConverter = imageDetailsDTOConverter;
+    this.imageListDTOConverter = imageListDTOConverter;
     this.imageLabeler = imageLabeler;
   }
 
@@ -70,7 +73,7 @@ public class ImageService {
     return count != 0;
   }
 
-  public Page<ImageDTO> listImages(@Nullable String query, Pageable pageable, long userId) {
+  public Page<ImageListDTO> listImages(@Nullable String query, Pageable pageable, long userId) {
     var where = IMAGE.OWNER_ID.eq(userId);
     if (StringUtils.isNotBlank(query)) {
       where =
@@ -80,12 +83,12 @@ public class ImageService {
     var images = dsl
       .selectFrom(IMAGE)
       .where(where)
-      .orderBy(IMAGE.CAPTURED_ON.desc().nullsLast(), IMAGE.CREATED_ON.desc())
+      .orderBy(IMAGE.CAPTURED_ON.desc().nullsLast())
       .offset(pageable.getOffset())
       .limit(pageable.getSize())
       .fetchInto(Image.class)
       .stream()
-      .map(imageDTOConverter::convert)
+      .map(imageListDTOConverter::convert)
       .toList();
 
     var count = dsl.selectCount().from(IMAGE).where(where).fetchOne().value1();
@@ -143,7 +146,7 @@ public class ImageService {
           .set(IMAGE.DESCRIPTION, description)
           .where(IMAGE.ID.eq(image.id()))
           .execute();
-        log.info(
+        log.debug(
           "updating description on image {} to '{}' matched {} rows",
           image.id(),
           description,
@@ -157,13 +160,18 @@ public class ImageService {
 
   public void setGeneratedDescriptionAsync(Image image) {
     log.info("generating description for file {}", image.id());
-    executorService.submit(() -> {
+    TaskHelper.runInBackground(() -> {
       setGeneratedDescription(image);
     });
   }
 
   @Transactional
-  public ImageDTO toggleFavorite(UUID uuid, Long userId) {
+  public boolean existsByTitle(String title) {
+    return dsl.selectCount().from(IMAGE).where(IMAGE.TITLE.eq(title)).fetchOne().component1() > 0;
+  }
+
+  @Transactional
+  public ImageDetailsDTO toggleFavorite(UUID uuid, Long userId) {
     if (!isOwner(uuid, userId)) {
       return null;
     }
@@ -174,6 +182,6 @@ public class ImageService {
       .returningResult()
       .fetchOneInto(Image.class);
 
-    return imageDTOConverter.convert(image);
+    return imageDetailsDTOConverter.convert(image);
   }
 }

@@ -6,16 +6,17 @@ import com.github.f4b6a3.ulid.Ulid;
 import com.github.gyrosofwar.imagehive.service.MediaService;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.http.server.types.files.StreamedFile;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Hidden;
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
-import me.desair.tus.server.HttpHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,18 @@ public class MediaController {
     }
   }
 
+  @Get("/thumbnail/{width}/{uuid}")
+  @Hidden
+  public HttpResponse<StreamedFile> getThumbnail(
+    @PathVariable int width,
+    @PathVariable UUID uuid,
+    @QueryValue String extension,
+    HttpHeaders httpHeaders,
+    Authentication authentication
+  ) throws IOException {
+    return getThumbnailInner(width, null, uuid, extension, httpHeaders, authentication);
+  }
+
   @Get("/thumbnail/{width}/{height}/{uuid}")
   @Hidden
   public HttpResponse<StreamedFile> getThumbnail(
@@ -60,6 +73,17 @@ public class MediaController {
     @PathVariable int height,
     @PathVariable UUID uuid,
     @QueryValue String extension,
+    HttpHeaders httpHeaders,
+    Authentication authentication
+  ) throws IOException {
+    return getThumbnailInner(width, height, uuid, extension, httpHeaders, authentication);
+  }
+
+  private HttpResponse<StreamedFile> getThumbnailInner(
+    int width,
+    Integer height,
+    UUID uuid,
+    String extension,
     HttpHeaders httpHeaders,
     Authentication authentication
   ) throws IOException {

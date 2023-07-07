@@ -2,16 +2,13 @@ package com.github.gyrosofwar.imagehive.service.thumbnails;
 
 import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
 import com.github.gyrosofwar.imagehive.service.ImageData;
-import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.client.HttpClient;
 import jakarta.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,14 +20,6 @@ import org.slf4j.LoggerFactory;
 public class ImgProxyThumbnailer implements Thumbnailer {
 
   private static final Logger log = LoggerFactory.getLogger(ImgProxyThumbnailer.class);
-
-  private static final Set<CharSequence> FORWARDED_REQUEST_HEADERS = Set.of(
-    "Accept",
-    "Width",
-    "Viewport-Width",
-    "DPR"
-  );
-
   private static final Set<CharSequence> FORWARDED_RESPONSE_HEADERS = Set.of(
     "Cache-Control",
     "Etag",
@@ -47,22 +36,26 @@ public class ImgProxyThumbnailer implements Thumbnailer {
     this.httpClient = httpClient;
   }
 
+  // TODO cache thumbnails to disk
   @Override
-  public ImageData getThumbnail(Request request) throws IOException {
+  public ImageData getThumbnail(Request request) {
+    log.debug("generating thumbnail for {}", request);
+
     var path = request.imagePath().toString().replace('\\', '/');
     var url = String.format("local://%s", path);
-    var thumbnailUrl = imgProxy.generateUrl(url, request.width(), request.height(), 1, "");
-    var headers = request.headers();
+    var builder = imgProxy
+      .builder(url)
+      .width(request.width())
+      .dpr(request.dpr())
+      .format(request.fileType().name().toLowerCase());
 
-    Map<CharSequence, CharSequence> allowedHeaders = new HashMap<>();
-    for (var header : headers.asMap().entrySet()) {
-      if (FORWARDED_REQUEST_HEADERS.contains(header.getKey())) {
-        allowedHeaders.put(header.getKey(), header.getValue().get(0));
-      }
+    if (request.height() != null) {
+      builder.height(request.height());
     }
 
-    var httpRequest = HttpRequest.GET(thumbnailUrl).headers(allowedHeaders);
-
+    var thumbnailUrl = builder.build();
+    log.debug("generated url {}", thumbnailUrl);
+    var httpRequest = HttpRequest.GET(thumbnailUrl);
     var response = httpClient.toBlocking().exchange(httpRequest, byte[].class);
     long lastModified = response.getHeaders().findInt("Last-Modified").orElse(0);
     Map<CharSequence, CharSequence> responseHeaders = new HashMap<>();

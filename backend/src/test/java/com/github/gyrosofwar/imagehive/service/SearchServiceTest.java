@@ -43,7 +43,8 @@ class SearchServiceTest extends BaseTest {
         "image/jpeg",
         "Testtitle One ",
         "This is test description two",
-        List.of("Tag1", "Tag2", "Tag3", "Tag4", "Tag5")
+        List.of("Tag1", "Tag2", "Tag3", "Tag4", "Tag5"),
+        false
       )
     );
 
@@ -55,7 +56,8 @@ class SearchServiceTest extends BaseTest {
         "image/jpg",
         "Testtitle Two",
         "This is test description two",
-        List.of("Tag1", "Tag3", "Tag4")
+        List.of("Tag1", "Tag3", "Tag4"),
+        false
       )
     );
 
@@ -67,7 +69,8 @@ class SearchServiceTest extends BaseTest {
         "image/jpeg",
         "Testtitle Three",
         "This is test description three",
-        List.of("Tag7", "Tag8", "Tag9")
+        List.of("Tag7", "Tag8", "Tag9"),
+        false
       )
     );
 

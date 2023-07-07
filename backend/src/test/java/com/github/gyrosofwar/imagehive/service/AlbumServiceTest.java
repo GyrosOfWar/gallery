@@ -52,7 +52,8 @@ class AlbumServiceTest extends BaseTest {
           "image/jpeg",
           "Image " + (i + 1),
           "description",
-          List.of("vienna")
+          List.of("vienna"),
+          false
         )
       );
       images.add(created.id());

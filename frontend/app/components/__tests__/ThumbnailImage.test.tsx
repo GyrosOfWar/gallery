@@ -1,11 +1,11 @@
-import {expect, describe, it, vi, beforeAll, afterEach, afterAll} from "vitest"
+import {expect, describe, it, beforeAll, afterEach, afterAll} from "vitest"
 import {render, within} from "@testing-library/react"
 import ThumbnailImage, {getImageSize} from "../ThumbnailImage"
 import type {ClientImage} from "~/routes"
 import {MemoryRouter} from "react-router"
 import {rest} from "msw"
 import {setupServer} from "msw/node"
-import userEvent from "@testing-library/user-event"
+// import userEvent from "@testing-library/user-event"
 
 const image = {
   createdOn: new Date().toISOString(),
@@ -19,7 +19,7 @@ const image = {
 const server = setupServer(
   rest.post("/api/image/*/favorite", (req, res, ctx) => {
     return res(ctx.json({...image, favorite: true}))
-  })
+  }),
 )
 
 beforeAll(() => server.listen())
@@ -33,7 +33,7 @@ describe("ThumbnailImage", () => {
     const {getByTestId} = render(
       <MemoryRouter>
         <ThumbnailImage link="/images/test" image={image} size="md" />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     const node = getByTestId(`image-${image.id}`)
     const img = within(node).getByRole("img")

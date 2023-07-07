@@ -2,7 +2,7 @@ package com.github.gyrosofwar.imagehive.converter;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.gyrosofwar.imagehive.dto.image.ImageDTO;
+import com.github.gyrosofwar.imagehive.dto.image.ImageDetailsDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageMetadata;
 import com.github.gyrosofwar.imagehive.dto.image.LocationInfo;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
@@ -16,13 +16,17 @@ import org.apache.commons.io.FilenameUtils;
 import org.jooq.JSONB;
 
 @Singleton
-public class ImageDTOConverter implements Converter<Image, ImageDTO> {
+public class ImageDetailsDTOConverter implements Converter<Image, ImageDetailsDTO> {
 
   private static final TypeReference<Map<String, Map<String, String>>> METADATA_SHAPE = new TypeReference<>() {};
   private final ObjectMapper objectMapper;
 
-  public ImageDTOConverter(ObjectMapper objectMapper) {
+  public ImageDetailsDTOConverter(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
+  }
+
+  static String getExtension(String path) {
+    return FilenameUtils.getExtension(Path.of(path).getFileName().toString());
   }
 
   private Map<String, Map<String, String>> parseMetadata(JSONB jsonb) {
@@ -59,12 +63,12 @@ public class ImageDTOConverter implements Converter<Image, ImageDTO> {
   }
 
   @Override
-  public ImageDTO convert(Image image) {
+  public ImageDetailsDTO convert(Image image) {
     if (image == null) {
       return null;
     }
 
-    return new ImageDTO(
+    return new ImageDetailsDTO(
       image.id(),
       image.title(),
       image.description(),
@@ -75,7 +79,7 @@ public class ImageDTOConverter implements Converter<Image, ImageDTO> {
       image.gpsLatitude(),
       image.gpsLongitude(),
       Arrays.asList(image.tags()),
-      FilenameUtils.getExtension(Path.of(image.filePath()).getFileName().toString()),
+      getExtension(image.filePath()),
       ImageMetadata.from(parseMetadata(image.metadata())),
       image.favorite(),
       parseGeoJson(image.geoJson())

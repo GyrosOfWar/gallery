@@ -14,6 +14,8 @@ import Layout from "./components/Layout"
 import css from "./css/app.css"
 import type {User} from "./services/auth.server"
 import {authenticator} from "./services/auth.server"
+import type {Device} from "./services/device.server"
+import {detectDevice} from "./services/device.server"
 
 export function links() {
   return [
@@ -33,13 +35,19 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 })
 
+export interface OutletData {
+  user: User | null
+  device: Device
+}
+
 export const loader: LoaderFunction = async ({request}) => {
   const user = await authenticator.isAuthenticated(request)
-  return json(user)
+  const device = detectDevice(request.headers.get("user-agent"))
+  return json({user, device} satisfies OutletData)
 }
 
 export default function App() {
-  const user = useLoaderData<User>()
+  const data = useLoaderData<OutletData>()
 
   return (
     <html lang="en">
@@ -50,8 +58,8 @@ export default function App() {
       </head>
       <body className="bg-white dark:bg-gray-900 dark:text-white">
         <Flowbite>
-          <Layout user={user}>
-            <Outlet context={{user}} />
+          <Layout user={data.user!}>
+            <Outlet context={data} />
           </Layout>
         </Flowbite>
         <ScrollRestoration />

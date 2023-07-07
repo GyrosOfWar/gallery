@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -137,7 +139,7 @@ public class ImageCreationService {
       }
 
       var detectedMime = tikaConfig.getDetector().detect(inputStream, meta);
-      log.info(
+      log.debug(
         "detected mime type {} for mime type hint {} and file name {}",
         detectedMime,
         contentTypeHint,
@@ -151,6 +153,7 @@ public class ImageCreationService {
 
   @Transactional
   public Image create(NewImage newImage) throws IOException, ImageProcessingException {
+    var start = Instant.now();
     var id = Ulid.fast();
     var userId = newImage.userId();
     log.info("generated ID {} for upload {}", id, newImage.fileName());
@@ -166,14 +169,14 @@ public class ImageCreationService {
     var description = newImage.description();
 
     var extension = getExtension(tempFile.toFile(), newImage.mimeType(), newImage.fileName());
-    log.info("determined extension {} for filename {}", extension, newImage.fileName());
+    log.debug("determined extension {} for filename {}", extension, newImage.fileName());
     var destinationPath = mediaService.persistImage(tempFile, id, extension, userId);
 
-    log.info("moved temp file {} to {}", tempFile, destinationPath);
+    log.debug("moved temp file {} to {}", tempFile, destinationPath);
     var metadata = getMetadata(destinationPath);
     var metadataJson = JSONB.jsonb(objectMapper.writeValueAsString(metadata.metadata()));
     var bufferedImage = ImageIO.read(destinationPath.toFile());
-    var geoJson = getImageLocation(metadata);
+    var geoJson = newImage.geoCodeLocation() ? getImageLocation(metadata) : null;
 
     var image = new Image(
       id.toUuid(),
@@ -193,7 +196,10 @@ public class ImageCreationService {
       geoJson
     );
     dsl.newRecord(IMAGE, image).insert();
-    log.info("inserted new image {}", image);
+    var elapsed = Duration.between(start, Instant.now());
+    log.info("inserted new image with ID {} in {}", image.id(), elapsed);
+    log.debug("inserted new image {}", image);
+
     return image;
   }
 

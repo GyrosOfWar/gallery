@@ -27,7 +27,7 @@ const AlbumListPage: React.FC = () => {
 
   return (
     <>
-      <header className="flex justify-between items-center">
+      <header className="flex justify-between items-baseline">
         <h1 className="text-3xl font-bold mb-4">Albums</h1>
         <Link to="/albums/create" className={buttonStyles}>
           <HiPlus className="w-4 h-4 mr-2" /> New
@@ -41,7 +41,7 @@ const AlbumListPage: React.FC = () => {
                 <img
                   alt={album.name}
                   className="aspect-square object-cover"
-                  src={thumbnailUrl(album.thumbnailImage, 400, 400, "jpg")}
+                  src={thumbnailUrl(album.thumbnailImage, 400, "jpg")}
                 />
               )}
               {!album.thumbnailImage && (
