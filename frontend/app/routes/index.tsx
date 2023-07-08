@@ -121,7 +121,7 @@ export default function Index() {
             <TextInput
               className="mr-2 grow"
               name="query"
-              placeholder="`Search`..."
+              placeholder="Search..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
