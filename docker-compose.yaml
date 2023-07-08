@@ -18,16 +18,34 @@ services:
     volumes:
       - "./backend/images:/images"
 
-  db:
-    profiles:
-      - database
+  postgres:
     image: postgres:15
     ports:
       - "5432:5432"
-
-    # env_file: .env
+    environment:
+      POSTGRES_PASSWORD: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
+  backend:
+    image: ghcr.io/gyrosofwar/imagehive-backend:latest
+    ports:
+      - "8040:8040"
+    depends_on:
+      - postgres
+    environment:
+      IMAGEHIVE_PG_JDBC_URL: "jdbc:postgresql://postgres:5432/postgres"
+      IMAGEHIVE_PG_PASSWORD: postgres
+  
+  frontend:
+    image: ghcr.io/gyrosofwar/imagehive-frontend:main
+    ports:
+      - "3000:3000"
+
+  ai:
+    image: ghcr.io/gyrosofwar/imagehive-ai:main
+    ports:
+      - "5000:5000"
 
 volumes:
   postgres-data:

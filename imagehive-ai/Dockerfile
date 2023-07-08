@@ -11,4 +11,4 @@ RUN pip install -r ./requirements.txt
 
 COPY . .
 EXPOSE 5000
-CMD [ "flask", "--app", "lavis_service", "run" ]
+CMD [ "flask", "--app", "services", "run" ]
