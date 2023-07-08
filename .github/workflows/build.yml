@@ -22,5 +22,5 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          context: frontend
+          context: "{{defaultContext}}:frontend"
           tags: gyrosofwar/imagehive-frontend:latest
