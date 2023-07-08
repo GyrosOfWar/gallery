@@ -108,3 +108,7 @@ jobs:
           IMAGEHIVE_PG_PASSWORD: password
       - name: Build docker image with Maven
         run: cd backend && ./mvnw deploy -Dpackaging=docker-native -Pgraalvm -Djib.to.image=ghcr.io/gyrosofwar/imagehive-backend:latest -Djib.to.auth.username=${{ github.actor }} -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }}
+        env:
+          IMAGEHIVE_PG_JDBC_URL: jdbc:postgresql://localhost:5432/postgres
+          IMAGEHIVE_PG_USER: postgres
+          IMAGEHIVE_PG_PASSWORD: password
