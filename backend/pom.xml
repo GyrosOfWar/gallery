@@ -20,7 +20,7 @@
     <micronaut.version>4.0.1</micronaut.version>
     <micronaut.data.version>4.0.2</micronaut.data.version>
     <micronaut.runtime>jetty</micronaut.runtime>
-    <jooq.version>3.15.11</jooq.version>
+    <jooq.version>3.18.5</jooq.version>
     <jib.docker.image>${project.artifactId}</jib.docker.image>
     <jib.docker.tag>${project.version}</jib.docker.tag>
     <exec.mainClass>com.github.gyrosofwar.imagehive.ImageHiveApplication</exec.mainClass>
@@ -299,7 +299,7 @@
       <plugin>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-maven-plugin</artifactId>
-        <version>8.5.13</version>
+        <version>9.20.1</version>
 
         <configuration>
           <!--suppress UnresolvedMavenProperty -->
