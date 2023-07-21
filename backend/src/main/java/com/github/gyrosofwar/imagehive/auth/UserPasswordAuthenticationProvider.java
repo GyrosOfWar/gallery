@@ -29,23 +29,20 @@ public class UserPasswordAuthenticationProvider implements AuthenticationProvide
   }
 
   @Override
-  public Publisher<AuthenticationResponse> authenticate(
-    @Nullable HttpRequest<?> httpRequest,
-    AuthenticationRequest<?, ?> authenticationRequest
-  ) {
+  public Publisher<AuthenticationResponse> authenticate(Object httpRequest, AuthenticationRequest authenticationRequest) {
     String identity = authenticationRequest.getIdentity().toString();
     String secret = authenticationRequest.getSecret().toString();
     return Mono
-      .fromSupplier(() -> userService.getByNameOrEmail(identity))
-      .flatMap(user -> {
-        if (user != null && passwordEncoder.matches(secret, user.passwordHash())) {
-          var roles = List.of(user.admin() ? UserRole.ADMIN.name() : UserRole.USER.name());
-          Map<String, Object> attributes = Map.of("userId", user.id(), "email", user.email());
-          return Mono.just(AuthenticationResponse.success(identity, roles, attributes));
-        } else {
-          return Mono.error(AuthenticationResponse.exception());
-        }
-      })
-      .subscribeOn(Schedulers.boundedElastic());
+            .fromSupplier(() -> userService.getByNameOrEmail(identity))
+            .flatMap(user -> {
+              if (user != null && passwordEncoder.matches(secret, user.passwordHash())) {
+                var roles = List.of(user.admin() ? UserRole.ADMIN.name() : UserRole.USER.name());
+                Map<String, Object> attributes = Map.of("userId", user.id(), "email", user.email());
+                return Mono.just(AuthenticationResponse.success(identity, roles, attributes));
+              } else {
+                return Mono.error(AuthenticationResponse.exception());
+              }
+            })
+            .subscribeOn(Schedulers.boundedElastic());
   }
 }

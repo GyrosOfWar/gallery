@@ -3,8 +3,9 @@ package com.github.gyrosofwar.imagehive.controller;
 import io.micronaut.security.authentication.Authentication;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.exception.TusException;
 import me.desair.tus.server.upload.UploadInfo;
@@ -29,7 +30,7 @@ public abstract class AbstractUploadController {
     Authentication authentication
   ) throws IOException, TusException {
     var fileUploadService = uploadService();
-    fileUploadService.process(request, response);
+    // fileUploadService.process(request, response);
 
     var uploadUri = request.getRequestURI();
     try {

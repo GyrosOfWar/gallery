@@ -16,7 +16,7 @@ import jakarta.inject.Singleton;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

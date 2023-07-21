@@ -25,7 +25,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import javax.imageio.ImageIO;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import mil.nga.sf.geojson.FeatureCollection;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.config.TikaConfig;

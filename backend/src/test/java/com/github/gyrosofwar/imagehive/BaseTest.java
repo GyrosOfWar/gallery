@@ -5,7 +5,7 @@ import com.github.gyrosofwar.imagehive.service.UserService;
 import com.github.gyrosofwar.imagehive.sql.Public;
 import io.micronaut.runtime.server.EmbeddedServer;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
-import io.micronaut.security.token.jwt.render.BearerAccessRefreshToken;
+import io.micronaut.security.token.render.BearerAccessRefreshToken;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.jooq.DSLContext;

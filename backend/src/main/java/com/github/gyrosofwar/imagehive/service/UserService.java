@@ -13,7 +13,7 @@ import jakarta.inject.Singleton;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
@@ -107,8 +107,8 @@ public class UserService {
 
   @Transactional
   public int deleteById(long id) {
-    try (DeleteUsingStep<UserRecord> delete = dsl.delete(USER)) {
-      return delete.where(USER.ID.eq(id)).execute();
+    try {
+      return dsl.delete(USER).where(USER.ID.eq(id)).execute();
     } catch (Exception e) {
       log.error("Could not delete user with id " + id, e);
       return 0;

@@ -24,16 +24,11 @@ public class SearchService {
   }
 
   public List<Image> searchImages(String query, Pageable pageable, long userId) {
-    try (SelectWhereStep<ImageRecord> selectFrom = dsl.selectFrom(IMAGE)) {
-      return selectFrom
-        .where("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query))
-        .and(IMAGE.OWNER_ID.eq(userId))
-        .offset(pageable.getOffset())
-        .limit(pageable.getSize())
-        .fetchInto(Image.class);
-    } catch (Exception e) {
-      log.error("There was an error searching for images", e);
-    }
-    return List.of();
+    return dsl.selectFrom(IMAGE)
+      .where("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query))
+      .and(IMAGE.OWNER_ID.eq(userId))
+      .offset(pageable.getOffset())
+      .limit(pageable.getSize())
+      .fetchInto(Image.class);
   }
 }

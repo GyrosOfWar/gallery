@@ -18,7 +18,7 @@ import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
