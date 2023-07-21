@@ -24,7 +24,8 @@ public class SearchService {
   }
 
   public List<Image> searchImages(String query, Pageable pageable, long userId) {
-    return dsl.selectFrom(IMAGE)
+    return dsl
+      .selectFrom(IMAGE)
       .where("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query))
       .and(IMAGE.OWNER_ID.eq(userId))
       .offset(pageable.getOffset())
