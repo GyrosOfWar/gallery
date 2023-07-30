@@ -29,7 +29,7 @@ public abstract class AbstractUploadController {
     Authentication authentication
   ) throws IOException, TusException {
     var fileUploadService = uploadService();
-    // fileUploadService.process(request, response);
+    fileUploadService.process(request, response);
 
     var uploadUri = request.getRequestURI();
     try {

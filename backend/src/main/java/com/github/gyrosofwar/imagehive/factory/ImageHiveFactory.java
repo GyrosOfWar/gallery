@@ -36,7 +36,7 @@ public class ImageHiveFactory {
   public TusFileUploadService tusImageUploadService() {
     return new TusFileUploadService()
       .withStoragePath("temp-images")
-      .withUploadURI("/api/images/upload");
+      .withUploadUri("/api/images/upload");
   }
 
   @Bean
@@ -44,6 +44,6 @@ public class ImageHiveFactory {
   public TusFileUploadService tusBatchUploadService() {
     return new TusFileUploadService()
       .withStoragePath("temp-images")
-      .withUploadURI("/api/batch-import/upload");
+      .withUploadUri("/api/batch-import/upload");
   }
 }

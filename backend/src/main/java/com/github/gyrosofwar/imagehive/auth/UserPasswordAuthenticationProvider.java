@@ -3,6 +3,7 @@ package com.github.gyrosofwar.imagehive.auth;
 import com.github.gyrosofwar.imagehive.service.UserService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.security.authentication.AuthenticationProvider;
 import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
@@ -15,7 +16,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 @Singleton
-public class UserPasswordAuthenticationProvider implements AuthenticationProvider {
+public class UserPasswordAuthenticationProvider implements AuthenticationProvider<HttpRequest<?>> {
 
   private final UserService userService;
   private final PasswordEncoder passwordEncoder;
@@ -30,8 +31,8 @@ public class UserPasswordAuthenticationProvider implements AuthenticationProvide
 
   @Override
   public Publisher<AuthenticationResponse> authenticate(
-    Object httpRequest,
-    AuthenticationRequest authenticationRequest
+    @Nullable HttpRequest<?> httpRequest,
+    AuthenticationRequest<?, ?> authenticationRequest
   ) {
     String identity = authenticationRequest.getIdentity().toString();
     String secret = authenticationRequest.getSecret().toString();

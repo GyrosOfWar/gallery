@@ -17,8 +17,6 @@
     <packaging>jar</packaging>
     <jdk.version>17</jdk.version>
     <release.version>17</release.version>
-    <micronaut.version>4.0.1</micronaut.version>
-    <micronaut.data.version>4.0.2</micronaut.data.version>
     <micronaut.runtime>jetty</micronaut.runtime>
     <jooq.version>3.18.5</jooq.version>
     <jib.docker.image>${project.artifactId}</jib.docker.image>
@@ -51,18 +49,6 @@
       <groupId>io.micronaut</groupId>
       <artifactId>micronaut-http-client</artifactId>
       <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-runtime</artifactId>
-      <scope>compile</scope>
-      <exclusions>
-          <exclusion>
-            <groupId>io.micronaut</groupId>
-            <artifactId>micronaut-jackson-databind</artifactId>
-          </exclusion>
-        </exclusions>
     </dependency>
     <dependency>
       <groupId>io.micronaut.beanvalidation</groupId>
@@ -117,7 +103,7 @@
     <dependency>
       <groupId>io.micronaut.servlet</groupId>
       <artifactId>micronaut-http-server-jetty</artifactId>
-      <version>3.3.5</version>
+      <version>${micronaut.core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jooq</groupId>
@@ -128,11 +114,6 @@
       <groupId>com.github.t9t.jooq</groupId>
       <artifactId>jooq-postgresql-json</artifactId>
       <version>4.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
@@ -165,6 +146,11 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>com.github.f4b6a3</groupId>
       <artifactId>ulid-creator</artifactId>
       <version>5.1.0</version>
@@ -187,7 +173,7 @@
     <dependency>
       <groupId>me.desair.tus</groupId>
       <artifactId>tus-java-server</artifactId>
-      <version>1.0.0-2.0</version>
+      <version>1.0.0-3.0</version>
     </dependency>
 
     <dependency>
@@ -230,7 +216,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>io.micronaut.build</groupId>
+        <groupId>io.micronaut.maven</groupId>
         <artifactId>micronaut-maven-plugin</artifactId>
       </plugin>
       
@@ -242,7 +228,7 @@
             <path>
               <groupId>io.micronaut</groupId>
               <artifactId>micronaut-inject-java</artifactId>
-              <version>${micronaut.version}</version>
+              <version>${micronaut.core.version}</version>
             </path>
             <path>
               <groupId>io.micronaut.data</groupId>
@@ -252,12 +238,12 @@
             <path>
               <groupId>io.micronaut</groupId>
               <artifactId>micronaut-graal</artifactId>
-              <version>${micronaut.version}</version>
+              <version>${micronaut.core.version}</version>
             </path>
             <path>
               <groupId>io.micronaut</groupId>
               <artifactId>micronaut-http-validation</artifactId>
-              <version>${micronaut.version}</version>
+              <version>${micronaut.core.version}</version>
             </path>
             <path>
               <groupId>io.micronaut.validation</groupId>
