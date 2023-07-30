@@ -4,26 +4,23 @@ from .nltk import tags_from_caption
 
 from flask import jsonify, request
 
-# LAVIS IMAGE CAPTIONING
 
+# LAVIS IMAGE CAPTIONING
 @app.route("/caption", methods=["POST"])
 def caption():
-    file = request.files['image']
-    print(f'received file with length {file.content_length}')
+    single_file = request.files.get("image")
+    file_list = request.files.getlist("images")
+    if single_file:
+        print("received single file to caption")
+        return jsonify(caption=caption_image(single_file))
+    elif len(file_list) > 0:
+        return jsonify(caption=caption_images(file_list))
+    else:
+        return jsonify(error="no files sent"), 400
 
-    return jsonify(caption=caption_image(file))
-
-@app.route("/caption-multiple", methods=["POST"])
-def caption_multiple():
-    files = request.files.getlist("images")
-
-    return jsonify(caption_images(files))
 
 # NLTK GENERATING TAGS FROM CAPTION
-
 @app.route("/tags", methods=["POST"])
 def tags():
-    caption = request.form['caption']
-    print(f'received file with length {file.content_length}')
-
+    caption = request.form["caption"]
     return jsonify(tags=tags_from_caption(caption))

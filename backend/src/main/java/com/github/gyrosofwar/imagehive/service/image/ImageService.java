@@ -137,7 +137,7 @@ public class ImageService {
   }
 
   @Transactional
-  public void setGeneratedDescription(Image image) {
+  public String setGeneratedDescription(Image image) {
     if (image.description() == null) {
       try {
         var description = imageLabeler.getDescription(Path.of(image.filePath()));
@@ -152,10 +152,12 @@ public class ImageService {
           description,
           updateCount
         );
+        return description;
       } catch (IOException e) {
         log.error("failed to get description:", e);
       }
     }
+    return null;
   }
 
   public void setGeneratedDescriptionAsync(Image image) {

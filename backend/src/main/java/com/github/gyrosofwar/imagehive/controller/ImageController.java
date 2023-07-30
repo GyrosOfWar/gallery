@@ -76,6 +76,17 @@ public class ImageController {
     return HttpResponse.noContent();
   }
 
+  @Post("/{uuid}/caption")
+  public HttpResponse<String> generateCaption(
+    @PathVariable UUID uuid,
+    Authentication authentication
+  ) {
+    log.info("generating caption for image {}", uuid);
+    var image = imageService.getByUuid(uuid, getUserId(authentication));
+    String caption = imageService.setGeneratedDescription(image);
+    return HttpResponse.ok(caption);
+  }
+
   @Get(produces = MediaType.APPLICATION_JSON)
   @Transactional
   public Page<ImageListDTO> getImages(
