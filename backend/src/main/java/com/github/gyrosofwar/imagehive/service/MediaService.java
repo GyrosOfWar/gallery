@@ -6,6 +6,7 @@ import com.github.gyrosofwar.imagehive.service.thumbnails.Thumbnailer;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpHeaders;
 import jakarta.inject.Singleton;
+import jakarta.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,8 +33,7 @@ public class MediaService {
   // builds a path like <base-path/<user-id>/<two-hex-chars>/<uuid>.jpg
   Path getImagePath(Ulid ulid, @Nullable String extension, long userId) {
     var randomPart = ulid.getRandom();
-    // var subFolder = DatatypeConverter.printHexBinary(randomPart).substring(0, 2);\
-    var subFolder = "todo";
+    var subFolder = DatatypeConverter.printHexBinary(randomPart).substring(0, 2);
     var folder = Path.of(configuration.imageBasePath(), String.valueOf(userId), subFolder);
 
     var fileName = ulid.toString();
