@@ -16,9 +16,9 @@ import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import java.util.UUID;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

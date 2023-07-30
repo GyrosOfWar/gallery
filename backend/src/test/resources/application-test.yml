@@ -5,3 +5,5 @@ datasources:
 
 imagehive:
   image-base-path: test-images
+  lavis:
+    enabled: false
