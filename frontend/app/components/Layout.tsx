@@ -1,7 +1,7 @@
 import type {User} from "~/services/auth.server"
 import {Link, NavLink} from "@remix-run/react"
 import {Navbar, Dropdown, useTheme} from "flowbite-react"
-import {HiUserAdd, HiLogout} from "react-icons/hi"
+import {HiUserAdd, HiLogout, HiAdjustments} from "react-icons/hi"
 import {HiMoon, HiPhoto, HiSun, HiCog} from "react-icons/hi2"
 import {useEffect} from "react"
 import Avatar from "react-avatar"
@@ -167,7 +167,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
             Import
           </NavbarLink>
           <DynamicDropdown
-            label={<HiCog className="w-8 h-8" />}
+            label={<HiAdjustments className="w-8 h-8" />}
             user={user}
             visibleFor="admin"
           >
@@ -203,9 +203,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
               </NavbarLink>
             </Dropdown.Item>
           </DynamicDropdown>
-          <Navbar.Link className="text-center">
-            <DarkThemeToggle />
-          </Navbar.Link>
+          <DarkThemeToggle />
         </Navbar.Collapse>
       </Navbar>
       <main
