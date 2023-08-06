@@ -1,9 +1,10 @@
+import type {User} from "~/services/auth.server"
 import {Link, NavLink} from "@remix-run/react"
 import {Navbar, Dropdown, useTheme} from "flowbite-react"
-import type {User} from "~/services/auth.server"
-
-import {HiMoon, HiPhoto, HiSun} from "react-icons/hi2"
+import {HiUserAdd, HiLogout} from "react-icons/hi"
+import {HiMoon, HiPhoto, HiSun, HiCog} from "react-icons/hi2"
 import {useEffect} from "react"
+import Avatar from "react-avatar"
 
 const navlinkStyle =
   "self-center block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
@@ -165,6 +166,43 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
           <NavbarLink to="/image/import" user={user} visibleFor="user">
             Import
           </NavbarLink>
+          <DynamicDropdown
+            label={<HiCog className="w-8 h-8" />}
+            user={user}
+            visibleFor="admin"
+          >
+            <Dropdown.Item icon={HiUserAdd}>
+              <NavbarLink
+                to="/admin/user/create"
+                user={user}
+                visibleFor="admin"
+              >
+                Create User
+              </NavbarLink>
+            </Dropdown.Item>
+          </DynamicDropdown>
+          <DynamicDropdown
+            label={<Avatar name={user?.username} round={true} size="30px" />}
+            user={user}
+            visibleFor="user"
+          >
+            <Dropdown.Header>
+              <span className="block text-sm">{user?.username}</span>
+              <span className="block truncate text-sm font-medium">
+                {user?.email}
+              </span>
+            </Dropdown.Header>
+            <Dropdown.Item icon={HiCog}>
+              <NavbarLink to="/user/settings" user={user} visibleFor="user">
+                Settings
+              </NavbarLink>
+            </Dropdown.Item>
+            <Dropdown.Item icon={HiLogout}>
+              <NavbarLink to="/auth/logout" user={user} visibleFor="user">
+                Logout
+              </NavbarLink>
+            </Dropdown.Item>
+          </DynamicDropdown>
           <Navbar.Link className="text-center">
             <DarkThemeToggle />
           </Navbar.Link>
