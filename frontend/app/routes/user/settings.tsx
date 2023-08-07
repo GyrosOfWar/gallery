@@ -1,21 +1,13 @@
-import {Sidebar} from "flowbite-react"
-import {HiUser, HiLockClosed} from "react-icons/hi"
+import {Outlet} from "@remix-run/react"
+import {Flowbite} from "flowbite-react"
+import UserSettingsSidebar from "../../components/UserSettingsSidebar"
 
-const UserSettingsSidebar = () => {
+const UserSettingsPage = () => {
   return (
-    <Sidebar aria-label="Usersettings sidebar">
-      <Sidebar.Items>
-        <Sidebar.ItemGroup>
-          <Sidebar.Item href="/general" icon={HiUser}>
-            <p>General</p>
-          </Sidebar.Item>
-          <Sidebar.Item to="/security" icon={HiLockClosed}>
-            <p>Security</p>
-          </Sidebar.Item>
-        </Sidebar.ItemGroup>
-      </Sidebar.Items>
-    </Sidebar>
+    <UserSettingsSidebar>
+      <Outlet />
+    </UserSettingsSidebar>
   )
 }
 
-export default UserSettingsSidebar
+export default UserSettingsPage

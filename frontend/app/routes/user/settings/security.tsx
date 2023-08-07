@@ -1,5 +1,5 @@
 const SecurityUserSettingsPage = () => {
-  return <>TODO</>
+  return <>SECURITY TODO</>
 }
 
 export default SecurityUserSettingsPage

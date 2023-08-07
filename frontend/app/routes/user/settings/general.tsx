@@ -1,5 +1,5 @@
 const GeneralUserSettingsPage = () => {
-  return <>TODO</>
+  return <>GENERAL TODO</>
 }
 
 export default GeneralUserSettingsPage
