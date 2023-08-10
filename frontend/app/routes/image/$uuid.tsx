@@ -1,5 +1,5 @@
 import {Form, Link, useLoaderData} from "@remix-run/react"
-import type {ImageDTO, ImageMetadata} from "imagehive-client"
+import type {ImageDetailsDTO, ImageMetadata} from "imagehive-client"
 import type {LoaderFunction} from "react-router"
 import {json} from "react-router"
 import {requireUser} from "~/services/auth.server"
@@ -43,7 +43,7 @@ const RelativeDate: React.FC<{timestamp: string | null | undefined}> = ({
 }
 
 interface Data {
-  data: ImageDTO
+  data: ImageDetailsDTO
 }
 
 export const loader: LoaderFunction = async ({params, request}) => {
@@ -53,7 +53,10 @@ export const loader: LoaderFunction = async ({params, request}) => {
   if (!uuid) {
     return new Response("missing parameter", {status: 404})
   }
-  const data: ImageDTO = await http.getJson(`/api/images/${uuid}`, accessToken)
+  const data: ImageDetailsDTO = await http.getJson(
+    `/api/images/${uuid}`,
+    accessToken,
+  )
   return json({data} satisfies Data)
 }
 
@@ -143,6 +146,8 @@ const ImageDetailsPage: React.FC = () => {
     setSharing(false)
   }
 
+  const onGenerateDescription = async () => {}
+
   return (
     <>
       <img
@@ -173,6 +178,13 @@ const ImageDetailsPage: React.FC = () => {
           <HiTrash className="w-4 h-4 mr-2" />
           Delete
         </Button>
+
+        {!image.description && (
+          <Button onClick={onGenerateDescription} color="success">
+            <HiPencil className="w-4 h-4 mr-2" />
+            Generate description
+          </Button>
+        )}
       </div>
 
       <Form onSubmit={toggleEditMode} method="post" className="max-w-2xl">

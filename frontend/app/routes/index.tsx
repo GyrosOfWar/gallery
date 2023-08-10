@@ -63,8 +63,8 @@ const Overlay: React.FC<OverlayProps> = ({image, onImageFavorited}) => {
       onClick={toggleFavorite}
       data-testid={`favorite-button-${image.id}`}
       className={clsx(
-        "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200",
-        image.favorite && "fill-yellow-300 hover:fill-yellow-200",
+        "w-10 h-10 absolute bottom-1 right-1 text-yellow-300 hover:text-yellow-200 opacity-75",
+        image.favorite && "fill-yellow-300 hover:fill-yellow-200 opacity-100",
       )}
     />
   )

@@ -1,6 +1,6 @@
-import type {ImageDTO} from "imagehive-client"
+import type {ImageDetailsDTO} from "imagehive-client"
 
-type Callback = (image: ImageDTO) => void
+type Callback = (image: ImageDetailsDTO) => void
 
 const useToggleFavorite = (imageId: string, callback?: Callback) => {
   const toggleFavorite = async (event: React.MouseEvent) => {
@@ -13,7 +13,7 @@ const useToggleFavorite = (imageId: string, callback?: Callback) => {
       console.error(`request failed with status code ${response.status}`)
     }
     if (callback) {
-      const imageDto: ImageDTO = await response.json()
+      const imageDto: ImageDetailsDTO = await response.json()
       callback(imageDto)
     }
   }

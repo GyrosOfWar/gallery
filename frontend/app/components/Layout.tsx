@@ -193,7 +193,11 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
               </span>
             </Dropdown.Header>
             <Dropdown.Item icon={HiCog}>
-              <NavbarLink to="/user/settings" user={user} visibleFor="user">
+              <NavbarLink
+                to="/user/settings/general"
+                user={user}
+                visibleFor="user"
+              >
                 Settings
               </NavbarLink>
             </Dropdown.Item>
