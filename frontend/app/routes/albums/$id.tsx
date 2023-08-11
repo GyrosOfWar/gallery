@@ -1,7 +1,7 @@
 import type {LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {Link, useLoaderData} from "@remix-run/react"
-import type {AlbumDetailsDTO, ImageDTO} from "imagehive-client"
+import type {AlbumDetailsDTO, ImageListDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
 import http from "~/util/http"
 import {HiPencil} from "react-icons/hi"
@@ -11,7 +11,7 @@ import useDevice from "~/hooks/useDevice"
 
 interface Data {
   album: AlbumDetailsDTO
-  images: ImageDTO[]
+  images: ImageListDTO[]
 }
 
 export const loader: LoaderFunction = async ({request, params}) => {
@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async ({request, params}) => {
     `/api/albums/${params.id}`,
     accessToken,
   )
-  const images: ImageDTO[] = await http.getJson(
+  const images: ImageListDTO[] = await http.getJson(
     `/api/albums/${params.id}/images`,
     accessToken,
   )

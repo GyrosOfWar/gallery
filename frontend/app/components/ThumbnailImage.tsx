@@ -1,13 +1,13 @@
 import {Link} from "@remix-run/react"
 import clsx from "clsx"
-import type {ImageDTO} from "imagehive-client"
+import type {ImageListDTO} from "imagehive-client"
 import type {ClientImage} from "~/routes"
 import {thumbnailUrl} from "~/util/consts"
 
 export type ImageSize = "sm" | "md" | "lg" | "xl"
 
 export interface Props {
-  image: ClientImage | ImageDTO
+  image: ClientImage | ImageListDTO
   size: ImageSize
   className?: string
   link?: string
@@ -54,7 +54,7 @@ const ThumbnailImage: React.FC<Props> = ({
       {overlay}
       <img
         className={clsx("w-full", square && "object-contain")}
-        alt={image.title || "<no title>"}
+        alt={"<no title>"}
         src={thumbnailUrl(image.id, width, image.extension)}
         height={width}
         width={height}

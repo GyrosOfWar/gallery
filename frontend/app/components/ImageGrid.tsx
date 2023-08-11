@@ -1,4 +1,4 @@
-import type {ImageDTO} from "imagehive-client"
+import type {ImageListDTO} from "imagehive-client"
 import type {ClientImage} from "~/routes"
 import type {GridProps} from "./Masonry"
 import Masonry, {getColumnCountFromDevice} from "./Masonry"
@@ -12,11 +12,11 @@ export type ColumnCount = number | "auto"
 
 export interface Props {
   numColumns: ColumnCount
-  images: (ImageDTO | ClientImage)[]
+  images: (ImageListDTO | ClientImage)[]
   hasNextPage: boolean
   loading?: boolean
   sentryRef?: React.Ref<HTMLDivElement>
-  renderOverlay?: (image: ImageDTO | ClientImage) => React.ReactElement
+  renderOverlay?: (image: ImageListDTO | ClientImage) => React.ReactElement
   withLinks?: boolean
   square?: boolean
   device: Device

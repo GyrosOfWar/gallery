@@ -6,7 +6,7 @@ import {
   useSearchParams,
 } from "@remix-run/react"
 import type {LoaderFunction} from "react-router"
-import type {ImageDTO, PageImageDTO} from "imagehive-client"
+import type {ImageListDTO, PageImageListDTO} from "imagehive-client"
 import {requireUser} from "~/services/auth.server"
 import {Button, TextInput} from "flowbite-react"
 import type {FormEvent} from "react"
@@ -23,7 +23,7 @@ import useImages from "~/hooks/useImages"
 import useDevice from "~/hooks/useDevice"
 
 export interface Data {
-  images: PageImageDTO
+  images: PageImageListDTO
 }
 
 export type ClientImagePage = ReturnType<typeof useLoaderData<Data>>["images"]
@@ -44,15 +44,18 @@ export const loader: LoaderFunction = async ({request}) => {
   }
 
   const requestUrl = `/api/images?${query.toString()}`
-  const images: PageImageDTO = await http.getJson(requestUrl, user.accessToken)
+  const images: PageImageListDTO = await http.getJson(
+    requestUrl,
+    user.accessToken,
+  )
 
   const data = {images} satisfies Data
   return json(data)
 }
 
 interface OverlayProps {
-  image: ImageDTO
-  onImageFavorited: (image: ImageDTO) => void
+  image: ImageListDTO
+  onImageFavorited: (image: ImageListDTO) => void
 }
 
 const Overlay: React.FC<OverlayProps> = ({image, onImageFavorited}) => {
@@ -92,7 +95,7 @@ export default function Index() {
     fetcher.load(`/?index&query=${encodeURIComponent(query)}`)
   }
 
-  const onImageFavorited = (image: ImageDTO) => {
+  const onImageFavorited = (image: ImageListDTO) => {
     setPages((pages) =>
       produce(pages, (draft) => {
         draft.forEach((page) => {
@@ -171,7 +174,7 @@ export default function Index() {
         device={device}
         renderOverlay={(image) => (
           <Overlay
-            image={image as ImageDTO}
+            image={image as ImageListDTO}
             onImageFavorited={onImageFavorited}
           />
         )}

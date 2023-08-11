@@ -8,7 +8,9 @@ const SecurityUserSettingsPage = () => {
   const [newPassword, setNewPassword] = useState("")
   const [confirmNewPassword, setConfirmNewPassword] = useState("")
 
-  const onSubmitPasswordChange = async (e) => {
+  const onSubmitPasswordChange = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => {
     e.preventDefault()
     const passwordChangeDTO = {
       oldPassword,

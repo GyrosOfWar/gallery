@@ -2,7 +2,11 @@ import type {ActionFunction, LoaderFunction} from "@remix-run/node"
 import {redirect} from "@remix-run/node"
 import {Form, useLoaderData} from "@remix-run/react"
 import {Button, Checkbox} from "flowbite-react"
-import type {ImageDTO, PageImageDTO} from "imagehive-client"
+import type {
+  ImageDetailsDTO,
+  ImageListDTO,
+  PageImageListDTO,
+} from "imagehive-client"
 import {useState} from "react"
 import {HiCheck} from "react-icons/hi"
 import {json} from "react-router"
@@ -13,8 +17,8 @@ import {requireUser} from "~/services/auth.server"
 import http from "~/util/http"
 
 interface Data {
-  albumImages: ImageDTO[]
-  images: PageImageDTO
+  albumImages: ImageListDTO[]
+  images: PageImageListDTO
   albumId: string
 }
 
@@ -43,11 +47,14 @@ const Overlay: React.FC<OverlayProps> = ({selected, setSelected}) => {
 export const loader: LoaderFunction = async ({params, request}) => {
   const albumId = params.id as string
   const {accessToken} = await requireUser(request)
-  const albumImages: ImageDTO[] = await http.getJson(
+  const albumImages: ImageDetailsDTO[] = await http.getJson(
     `/api/albums/${albumId}/images`,
     accessToken,
   )
-  const images: PageImageDTO = await http.getJson(`/api/images`, accessToken)
+  const images: PageImageListDTO = await http.getJson(
+    `/api/images`,
+    accessToken,
+  )
   return json({
     albumImages,
     images,

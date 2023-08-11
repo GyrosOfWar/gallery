@@ -9,6 +9,7 @@
     "dev:css": "tailwindcss -w -i ./css/app.css -o ./app/css/app.css",
     "start": "remix-serve build",
     "typecheck": "tsc",
+    "typecheck:watch": "tsc --watch",
     "format": "prettier --write .",
     "lint": "eslint app && prettier --check .",
     "test": "vitest"
