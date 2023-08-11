@@ -1,7 +1,7 @@
 package com.github.gyrosofwar.imagehive;
 
+import com.github.gyrosofwar.imagehive.dto.admin.UserCreateDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageDetailsDTO;
-import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;

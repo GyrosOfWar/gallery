@@ -1,7 +1,7 @@
 package com.github.gyrosofwar.imagehive.service;
 
 import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
-import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.dto.admin.UserCreateDTO;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.ApplicationEventListener;
 import io.micronaut.context.event.StartupEvent;

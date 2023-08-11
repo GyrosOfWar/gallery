@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.github.gyrosofwar.imagehive.BaseTest;
-import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.dto.admin.UserCreateDTO;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;

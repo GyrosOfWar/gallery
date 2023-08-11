@@ -1,6 +1,6 @@
 package com.github.gyrosofwar.imagehive.controller;
 
-import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.dto.admin.UserCreateDTO;
 import com.github.gyrosofwar.imagehive.service.UserService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;

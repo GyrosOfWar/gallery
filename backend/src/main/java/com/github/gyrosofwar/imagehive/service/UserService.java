@@ -2,11 +2,11 @@ package com.github.gyrosofwar.imagehive.service;
 
 import static com.github.gyrosofwar.imagehive.sql.Tables.USER;
 
-import com.github.gyrosofwar.imagehive.dto.user.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.dto.admin.UserCreateDTO;
+import com.github.gyrosofwar.imagehive.dto.user.settings.UpdatePasswordDTO;
 import com.github.gyrosofwar.imagehive.service.mail.Email;
 import com.github.gyrosofwar.imagehive.service.mail.EmailService;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.User;
-import com.github.gyrosofwar.imagehive.sql.tables.records.UserRecord;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
@@ -17,7 +17,6 @@ import java.time.OffsetDateTime;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.DSLContext;
-import org.jooq.DeleteUsingStep;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -44,7 +43,6 @@ public class UserService {
   }
 
   /**
-   *
    * @param userCreate DTO containing all the necessary info for user creation
    * @return The id of the newly created user
    */
@@ -132,6 +130,18 @@ public class UserService {
       .selectFrom(USER)
       .where(USER.USERNAME.eq(identifier).or(USER.EMAIL.eq(identifier)))
       .fetchOneInto(User.class);
+  }
+
+  @Transactional
+  public void updatePassword(Long id, UpdatePasswordDTO updatePassword) {
+    User user = getById(id);
+    if (passwordEncoder.matches(updatePassword.oldPassword(), user.passwordHash())) {
+      dsl
+        .update(USER)
+        .set(USER.PASSWORD_HASH, passwordEncoder.encode(updatePassword.newPassword()))
+        .where(USER.ID.eq(id))
+        .execute();
+    }
   }
 
   // admin-level method

@@ -1,4 +1,4 @@
-package com.github.gyrosofwar.imagehive.dto.user;
+package com.github.gyrosofwar.imagehive.dto.admin;
 
 public record UserCreateDTO(
   String username,
