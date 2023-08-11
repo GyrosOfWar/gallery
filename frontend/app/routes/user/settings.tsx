@@ -1,7 +1,8 @@
 import {Outlet} from "@remix-run/react"
 import UserSettingsSidebar from "../../components/UserSettingsSidebar"
 
-const UserSettingsPage = () => {
+const UserSettingsLayout = () => {
+  console.log("rendering user settings layout")
   return (
     <UserSettingsSidebar>
       <Outlet />
@@ -9,4 +10,4 @@ const UserSettingsPage = () => {
   )
 }
 
-export default UserSettingsPage
+export default UserSettingsLayout
