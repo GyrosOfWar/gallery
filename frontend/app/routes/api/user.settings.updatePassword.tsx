@@ -4,9 +4,11 @@ import http from "~/util/http"
 
 export const action: ActionFunction = async ({request}) => {
   const user = await requireUser(request)
+  const body = await request.json()
+
   const response = await http.postJson(
     `/api/user/settings/updatePassword`,
-    request.body,
+    body,
     user.accessToken,
   )
   return response

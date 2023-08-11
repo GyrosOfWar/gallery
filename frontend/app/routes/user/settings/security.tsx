@@ -8,12 +8,14 @@ const SecurityUserSettingsPage = () => {
   const [newPassword, setNewPassword] = useState("")
   const [confirmNewPassword, setConfirmNewPassword] = useState("")
 
-  const onSubmitPasswordChange = async () => {
+  const onSubmitPasswordChange = async (e) => {
+    e.preventDefault()
     const passwordChangeDTO = {
-      oldPassword: oldPassword,
-      newPassword: newPassword,
-      confirmNewPassword: confirmNewPassword,
+      oldPassword,
+      newPassword,
+      confirmNewPassword,
     } satisfies UpdatePasswordDTO
+
     await fetch("/api/user/settings/updatePassword", {
       method: "POST",
       body: JSON.stringify(passwordChangeDTO),
