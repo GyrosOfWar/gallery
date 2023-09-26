@@ -18,5 +18,6 @@ out/
 /test-images
 /temp-images
 password.txt
+JAVA_HOME
 .vscode
 .env
