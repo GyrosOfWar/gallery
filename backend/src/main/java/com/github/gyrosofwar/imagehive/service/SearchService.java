@@ -3,12 +3,10 @@ package com.github.gyrosofwar.imagehive.service;
 import static com.github.gyrosofwar.imagehive.sql.Tables.IMAGE;
 
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
-import com.github.gyrosofwar.imagehive.sql.tables.records.ImageRecord;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import java.util.List;
 import org.jooq.DSLContext;
-import org.jooq.SelectWhereStep;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

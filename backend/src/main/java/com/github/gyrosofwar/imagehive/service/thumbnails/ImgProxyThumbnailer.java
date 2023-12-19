@@ -8,7 +8,6 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.client.HttpClient;
 import jakarta.inject.Singleton;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

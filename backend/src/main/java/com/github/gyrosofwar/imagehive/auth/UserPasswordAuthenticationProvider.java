@@ -3,7 +3,6 @@ package com.github.gyrosofwar.imagehive.auth;
 import com.github.gyrosofwar.imagehive.service.UserService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
-import io.micronaut.http.HttpResponse;
 import io.micronaut.security.authentication.AuthenticationProvider;
 import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;

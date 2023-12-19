@@ -36,6 +36,9 @@ micronaut:
     name: imagehive
   security:
     authentication: bearer
+    endpoints:
+      login:
+        path: /api/login
     token:
       jwt:
         signatures:
@@ -89,3 +92,4 @@ imagehive:
 
 jackson:
   date-format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+
