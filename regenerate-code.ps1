@@ -15,6 +15,6 @@ if (Test-Path "imagehive-client") {
 Set-Location imagehive-client
 npm run build
 Set-Location ..
-Set-Location frontend
+Set-Location imagehive-frontend
 npm i
 Set-Location ..

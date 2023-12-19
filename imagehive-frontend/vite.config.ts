@@ -11,4 +11,7 @@ export default defineConfig({
       '/api': 'http://localhost:8040',
     },
   },
+  resolve: {
+    preserveSymlinks: true,
+  },
 });

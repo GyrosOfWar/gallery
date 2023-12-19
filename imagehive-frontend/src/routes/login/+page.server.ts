@@ -1,5 +1,5 @@
 import type { JwtSession } from '$lib/types.js';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const actions = {
   async default(event) {
@@ -19,10 +19,16 @@ export const actions = {
       return fail(response.status, { success: false, error: 'Bad credentials' });
     } else {
       const token = (await response.json()) as JwtSession;
-      event.locals.session = token;
-      return {
-        token,
-      };
+
+      event.cookies.set('token', `Bearer ${token.access_token}`, {
+        httpOnly: true,
+        path: '/',
+        secure: true,
+        sameSite: 'strict',
+        maxAge: token.expires_in,
+      });
+
+      redirect(302, '/');
     }
   },
 };
