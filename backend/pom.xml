@@ -99,7 +99,6 @@
     <dependency>
       <groupId>io.micronaut.servlet</groupId>
       <artifactId>micronaut-http-server-jetty</artifactId>
-      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>org.jooq</groupId>
@@ -239,7 +238,6 @@
             <path>
               <groupId>io.micronaut</groupId>
               <artifactId>micronaut-http-validation</artifactId>
-              <version>${micronaut.core.version}</version>
             </path>
             <path>
               <groupId>io.micronaut.validation</groupId>
