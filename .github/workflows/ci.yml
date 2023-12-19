@@ -14,11 +14,11 @@ jobs:
         with:
           node-version: 19
       - name: Install packages
-        run: cd frontend && npm ci
+        run: cd imagehive-frontend && npm ci
       - name: Run lint
-        run: cd frontend && npm run lint
+        run: cd imagehive-frontend && npm run check
       - name: Run tests
-        run: cd frontend && npm test
+        run: cd imagehive-frontend && npm run test:unit
 
   backend:
     name: Backend tests
