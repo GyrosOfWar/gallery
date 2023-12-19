@@ -1,3 +1,4 @@
+import type { JwtSession } from '$lib/types.js';
 import { fail } from '@sveltejs/kit';
 
 export const actions = {
@@ -15,9 +16,13 @@ export const actions = {
     });
 
     if (!response.ok) {
-      fail(response.status, { text: response.statusText });
+      return fail(response.status, { success: false, error: 'Bad credentials' });
     } else {
-      console.log('success');
+      const token = (await response.json()) as JwtSession;
+      event.locals.session = token;
+      return {
+        token,
+      };
     }
   },
 };

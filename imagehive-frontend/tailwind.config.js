@@ -10,7 +10,7 @@ const config = {
       },
     },
   },
-  plugins: [require("daisyui")],
+  plugins: [require('daisyui')],
 };
 
 export default config;
