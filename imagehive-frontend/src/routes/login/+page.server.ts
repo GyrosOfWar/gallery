@@ -1,5 +1,5 @@
 import type { JwtSession } from '$lib/types.js';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 
 export const actions = {
   async default(event) {
@@ -28,7 +28,7 @@ export const actions = {
         maxAge: token.expires_in,
       });
 
-      redirect(302, '/');
+      return { success: true, token };
     }
   },
 };

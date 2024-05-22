@@ -6,8 +6,9 @@
   export let form;
 
   function onSubmit() {
-    if (form && !form.error) {
-      $session = form.token;
+    if (form && !form.error && form.success) {
+      const token = form.token!;
+      $session = token;
     }
   }
 </script>
