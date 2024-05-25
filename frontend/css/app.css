@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .usersettings-main {
-    flex-direction: unset;
+  flex-direction: unset;
 }

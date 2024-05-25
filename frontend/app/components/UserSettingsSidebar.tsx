@@ -3,8 +3,8 @@ import {HiUser, HiLockClosed} from "react-icons/hi"
 
 export function changeFlexSidebar() {
   //TODO: check if there is a nicer way to do this
-  if (typeof window !== 'undefined') {
-    document.querySelector("#mainView")?.classList.add('usersettings-main');
+  if (typeof window !== "undefined") {
+    document.querySelector("#mainView")?.classList.add("usersettings-main")
   }
 }
 
