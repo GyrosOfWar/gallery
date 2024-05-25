@@ -1,9 +1,8 @@
 import type {User} from "~/services/auth.server"
 import {Link, NavLink} from "@remix-run/react"
-import {Navbar, Dropdown, useTheme} from "flowbite-react"
+import {Navbar, Dropdown} from "flowbite-react"
 import {HiUserAdd, HiLogout, HiAdjustments} from "react-icons/hi"
-import {HiMoon, HiPhoto, HiSun, HiCog} from "react-icons/hi2"
-import {useEffect} from "react"
+import {HiPhoto, HiCog} from "react-icons/hi2"
 import Avatar from "react-avatar"
 
 const navlinkStyle =
@@ -94,39 +93,8 @@ const DynamicDropdown: React.FC<DropdownProps> = ({
 }
 
 const DarkThemeToggle = () => {
-  const {mode, toggleMode} = useTheme()
-
-  const onToggleTheme = () => {
-    if (toggleMode) {
-      toggleMode()
-      if (mode) {
-        localStorage.setItem("theme", mode)
-      }
-    }
-  }
-
-  useEffect(() => {
-    const localStorageTheme = localStorage.getItem("theme")
-    if (localStorageTheme && localStorageTheme.length > 0) {
-      // TODO
-    }
-  }, [])
-
-  return (
-    <button
-      aria-label="Toggle dark mode"
-      data-testid="dark-theme-toggle"
-      onClick={onToggleTheme}
-      type="button"
-      className="px-2"
-    >
-      {mode === "dark" ? (
-        <HiSun aria-label="Currently dark mode" className="w-6 h-6" />
-      ) : (
-        <HiMoon aria-label="Currently light mode" className="w-6 h-6" />
-      )}
-    </button>
-  )
+  // TODO useTheme was removed, so I guess we need to roll our own theming
+  return null
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
