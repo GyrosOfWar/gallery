@@ -5,6 +5,7 @@ module.exports = {
   future: {
     // makes the warning go away in v1.15+
     v2_routeConvention: true,
+    v2_dev: true,
   },
 
   ignoredRouteFiles: ["**/.*"],

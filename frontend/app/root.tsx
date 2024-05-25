@@ -1,4 +1,4 @@
-import type {LoaderFunction, MetaFunction} from "@remix-run/node"
+import type {LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {
   Links,
@@ -29,12 +29,6 @@ export function links() {
   ]
 }
 
-export const meta: MetaFunction = () => ({
-  charset: "utf-8",
-  title: "Imagehive",
-  viewport: "width=device-width,initial-scale=1",
-})
-
 export interface OutletData {
   user: User | null
   device: Device
@@ -52,6 +46,10 @@ export default function App() {
   return (
     <html lang="en">
       <head>
+        <meta charSet="utf-8" />
+        <title>ImageHive</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+
         <Meta />
         <Links />
         <meta httpEquiv="Accept-CH" content="DPR, Viewport-Width, Width" />
