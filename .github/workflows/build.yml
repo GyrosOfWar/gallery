@@ -33,7 +33,7 @@ jobs:
       - name: Build and push to Github Packages
         uses: docker/build-push-action@v2
         with:
-          context: "{{defaultContext}}:imagehive-frontend"
+          context: "{{defaultContext}}:frontend"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -72,17 +72,16 @@ jobs:
       contents: read
       packages: write
     services:
-        postgres:
-          image: postgres
-          ports:
-            - 5432:5432
-          env:
-            POSTGRES_PASSWORD: password
-          options:
-            --health-cmd pg_isready
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: password
+        options: --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
@@ -93,7 +92,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 19
+          node-version: 20
       - name: Cache Maven packages
         uses: actions/cache@v1
         with:

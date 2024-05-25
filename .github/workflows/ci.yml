@@ -1,7 +1,6 @@
 name: Run tests & Sonar
 
-on:
-  push
+on: push
 
 jobs:
   frontend:
@@ -12,13 +11,13 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 19
+          node-version: 20
       - name: Install packages
-        run: cd imagehive-frontend && npm ci
+        run: cd frontend && npm ci
       - name: Run lint
-        run: cd imagehive-frontend && npm run check
+        run: cd frontend && npm run lint
       - name: Run tests
-        run: cd imagehive-frontend && npm run test:unit
+        run: cd frontend && npm test
 
   backend:
     name: Backend tests
@@ -30,8 +29,7 @@ jobs:
           - 5432:5432
         env:
           POSTGRES_PASSWORD: password
-        options:
-          --health-cmd pg_isready
+        options: --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -45,7 +43,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 19
+          node-version: 20
       - name: Cache SonarQube packages
         uses: actions/cache@v1
         with:
