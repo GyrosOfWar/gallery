@@ -24,7 +24,7 @@ export interface User {
 export const authenticator = new Authenticator<User>(sessionStorage)
 
 async function login(username: string, password: string): Promise<User> {
-  const loginUrl = backendUrl("/login")
+  const loginUrl = backendUrl("/api/login")
   try {
     const response = await fetch(loginUrl, {
       method: "POST",
