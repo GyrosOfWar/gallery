@@ -149,7 +149,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
               </NavbarLink>
             </Dropdown.Item>
           </DynamicDropdown>
-          <DynamicDropdown
+          {/* <DynamicDropdown
             label={<Avatar name={user?.username} round={true} size="30px" />}
             user={user}
             visibleFor="user"
@@ -174,7 +174,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
                 Logout
               </NavbarLink>
             </Dropdown.Item>
-          </DynamicDropdown>
+          </DynamicDropdown> */}
           <DarkThemeToggle />
         </Navbar.Collapse>
       </Navbar>
