@@ -1,7 +1,7 @@
 micronaut:
   server:
     multipart:
-      max-file-size: '100MB'
+      max-file-size: "100MB"
       enabled: true
       disk: true
     # for tus file uploads
@@ -27,8 +27,8 @@ micronaut:
             - Upload-Length
             - Upload-Metadata
           allowed-origins:
-            - http://localhost:3000
-            - http://127.0.0.1:3000
+            - http://localhost:5173
+            - http://127.0.0.1:5173
 
     host: 0.0.0.0
     port: 8040
@@ -72,7 +72,7 @@ flyway:
 
 imagehive:
   image-base-path: "images"
-  thumbnailer: IMG_PROXY
+  thumbnailer: JAVA
 
   lavis:
     enabled: true
@@ -92,4 +92,3 @@ imagehive:
 
 jackson:
   date-format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-

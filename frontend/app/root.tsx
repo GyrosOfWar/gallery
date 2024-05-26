@@ -8,7 +8,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react"
-import {Flowbite} from "flowbite-react"
+import {Flowbite, ThemeModeScript} from "flowbite-react"
 import Layout from "./components/Layout"
 import type {User} from "./services/auth.server"
 import {authenticator} from "./services/auth.server"
@@ -61,6 +61,7 @@ export default function App() {
         </Flowbite>
         <ScrollRestoration />
         <Scripts />
+        <ThemeModeScript />
       </body>
     </html>
   )
