@@ -2,7 +2,6 @@ import type {LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -62,7 +61,6 @@ export default function App() {
         </Flowbite>
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   )
