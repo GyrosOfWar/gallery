@@ -11,15 +11,15 @@ import {
 } from "@remix-run/react"
 import {Flowbite} from "flowbite-react"
 import Layout from "./components/Layout"
-import css from "./css/app.css"
 import type {User} from "./services/auth.server"
 import {authenticator} from "./services/auth.server"
 import type {Device} from "./services/device.server"
 import {detectDevice} from "./services/device.server"
+import stylesheet from "~/tailwind.css?url"
 
 export function links() {
   return [
-    {rel: "stylesheet", href: css},
+    {rel: "stylesheet", href: stylesheet},
     {
       rel: "stylesheet",
       href: "https://unpkg.com/leaflet@1.9.3/dist/leaflet.css",
