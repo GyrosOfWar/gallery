@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import type {DropzoneOptions} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
+
 import {HiOutlineArrowUpTray} from "react-icons/hi2"
 
 export interface Props extends DropzoneOptions {

@@ -36,7 +36,6 @@ function imageSizeForColumns(columns: number): ImageSize {
 
 const SquareGrid: React.FC<PropsWithChildren<GridProps>> = ({
   children,
-  columnCount,
   testId,
   className,
 }) => {

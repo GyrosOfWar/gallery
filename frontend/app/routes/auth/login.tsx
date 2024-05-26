@@ -1,17 +1,16 @@
-import type {ActionArgs, LoaderArgs} from "@remix-run/node"
-import {json} from "@remix-run/node"
+import {ActionFunctionArgs, LoaderFunctionArgs, json} from "@remix-run/node"
 import {Form} from "@remix-run/react"
 import {Button, TextInput, Label} from "flowbite-react"
 import {authenticator} from "~/services/auth.server"
 
-export async function action({request}: ActionArgs) {
+export async function action({request}: ActionFunctionArgs) {
   return await authenticator.authenticate("user-pass", request, {
     successRedirect: "/",
     failureRedirect: "/auth/login",
   })
 }
 
-export async function loader({request}: LoaderArgs) {
+export async function loader({request}: LoaderFunctionArgs) {
   const response = await authenticator.isAuthenticated(request, {
     successRedirect: "/",
   })

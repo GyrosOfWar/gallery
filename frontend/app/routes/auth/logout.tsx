@@ -1,9 +1,9 @@
-import type {ActionArgs} from "@remix-run/node"
+import {ActionFunctionArgs} from "@remix-run/node"
 import {useSubmit} from "@remix-run/react"
 import {useEffect, useRef} from "react"
 import {authenticator} from "~/services/auth.server"
 
-export async function action({request}: ActionArgs) {
+export async function action({request}: ActionFunctionArgs) {
   await authenticator.logout(request, {redirectTo: "/auth/login"})
 }
 

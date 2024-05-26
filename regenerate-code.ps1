@@ -1,7 +1,7 @@
 if (!(Test-Path "env:IMAGEHIVE_PG_JDBC_URL") -and !(Test-Path "env:IMAGEHIVE_PG_USER") -and !(Test-Path "env:IMAGEHIVE_PG_PASSWORD")) {
-    $env:IMAGEHIVE_PG_JDBC_URL=$args[0]
-    $env:IMAGEHIVE_PG_USER=$args[1]
-    $env:IMAGEHIVE_PG_PASSWORD=$args[2]
+    $env:IMAGEHIVE_PG_JDBC_URL = $args[0]
+    $env:IMAGEHIVE_PG_USER = $args[1]
+    $env:IMAGEHIVE_PG_PASSWORD = $args[2]
 }
 Set-Location backend
 .\mvnw clean
@@ -15,6 +15,6 @@ if (Test-Path "imagehive-client") {
 Set-Location imagehive-client
 npm run build
 Set-Location ..
-Set-Location imagehive-frontend
+Set-Location frontend
 npm i
 Set-Location ..
