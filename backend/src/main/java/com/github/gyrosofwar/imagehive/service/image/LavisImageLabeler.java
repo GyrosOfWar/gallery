@@ -21,7 +21,22 @@ public class LavisImageLabeler implements ImageLabeler {
 
   @Override
   public Set<String> getTags(Path path) throws IOException {
-    return Set.of();
+    try (var inputStream = Files.newInputStream(path)) {
+      var contentLength = Files.size(path);
+      var body = MultipartBody
+        .builder()
+        .addPart(
+          "images",
+          "image.jpeg",
+          MediaType.APPLICATION_OCTET_STREAM_TYPE,
+          inputStream,
+          contentLength
+        )
+        .build();
+
+      var response = lavisServiceClient.getTags(body);
+      return Set.copyOf(response.tags().get(0));
+    }
   }
 
   @Override
@@ -31,7 +46,7 @@ public class LavisImageLabeler implements ImageLabeler {
       var body = MultipartBody
         .builder()
         .addPart(
-          "image",
+          "images",
           "image.jpeg",
           MediaType.APPLICATION_OCTET_STREAM_TYPE,
           inputStream,
@@ -39,7 +54,7 @@ public class LavisImageLabeler implements ImageLabeler {
         )
         .build();
 
-      return lavisServiceClient.getCaption(body).caption();
+      return lavisServiceClient.getCaption(body).captions().get(0);
     }
   }
 }

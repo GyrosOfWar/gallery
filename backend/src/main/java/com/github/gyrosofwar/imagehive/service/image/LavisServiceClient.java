@@ -10,8 +10,9 @@ import io.micronaut.http.client.multipart.MultipartBody;
 @Requires(property = "imagehive.lavis.enabled")
 @Client("${imagehive.lavis.url:http://localhost:5000}")
 public interface LavisServiceClient {
-  @Post(value = "/caption", produces = MediaType.MULTIPART_FORM_DATA)
-  Caption getCaption(@Body MultipartBody body);
+  @Post(value = "/generate/caption", produces = MediaType.MULTIPART_FORM_DATA)
+  CaptionsResponse getCaption(@Body MultipartBody body);
 
-  record Caption(String caption) {}
+  @Post(value = "/generate/tags", produces = MediaType.MULTIPART_FORM_DATA)
+  TagsResponse getTags(@Body MultipartBody body);
 }
