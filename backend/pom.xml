@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.gyrosofwar.imagehive</groupId>
   <artifactId>imagehive</artifactId>
@@ -218,7 +219,7 @@
         <groupId>io.micronaut.maven</groupId>
         <artifactId>micronaut-maven-plugin</artifactId>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -239,16 +240,6 @@
               <artifactId>micronaut-graal</artifactId>
               <version>${micronaut.core.version}</version>
             </path>
-            <!-- <path>
-              <groupId>io.micronaut</groupId>
-              <artifactId>micronaut-http-validation</artifactId>
-              <version>${micronaut.core.version}</version>
-            </path>
-            <path>
-              <groupId>io.micronaut.validation</groupId>
-              <artifactId>micronaut-validation</artifactId>
-              <version>${micronaut.version}</version>
-            </path> -->
             <path>
               <groupId>io.micronaut.security</groupId>
               <artifactId>micronaut-security-annotations</artifactId>
@@ -275,6 +266,11 @@
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
         <configuration>
+          <from>
+            <image>
+              ubuntu:22.04
+            </image>
+          </from>
           <to>
             <image>${jib.docker.image}:${jib.docker.tag}</image>
           </to>
@@ -287,12 +283,9 @@
         <version>9.20.1</version>
 
         <configuration>
-          <!--suppress UnresolvedMavenProperty -->
           <user>${env.IMAGEHIVE_PG_USER}</user>
-          <!--suppress UnresolvedMavenProperty -->
           <password>${env.IMAGEHIVE_PG_PASSWORD}</password>
           <driver>org.postgresql.Driver</driver>
-          <!--suppress UnresolvedMavenProperty -->
           <url>${env.IMAGEHIVE_PG_JDBC_URL}</url>
         </configuration>
       </plugin>
@@ -305,11 +298,8 @@
         <configuration>
           <jdbc>
             <driver>org.postgresql.Driver</driver>
-            <!--suppress UnresolvedMavenProperty -->
             <url>${env.IMAGEHIVE_PG_JDBC_URL}</url>
-            <!--suppress UnresolvedMavenProperty -->
             <user>${env.IMAGEHIVE_PG_USER}</user>
-            <!--suppress UnresolvedMavenProperty -->
             <password>${env.IMAGEHIVE_PG_PASSWORD}</password>
           </jdbc>
 
@@ -353,18 +343,6 @@
           <prettierJavaVersion>2.0.0</prettierJavaVersion>
           <printWidth>100</printWidth>
           <endOfLine>auto</endOfLine>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>com.google.cloud.tools</groupId>
-        <artifactId>jib-maven-plugin</artifactId>
-        <configuration>
-          <from>
-            <image>
-              ubuntu:22.04
-            </image>
-          </from>
         </configuration>
       </plugin>
     </plugins>

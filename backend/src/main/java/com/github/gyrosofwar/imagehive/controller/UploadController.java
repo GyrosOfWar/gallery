@@ -80,7 +80,7 @@ public class UploadController extends AbstractUploadController {
       true
     );
     var image = imageCreationService.create(newImage);
-    imageService.setGeneratedDescriptionAsync(image);
+    imageService.setGeneratedDataAsync(image);
   }
 
   @Override

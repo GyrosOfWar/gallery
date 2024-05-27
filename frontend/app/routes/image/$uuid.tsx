@@ -131,17 +131,21 @@ const ImageDetailsPage: React.FC = () => {
 
   const shareImage = async () => {
     setSharing(true)
-    const response = await fetch(originalImageUrl(image.id, image.extension))
-    const blob = await response.blob()
-    const file = new File([blob], `shared.${image.extension}`, {
-      type: "image/jpeg",
-      lastModified: new Date().getTime(),
-    })
 
-    await navigator.share({
-      title: image.title || "Shared image",
-      files: [file],
-    })
+    if (typeof navigator.share !== "undefined") {
+      const response = await fetch(originalImageUrl(image.id, image.extension))
+      const blob = await response.blob()
+      const file = new File([blob], `shared.${image.extension}`, {
+        type: "image/jpeg",
+        lastModified: new Date().getTime(),
+      })
+      await navigator.share({
+        title: image.title || "Shared image",
+        files: [file],
+      })
+    } else {
+      // TODO: implement fallback
+    }
 
     setSharing(false)
   }
