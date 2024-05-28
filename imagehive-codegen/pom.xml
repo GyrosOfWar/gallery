@@ -37,7 +37,6 @@
       <version>${jooq.version}</version>
     </dependency>
 
-
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
@@ -55,6 +54,17 @@
           <version>3.1.0</version>
           <configuration>
             <mainClass>com.github.gyrosofwar.imagehive.codegen.JooqGenerator</mainClass>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>com.hubspot.maven.plugins</groupId>
+          <artifactId>prettier-maven-plugin</artifactId>
+          <version>0.18</version>
+          <configuration>
+            <prettierJavaVersion>2.0.0</prettierJavaVersion>
+            <printWidth>100</printWidth>
+            <endOfLine>auto</endOfLine>
           </configuration>
         </plugin>
       </plugins>

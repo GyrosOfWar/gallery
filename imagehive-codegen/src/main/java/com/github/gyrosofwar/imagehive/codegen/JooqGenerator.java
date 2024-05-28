@@ -10,42 +10,36 @@ import org.jooq.meta.jaxb.Target;
 import org.jooq.meta.postgres.PostgresDatabase;
 
 public class JooqGenerator {
+
   private static Jdbc getJdbc() {
-    var jdbc = new Jdbc();
-    jdbc.setDriver("org.postgresql.Driver");
-    jdbc.setUrl(System.getenv("IMAGEHIVE_PG_JDBC_URL"));
-    jdbc.setUser(System.getenv("IMAGEHIVE_PG_USER"));
-    jdbc.setPassword(System.getenv("IMAGEHIVE_PG_PASSWORD"));
-    return jdbc;
+    return new Jdbc()
+      .withDriver("org.postgresql.Driver")
+      .withUrl(System.getenv("IMAGEHIVE_PG_JDBC_URL"))
+      .withUser(System.getenv("IMAGEHIVE_PG_USER"))
+      .withPassword(System.getenv("IMAGEHIVE_PG_PASSWORD"));
   }
 
   private static Generator getGenerator() {
-    var database = new Database();
-    database.setName(PostgresDatabase.class.getName());
-    database.setInputSchema("public");
-    database.setIncludeExcludeColumns(true);
-    database.setIncludes(".*");
-    database.setExcludes("flyway_schema_history|ts_vector");
+    var database = new Database()
+      .withName(PostgresDatabase.class.getName())
+      .withInputSchema("public")
+      .withIncludeExcludeColumns(true)
+      .withIncludes(".*")
+      .withExcludes("flyway_schema_history|ts_vec");
 
-    var generate = new Generate();
-    generate.setPojos(true);
-    generate.setJavaTimeTypes(true);
-    generate.setPojosAsJavaRecordClasses(true);
-    generate.setPojosEqualsAndHashCode(false);
-    generate.setPojosToString(false);
-    generate.setRoutines(false);
+    var generate = new Generate()
+      .withPojos(true)
+      .withJavaTimeTypes(true)
+      .withPojosAsJavaRecordClasses(true)
+      .withPojosEqualsAndHashCode(false)
+      .withPojosToString(false)
+      .withRoutines(false);
 
-    var target = new Target();
-    target.setPackageName("com.github.gyrosofwar.imagehive.sql");
-    target.setDirectory("../backend/src/main/java");
+    var target = new Target()
+      .withPackageName("com.github.gyrosofwar.imagehive.sql")
+      .withDirectory("../backend/src/main/java");
 
-
-    var generator = new Generator();
-    generator.setDatabase(database);
-    generator.setGenerate(generate);
-    generator.setTarget(target);
-
-    return generator;
+    return new Generator().withDatabase(database).withGenerate(generate).withTarget(target);
   }
 
   public static void main(String[] args) throws Exception {
