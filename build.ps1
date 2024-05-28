@@ -7,7 +7,6 @@ if (Test-Path -Path .\JAVA_HOME -PathType Leaf) {
     $env:JAVA_HOME = Get-Content -Path .\JAVA_HOME
 }
 Set-Location backend
-./mvnw.bat flyway:migrate
-./mvnw.bat compile
+./mvnw.bat compile test-compile
 Set-Location ..
 npx @openapitools/openapi-generator-cli generate

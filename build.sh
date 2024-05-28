@@ -2,7 +2,6 @@
 set -e
 
 cd backend
-./mvnw flyway:migrate
-./mvnw compile
+./mvnw compile test-compile
 cd ..
 npx @openapitools/openapi-generator-cli generate
