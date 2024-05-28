@@ -1,4 +1,4 @@
-from services import app
+from imagehive_ai import app
 from flask import jsonify, request
 import ollama
 from PIL import Image

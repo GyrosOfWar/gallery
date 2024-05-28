@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "imagehive-ai"
+version = "0.1.0"
+description = ""
+authors = ["Martin Tomasi <martin.tomasi@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pillow = "^10.3.0"
+ollama = "^0.2.0"
+flask = "^3.0.3"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
