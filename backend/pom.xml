@@ -278,64 +278,6 @@
       </plugin>
 
       <plugin>
-        <groupId>org.flywaydb</groupId>
-        <artifactId>flyway-maven-plugin</artifactId>
-        <version>9.20.1</version>
-
-        <configuration>
-          <user>${env.IMAGEHIVE_PG_USER}</user>
-          <password>${env.IMAGEHIVE_PG_PASSWORD}</password>
-          <driver>org.postgresql.Driver</driver>
-          <url>${env.IMAGEHIVE_PG_JDBC_URL}</url>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.jooq</groupId>
-        <artifactId>jooq-codegen-maven</artifactId>
-        <version>${jooq.version}</version>
-
-        <configuration>
-          <jdbc>
-            <driver>org.postgresql.Driver</driver>
-            <url>${env.IMAGEHIVE_PG_JDBC_URL}</url>
-            <user>${env.IMAGEHIVE_PG_USER}</user>
-            <password>${env.IMAGEHIVE_PG_PASSWORD}</password>
-          </jdbc>
-
-          <generator>
-            <database>
-              <name>org.jooq.meta.postgres.PostgresDatabase</name>
-              <inputSchema>public</inputSchema>
-              <includeExcludeColumns>true</includeExcludeColumns>
-              <includes>.*</includes>
-              <excludes>flyway_schema_history|ts_vec</excludes>
-            </database>
-            <generate>
-              <pojos>true</pojos>
-              <javaTimeTypes>true</javaTimeTypes>
-              <pojosAsJavaRecordClasses>true</pojosAsJavaRecordClasses>
-              <pojosEqualsAndHashCode>false</pojosEqualsAndHashCode>
-              <pojosToString>false</pojosToString>
-              <routines>false</routines>
-            </generate>
-            <target>
-              <packageName>com.github.gyrosofwar.imagehive.sql</packageName>
-            </target>
-          </generator>
-        </configuration>
-        <executions>
-          <execution>
-            <id>jooq-codegen</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
         <groupId>com.hubspot.maven.plugins</groupId>
         <artifactId>prettier-maven-plugin</artifactId>
         <version>0.18</version>
