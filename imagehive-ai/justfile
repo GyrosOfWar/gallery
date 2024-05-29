@@ -2,3 +2,6 @@ set shell := ["nu", "-c"]
 
 format:
     poetry run black .
+
+start:
+    poetry run flask --app imagehive_ai run

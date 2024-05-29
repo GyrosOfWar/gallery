@@ -18,7 +18,6 @@ codegen := project + "/imagehive-codegen"
 @codegen *cmd:
     cd {{codegen}}; just {{cmd}}
 
-
 format:
   just backend format
   just frontend format

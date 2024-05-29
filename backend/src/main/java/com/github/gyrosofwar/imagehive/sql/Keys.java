@@ -34,12 +34,13 @@ public class Keys {
     new TableField[] { Album.ALBUM.ID },
     true
   );
-  public static final UniqueKey<AlbumImageRecord> ALBUM_IMAGE_ALBUM_ID_IMAGE_ID_KEY = Internal.createUniqueKey(
-    AlbumImage.ALBUM_IMAGE,
-    DSL.name("album_image_album_id_image_id_key"),
-    new TableField[] { AlbumImage.ALBUM_IMAGE.ALBUM_ID, AlbumImage.ALBUM_IMAGE.IMAGE_ID },
-    true
-  );
+  public static final UniqueKey<AlbumImageRecord> ALBUM_IMAGE_ALBUM_ID_IMAGE_ID_KEY =
+    Internal.createUniqueKey(
+      AlbumImage.ALBUM_IMAGE,
+      DSL.name("album_image_album_id_image_id_key"),
+      new TableField[] { AlbumImage.ALBUM_IMAGE.ALBUM_ID, AlbumImage.ALBUM_IMAGE.IMAGE_ID },
+      true
+    );
   public static final UniqueKey<ImageRecord> IMAGE_PKEY = Internal.createUniqueKey(
     Image.IMAGE,
     DSL.name("image_pkey"),
@@ -57,23 +58,28 @@ public class Keys {
   // FOREIGN KEY definitions
   // -------------------------------------------------------------------------
 
-  public static final ForeignKey<AlbumRecord, UserRecord> ALBUM__ALBUM_OWNER_ID_FKEY = Internal.createForeignKey(
-    Album.ALBUM,
-    DSL.name("album_owner_id_fkey"),
-    new TableField[] { Album.ALBUM.OWNER_ID },
-    Keys.USER_PKEY,
-    new TableField[] { User.USER.ID },
-    true
-  );
-  public static final ForeignKey<AlbumRecord, ImageRecord> ALBUM__ALBUM_THUMBNAIL_ID_FKEY = Internal.createForeignKey(
-    Album.ALBUM,
-    DSL.name("album_thumbnail_id_fkey"),
-    new TableField[] { Album.ALBUM.THUMBNAIL_ID },
-    Keys.IMAGE_PKEY,
-    new TableField[] { Image.IMAGE.ID },
-    true
-  );
-  public static final ForeignKey<AlbumImageRecord, AlbumRecord> ALBUM_IMAGE__ALBUM_IMAGE_ALBUM_ID_FKEY = Internal.createForeignKey(
+  public static final ForeignKey<AlbumRecord, UserRecord> ALBUM__ALBUM_OWNER_ID_FKEY =
+    Internal.createForeignKey(
+      Album.ALBUM,
+      DSL.name("album_owner_id_fkey"),
+      new TableField[] { Album.ALBUM.OWNER_ID },
+      Keys.USER_PKEY,
+      new TableField[] { User.USER.ID },
+      true
+    );
+  public static final ForeignKey<AlbumRecord, ImageRecord> ALBUM__ALBUM_THUMBNAIL_ID_FKEY =
+    Internal.createForeignKey(
+      Album.ALBUM,
+      DSL.name("album_thumbnail_id_fkey"),
+      new TableField[] { Album.ALBUM.THUMBNAIL_ID },
+      Keys.IMAGE_PKEY,
+      new TableField[] { Image.IMAGE.ID },
+      true
+    );
+  public static final ForeignKey<
+    AlbumImageRecord,
+    AlbumRecord
+  > ALBUM_IMAGE__ALBUM_IMAGE_ALBUM_ID_FKEY = Internal.createForeignKey(
     AlbumImage.ALBUM_IMAGE,
     DSL.name("album_image_album_id_fkey"),
     new TableField[] { AlbumImage.ALBUM_IMAGE.ALBUM_ID },
@@ -81,7 +87,10 @@ public class Keys {
     new TableField[] { Album.ALBUM.ID },
     true
   );
-  public static final ForeignKey<AlbumImageRecord, ImageRecord> ALBUM_IMAGE__ALBUM_IMAGE_IMAGE_ID_FKEY = Internal.createForeignKey(
+  public static final ForeignKey<
+    AlbumImageRecord,
+    ImageRecord
+  > ALBUM_IMAGE__ALBUM_IMAGE_IMAGE_ID_FKEY = Internal.createForeignKey(
     AlbumImage.ALBUM_IMAGE,
     DSL.name("album_image_image_id_fkey"),
     new TableField[] { AlbumImage.ALBUM_IMAGE.IMAGE_ID },
@@ -89,12 +98,13 @@ public class Keys {
     new TableField[] { Image.IMAGE.ID },
     true
   );
-  public static final ForeignKey<ImageRecord, UserRecord> IMAGE__IMAGE_OWNER_ID_FKEY = Internal.createForeignKey(
-    Image.IMAGE,
-    DSL.name("image_owner_id_fkey"),
-    new TableField[] { Image.IMAGE.OWNER_ID },
-    Keys.USER_PKEY,
-    new TableField[] { User.USER.ID },
-    true
-  );
+  public static final ForeignKey<ImageRecord, UserRecord> IMAGE__IMAGE_OWNER_ID_FKEY =
+    Internal.createForeignKey(
+      Image.IMAGE,
+      DSL.name("image_owner_id_fkey"),
+      new TableField[] { Image.IMAGE.OWNER_ID },
+      Keys.USER_PKEY,
+      new TableField[] { User.USER.ID },
+      true
+    );
 }

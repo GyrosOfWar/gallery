@@ -230,7 +230,17 @@ public class User extends TableImpl<UserRecord> {
   // -------------------------------------------------------------------------
 
   @Override
-  public Row9<Long, String, String, String, Boolean, String, JSONB, OffsetDateTime, OffsetDateTime> fieldsRow() {
+  public Row9<
+    Long,
+    String,
+    String,
+    String,
+    Boolean,
+    String,
+    JSONB,
+    OffsetDateTime,
+    OffsetDateTime
+  > fieldsRow() {
     return (Row9) super.fieldsRow();
   }
 
@@ -238,7 +248,18 @@ public class User extends TableImpl<UserRecord> {
    * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
    */
   public <U> SelectField<U> mapping(
-    Function9<? super Long, ? super String, ? super String, ? super String, ? super Boolean, ? super String, ? super JSONB, ? super OffsetDateTime, ? super OffsetDateTime, ? extends U> from
+    Function9<
+      ? super Long,
+      ? super String,
+      ? super String,
+      ? super String,
+      ? super Boolean,
+      ? super String,
+      ? super JSONB,
+      ? super OffsetDateTime,
+      ? super OffsetDateTime,
+      ? extends U
+    > from
   ) {
     return convertFrom(Records.mapping(from));
   }
@@ -249,7 +270,18 @@ public class User extends TableImpl<UserRecord> {
    */
   public <U> SelectField<U> mapping(
     Class<U> toType,
-    Function9<? super Long, ? super String, ? super String, ? super String, ? super Boolean, ? super String, ? super JSONB, ? super OffsetDateTime, ? super OffsetDateTime, ? extends U> from
+    Function9<
+      ? super Long,
+      ? super String,
+      ? super String,
+      ? super String,
+      ? super Boolean,
+      ? super String,
+      ? super JSONB,
+      ? super OffsetDateTime,
+      ? super OffsetDateTime,
+      ? extends U
+    > from
   ) {
     return convertFrom(toType, Records.mapping(from));
   }

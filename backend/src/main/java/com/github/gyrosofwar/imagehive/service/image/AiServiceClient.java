@@ -7,9 +7,9 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.multipart.MultipartBody;
 
-@Requires(property = "imagehive.lavis.enabled")
-@Client("${imagehive.lavis.url:http://localhost:5000}")
-public interface LavisServiceClient {
+@Requires(property = "imagehive.ai.enabled")
+@Client("${imagehive.ai.url:http://localhost:5000}")
+public interface AiServiceClient {
   @Post(value = "/generate/caption", produces = MediaType.MULTIPART_FORM_DATA)
   CaptionsResponse getCaption(@Body MultipartBody body);
 

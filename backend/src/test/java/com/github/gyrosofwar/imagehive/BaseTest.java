@@ -36,8 +36,7 @@ public abstract class BaseTest {
   }
 
   protected void cleanUpDatabase() {
-    Public.PUBLIC
-      .getTables()
+    Public.PUBLIC.getTables()
       .forEach(table -> {
         dsl.truncate(table).cascade().execute();
       });
@@ -47,7 +46,8 @@ public abstract class BaseTest {
   void beforeEach() {
     cleanUpDatabase();
 
-    userId =
-      userService.create(new UserCreateDTO(username, "example@example.com", password, true, false));
+    userId = userService.create(
+      new UserCreateDTO(username, "example@example.com", password, true, false)
+    );
   }
 }

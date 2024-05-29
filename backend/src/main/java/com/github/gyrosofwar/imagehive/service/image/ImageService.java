@@ -77,8 +77,9 @@ public class ImageService {
   public Page<ImageListDTO> listImages(@Nullable String query, Pageable pageable, long userId) {
     var where = IMAGE.OWNER_ID.eq(userId);
     if (StringUtils.isNotBlank(query)) {
-      where =
-        where.and(DSL.condition("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query)));
+      where = where.and(
+        DSL.condition("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query))
+      );
     }
 
     var images = dsl

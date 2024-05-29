@@ -246,7 +246,16 @@ public class Album extends TableImpl<AlbumRecord> {
    * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
    */
   public <U> SelectField<U> mapping(
-    Function7<? super Long, ? super String, ? super String, ? super OffsetDateTime, ? super Long, ? super UUID, ? super String[], ? extends U> from
+    Function7<
+      ? super Long,
+      ? super String,
+      ? super String,
+      ? super OffsetDateTime,
+      ? super Long,
+      ? super UUID,
+      ? super String[],
+      ? extends U
+    > from
   ) {
     return convertFrom(Records.mapping(from));
   }
@@ -257,7 +266,16 @@ public class Album extends TableImpl<AlbumRecord> {
    */
   public <U> SelectField<U> mapping(
     Class<U> toType,
-    Function7<? super Long, ? super String, ? super String, ? super OffsetDateTime, ? super Long, ? super UUID, ? super String[], ? extends U> from
+    Function7<
+      ? super Long,
+      ? super String,
+      ? super String,
+      ? super OffsetDateTime,
+      ? super Long,
+      ? super UUID,
+      ? super String[],
+      ? extends U
+    > from
   ) {
     return convertFrom(toType, Records.mapping(from));
   }

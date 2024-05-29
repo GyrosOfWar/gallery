@@ -280,9 +280,9 @@
       <plugin>
         <groupId>com.hubspot.maven.plugins</groupId>
         <artifactId>prettier-maven-plugin</artifactId>
-        <version>0.18</version>
+        <version>0.22</version>
         <configuration>
-          <prettierJavaVersion>2.0.0</prettierJavaVersion>
+          <prettierJavaVersion>2.6.0</prettierJavaVersion>
           <printWidth>100</printWidth>
           <endOfLine>auto</endOfLine>
         </configuration>

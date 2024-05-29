@@ -163,12 +163,32 @@ public class UserRecord
   // -------------------------------------------------------------------------
 
   @Override
-  public Row9<Long, String, String, String, Boolean, String, JSONB, OffsetDateTime, OffsetDateTime> fieldsRow() {
+  public Row9<
+    Long,
+    String,
+    String,
+    String,
+    Boolean,
+    String,
+    JSONB,
+    OffsetDateTime,
+    OffsetDateTime
+  > fieldsRow() {
     return (Row9) super.fieldsRow();
   }
 
   @Override
-  public Row9<Long, String, String, String, Boolean, String, JSONB, OffsetDateTime, OffsetDateTime> valuesRow() {
+  public Row9<
+    Long,
+    String,
+    String,
+    String,
+    Boolean,
+    String,
+    JSONB,
+    OffsetDateTime,
+    OffsetDateTime
+  > valuesRow() {
     return (Row9) super.valuesRow();
   }
 

@@ -175,9 +175,9 @@ public class Image extends TableImpl<ImageRecord> {
    */
   public final TableField<ImageRecord, Boolean> FAVORITE = createField(
     DSL.name("favorite"),
-    SQLDataType.BOOLEAN
-      .nullable(false)
-      .defaultValue(DSL.field(DSL.raw("false"), SQLDataType.BOOLEAN)),
+    SQLDataType.BOOLEAN.nullable(false).defaultValue(
+      DSL.field(DSL.raw("false"), SQLDataType.BOOLEAN)
+    ),
     this,
     ""
   );
@@ -305,7 +305,23 @@ public class Image extends TableImpl<ImageRecord> {
   // -------------------------------------------------------------------------
 
   @Override
-  public Row15<UUID, String, String, OffsetDateTime, OffsetDateTime, Long, Integer, Integer, Double, Double, JSONB, String[], Boolean, String, JSONB> fieldsRow() {
+  public Row15<
+    UUID,
+    String,
+    String,
+    OffsetDateTime,
+    OffsetDateTime,
+    Long,
+    Integer,
+    Integer,
+    Double,
+    Double,
+    JSONB,
+    String[],
+    Boolean,
+    String,
+    JSONB
+  > fieldsRow() {
     return (Row15) super.fieldsRow();
   }
 
@@ -313,7 +329,24 @@ public class Image extends TableImpl<ImageRecord> {
    * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
    */
   public <U> SelectField<U> mapping(
-    Function15<? super UUID, ? super String, ? super String, ? super OffsetDateTime, ? super OffsetDateTime, ? super Long, ? super Integer, ? super Integer, ? super Double, ? super Double, ? super JSONB, ? super String[], ? super Boolean, ? super String, ? super JSONB, ? extends U> from
+    Function15<
+      ? super UUID,
+      ? super String,
+      ? super String,
+      ? super OffsetDateTime,
+      ? super OffsetDateTime,
+      ? super Long,
+      ? super Integer,
+      ? super Integer,
+      ? super Double,
+      ? super Double,
+      ? super JSONB,
+      ? super String[],
+      ? super Boolean,
+      ? super String,
+      ? super JSONB,
+      ? extends U
+    > from
   ) {
     return convertFrom(Records.mapping(from));
   }
@@ -324,7 +357,24 @@ public class Image extends TableImpl<ImageRecord> {
    */
   public <U> SelectField<U> mapping(
     Class<U> toType,
-    Function15<? super UUID, ? super String, ? super String, ? super OffsetDateTime, ? super OffsetDateTime, ? super Long, ? super Integer, ? super Integer, ? super Double, ? super Double, ? super JSONB, ? super String[], ? super Boolean, ? super String, ? super JSONB, ? extends U> from
+    Function15<
+      ? super UUID,
+      ? super String,
+      ? super String,
+      ? super OffsetDateTime,
+      ? super OffsetDateTime,
+      ? super Long,
+      ? super Integer,
+      ? super Integer,
+      ? super Double,
+      ? super Double,
+      ? super JSONB,
+      ? super String[],
+      ? super Boolean,
+      ? super String,
+      ? super JSONB,
+      ? extends U
+    > from
   ) {
     return convertFrom(toType, Records.mapping(from));
   }

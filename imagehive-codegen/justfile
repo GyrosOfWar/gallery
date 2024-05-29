@@ -2,3 +2,6 @@ set shell := ["nu", "-c"]
 
 format:
     mvn prettier:write
+
+start:
+    mvn compile exec:java

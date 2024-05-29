@@ -35,8 +35,7 @@ public class UserPasswordAuthenticationProvider implements AuthenticationProvide
   ) {
     String identity = authenticationRequest.getIdentity().toString();
     String secret = authenticationRequest.getSecret().toString();
-    return Mono
-      .fromSupplier(() -> userService.getByNameOrEmail(identity))
+    return Mono.fromSupplier(() -> userService.getByNameOrEmail(identity))
       .flatMap(user -> {
         if (user != null && passwordEncoder.matches(secret, user.passwordHash())) {
           var roles = List.of(user.admin() ? UserRole.ADMIN.name() : UserRole.USER.name());

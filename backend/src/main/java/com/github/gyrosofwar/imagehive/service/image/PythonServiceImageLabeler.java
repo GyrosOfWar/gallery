@@ -10,21 +10,20 @@ import java.nio.file.Path;
 import java.util.Set;
 
 @Singleton
-@Requires("${imagehive.lavis.enabled}")
-public class LavisImageLabeler implements ImageLabeler {
+@Requires("${imagehive.ai.enabled}")
+public class PythonServiceImageLabeler implements ImageLabeler {
 
-  private final LavisServiceClient lavisServiceClient;
+  private final AiServiceClient aiServiceClient;
 
-  public LavisImageLabeler(LavisServiceClient lavisServiceClient) {
-    this.lavisServiceClient = lavisServiceClient;
+  public PythonServiceImageLabeler(AiServiceClient aiServiceClient) {
+    this.aiServiceClient = aiServiceClient;
   }
 
   @Override
   public Set<String> getTags(Path path) throws IOException {
     try (var inputStream = Files.newInputStream(path)) {
       var contentLength = Files.size(path);
-      var body = MultipartBody
-        .builder()
+      var body = MultipartBody.builder()
         .addPart(
           "images",
           "image.jpeg",
@@ -34,7 +33,7 @@ public class LavisImageLabeler implements ImageLabeler {
         )
         .build();
 
-      var response = lavisServiceClient.getTags(body);
+      var response = aiServiceClient.getTags(body);
       return Set.copyOf(response.tags().get(0));
     }
   }
@@ -43,8 +42,7 @@ public class LavisImageLabeler implements ImageLabeler {
   public String getDescription(Path path) throws IOException {
     try (var inputStream = Files.newInputStream(path)) {
       var contentLength = Files.size(path);
-      var body = MultipartBody
-        .builder()
+      var body = MultipartBody.builder()
         .addPart(
           "images",
           "image.jpeg",
@@ -54,7 +52,7 @@ public class LavisImageLabeler implements ImageLabeler {
         )
         .build();
 
-      return lavisServiceClient.getCaption(body).captions().get(0);
+      return aiServiceClient.getCaption(body).captions().get(0);
     }
   }
 }

@@ -89,8 +89,7 @@ public class BatchImportController extends AbstractUploadController {
         log.info("kicking off import for upload ID {}", uploadId);
         var folder = getUploadFolder(uploadId).toAbsolutePath();
         log.info("found folder {}", folder);
-        var zipFiles = Files
-          .list(folder)
+        var zipFiles = Files.list(folder)
           .filter(p -> p.getFileName().toString().endsWith(".zip"))
           .toList();
         log.info("found zip files {}", zipFiles);

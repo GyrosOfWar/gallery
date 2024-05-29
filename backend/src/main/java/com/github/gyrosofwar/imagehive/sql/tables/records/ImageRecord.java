@@ -20,7 +20,23 @@ import org.jooq.impl.UpdatableRecordImpl;
 public class ImageRecord
   extends UpdatableRecordImpl<ImageRecord>
   implements
-    Record15<UUID, String, String, OffsetDateTime, OffsetDateTime, Long, Integer, Integer, Double, Double, JSONB, String[], Boolean, String, JSONB> {
+    Record15<
+      UUID,
+      String,
+      String,
+      OffsetDateTime,
+      OffsetDateTime,
+      Long,
+      Integer,
+      Integer,
+      Double,
+      Double,
+      JSONB,
+      String[],
+      Boolean,
+      String,
+      JSONB
+    > {
 
   private static final long serialVersionUID = 1L;
 
@@ -248,12 +264,44 @@ public class ImageRecord
   // -------------------------------------------------------------------------
 
   @Override
-  public Row15<UUID, String, String, OffsetDateTime, OffsetDateTime, Long, Integer, Integer, Double, Double, JSONB, String[], Boolean, String, JSONB> fieldsRow() {
+  public Row15<
+    UUID,
+    String,
+    String,
+    OffsetDateTime,
+    OffsetDateTime,
+    Long,
+    Integer,
+    Integer,
+    Double,
+    Double,
+    JSONB,
+    String[],
+    Boolean,
+    String,
+    JSONB
+  > fieldsRow() {
     return (Row15) super.fieldsRow();
   }
 
   @Override
-  public Row15<UUID, String, String, OffsetDateTime, OffsetDateTime, Long, Integer, Integer, Double, Double, JSONB, String[], Boolean, String, JSONB> valuesRow() {
+  public Row15<
+    UUID,
+    String,
+    String,
+    OffsetDateTime,
+    OffsetDateTime,
+    Long,
+    Integer,
+    Integer,
+    Double,
+    Double,
+    JSONB,
+    String[],
+    Boolean,
+    String,
+    JSONB
+  > valuesRow() {
     return (Row15) super.valuesRow();
   }
 
