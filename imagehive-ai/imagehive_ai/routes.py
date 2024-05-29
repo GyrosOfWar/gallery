@@ -26,7 +26,8 @@ def log_duration(func: Callable) -> Callable:
 
 
 def split_tags(string: str):
-    return [tag.strip().lower() for tag in string.split(",")]
+    tags = [tag.strip().lower() for tag in string.split(",")]
+    return [tag for tag in tags if len(tag) > 0]
 
 
 @log_duration
