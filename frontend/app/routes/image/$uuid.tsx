@@ -6,7 +6,7 @@ import {requireUser} from "~/services/auth.server"
 import {originalImageUrl} from "~/util/consts"
 import {formatRelative, parseISO} from "date-fns"
 import {useMemo, useState} from "react"
-import {ClientOnly} from "remix-utils"
+import {ClientOnly} from "remix-utils/client-only"
 import {Button} from "flowbite-react"
 import OpenStreetMapEmbed from "~/components/OpenStreetMapEmbed.client"
 import http from "~/util/http"
@@ -26,7 +26,7 @@ import {
   HiShare,
 } from "react-icons/hi2"
 import useToggleFavorite from "~/hooks/useToggleFavorite"
-import produce from "immer"
+import {produce} from "immer"
 
 const RelativeDate: React.FC<{timestamp: string | null | undefined}> = ({
   timestamp,
@@ -131,17 +131,21 @@ const ImageDetailsPage: React.FC = () => {
 
   const shareImage = async () => {
     setSharing(true)
-    const response = await fetch(originalImageUrl(image.id, image.extension))
-    const blob = await response.blob()
-    const file = new File([blob], `shared.${image.extension}`, {
-      type: "image/jpeg",
-      lastModified: new Date().getTime(),
-    })
 
-    await navigator.share({
-      title: image.title || "Shared image",
-      files: [file],
-    })
+    if (typeof navigator.share !== "undefined") {
+      const response = await fetch(originalImageUrl(image.id, image.extension))
+      const blob = await response.blob()
+      const file = new File([blob], `shared.${image.extension}`, {
+        type: "image/jpeg",
+        lastModified: new Date().getTime(),
+      })
+      await navigator.share({
+        title: image.title || "Shared image",
+        files: [file],
+      })
+    } else {
+      // TODO: implement fallback
+    }
 
     setSharing(false)
   }

@@ -1,0 +1,14 @@
+{
+  "folders": [
+	{
+		"path": "frontend"
+	},
+	{
+		"path": "imagehive-ai"
+	},
+	{
+		"path": "backend"
+	}
+],
+  "settings": {}
+}

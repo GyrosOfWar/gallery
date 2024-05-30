@@ -160,7 +160,7 @@ export default function Index() {
       {nothingForQuery && (
         <div className="grow flex justify-center items-center text-xl">
           <div className="text-center">
-            <p>No results for query '{query}'</p>
+            <p>No results for query &apos;{query}&apos;</p>
           </div>
         </div>
       )}

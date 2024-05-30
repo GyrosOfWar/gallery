@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Client("/")
 public interface AppClient {
-  @Post("/login")
+  @Post("/api/login")
   BearerAccessRefreshToken login(@Body UsernamePasswordCredentials credentials);
 
   @Post("/api/admin/user/create")

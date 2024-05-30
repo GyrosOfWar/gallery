@@ -27,11 +27,8 @@ public class ImgProxy {
     }
     byte[] res = new byte[hex.length() / 2];
     for (int i = 0; i < res.length; i++) {
-      res[i] =
-        (byte) (
-          (Character.digit(hex.charAt(i * 2), 16) << 4) |
-          (Character.digit(hex.charAt(i * 2 + 1), 16))
-        );
+      res[i] = (byte) ((Character.digit(hex.charAt(i * 2), 16) << 4) |
+        (Character.digit(hex.charAt(i * 2 + 1), 16)));
     }
     return res;
   }
@@ -172,8 +169,7 @@ public class ImgProxy {
         components.add("f:" + format);
       }
 
-      var encodedUrl = Base64
-        .getUrlEncoder()
+      var encodedUrl = Base64.getUrlEncoder()
         .encodeToString(sourceUrl.getBytes(StandardCharsets.UTF_8));
 
       var path = "/" + String.join("/", components) + "/" + encodedUrl;
@@ -186,8 +182,7 @@ public class ImgProxy {
         sha256hmac.init(secretKey);
         sha256hmac.update(salt);
 
-        String hash = Base64
-          .getUrlEncoder()
+        String hash = Base64.getUrlEncoder()
           .withoutPadding()
           .encodeToString(sha256hmac.doFinal(path.getBytes(StandardCharsets.UTF_8)));
 

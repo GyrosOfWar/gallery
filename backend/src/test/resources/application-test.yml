@@ -1,9 +1,9 @@
 datasources:
   default:
-    url: jdbc:tc:postgresql:15:///postgres
+    url: jdbc:tc:postgresql:16:///postgres
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
 
 imagehive:
   image-base-path: test-images
-  lavis:
+  ai:
     enabled: false

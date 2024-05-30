@@ -7,12 +7,12 @@ import java.net.URI;
 @ConfigurationProperties("imagehive")
 public record ImageHiveConfiguration(
   String imageBasePath,
-  @Nullable LavisServiceConfiguration lavis,
+  @Nullable ImageHiveConfiguration.AiServiceConfiguration ai,
   @Nullable ImgProxyConfiguration imgProxy,
   ThumbnailerType thumbnailer
 ) {
-  @ConfigurationProperties("lavis")
-  public record LavisServiceConfiguration(boolean enabled, @Nullable URI url) {}
+  @ConfigurationProperties("ai")
+  public record AiServiceConfiguration(boolean enabled, @Nullable URI url) {}
 
   @ConfigurationProperties("img-proxy")
   public record ImgProxyConfiguration(URI uri, String key, String salt) {}

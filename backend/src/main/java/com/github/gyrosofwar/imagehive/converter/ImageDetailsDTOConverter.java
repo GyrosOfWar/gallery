@@ -18,7 +18,8 @@ import org.jooq.JSONB;
 @Singleton
 public class ImageDetailsDTOConverter implements Converter<Image, ImageDetailsDTO> {
 
-  private static final TypeReference<Map<String, Map<String, String>>> METADATA_SHAPE = new TypeReference<>() {};
+  private static final TypeReference<Map<String, Map<String, String>>> METADATA_SHAPE =
+    new TypeReference<>() {};
   private final ObjectMapper objectMapper;
 
   public ImageDetailsDTOConverter(ObjectMapper objectMapper) {

@@ -109,8 +109,7 @@ public class GoogleTakeoutImporter {
 
     log.info("deleting files in {}", destinationDirectory);
     // delete all the files in the import
-    Files
-      .walk(destinationDirectory)
+    Files.walk(destinationDirectory)
       .sorted(Comparator.reverseOrder())
       .map(Path::toFile)
       .forEach(File::delete);
@@ -121,14 +120,13 @@ public class GoogleTakeoutImporter {
   private boolean isSupportedFile(Path path) {
     if (path.getFileName() != null) {
       var fileName = path.getFileName().toString();
-      var isImageFile = SUPPORTED_EXTENSIONS
-        .stream()
+      var isImageFile = SUPPORTED_EXTENSIONS.stream()
         .anyMatch(extension -> fileName.toLowerCase().endsWith(extension));
       log.debug("path {} is image file: {}", path, isImageFile);
       if (isImageFile) {
         var stream = StreamSupport.stream(path.spliterator(), false);
-        var folderNameMatches = stream.anyMatch(segment ->
-          FOLDER_REGEX.asMatchPredicate().test(segment.toString())
+        var folderNameMatches = stream.anyMatch(
+          segment -> FOLDER_REGEX.asMatchPredicate().test(segment.toString())
         );
         log.debug("path {}, folder name matches: {}", path, folderNameMatches);
         return folderNameMatches;

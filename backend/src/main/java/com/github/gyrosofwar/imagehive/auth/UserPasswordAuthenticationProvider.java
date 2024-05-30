@@ -3,7 +3,6 @@ package com.github.gyrosofwar.imagehive.auth;
 import com.github.gyrosofwar.imagehive.service.UserService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
-import io.micronaut.http.HttpResponse;
 import io.micronaut.security.authentication.AuthenticationProvider;
 import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
@@ -36,8 +35,7 @@ public class UserPasswordAuthenticationProvider implements AuthenticationProvide
   ) {
     String identity = authenticationRequest.getIdentity().toString();
     String secret = authenticationRequest.getSecret().toString();
-    return Mono
-      .fromSupplier(() -> userService.getByNameOrEmail(identity))
+    return Mono.fromSupplier(() -> userService.getByNameOrEmail(identity))
       .flatMap(user -> {
         if (user != null && passwordEncoder.matches(secret, user.passwordHash())) {
           var roles = List.of(user.admin() ? UserRole.ADMIN.name() : UserRole.USER.name());

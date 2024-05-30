@@ -1,10 +1,8 @@
 import type {User} from "~/services/auth.server"
 import {Link, NavLink} from "@remix-run/react"
-import {Navbar, Dropdown, useTheme} from "flowbite-react"
-import {HiUserAdd, HiLogout, HiAdjustments} from "react-icons/hi"
-import {HiMoon, HiPhoto, HiSun, HiCog} from "react-icons/hi2"
-import {useEffect} from "react"
-import Avatar from "react-avatar"
+import {Navbar, Dropdown} from "flowbite-react"
+import {HiUserAdd, HiAdjustments} from "react-icons/hi"
+import {HiPhoto} from "react-icons/hi2"
 
 const navlinkStyle =
   "self-center block py-2 pl-3 pr-4 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
@@ -94,39 +92,8 @@ const DynamicDropdown: React.FC<DropdownProps> = ({
 }
 
 const DarkThemeToggle = () => {
-  const {mode, toggleMode} = useTheme()
-
-  const onToggleTheme = () => {
-    if (toggleMode) {
-      toggleMode()
-      if (mode) {
-        localStorage.setItem("theme", mode)
-      }
-    }
-  }
-
-  useEffect(() => {
-    const localStorageTheme = localStorage.getItem("theme")
-    if (localStorageTheme && localStorageTheme.length > 0) {
-      // TODO
-    }
-  }, [])
-
-  return (
-    <button
-      aria-label="Toggle dark mode"
-      data-testid="dark-theme-toggle"
-      onClick={onToggleTheme}
-      type="button"
-      className="px-2"
-    >
-      {mode === "dark" ? (
-        <HiSun aria-label="Currently dark mode" className="w-6 h-6" />
-      ) : (
-        <HiMoon aria-label="Currently light mode" className="w-6 h-6" />
-      )}
-    </button>
-  )
+  // TODO useTheme was removed, so I guess we need to roll our own theming
+  return null
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -181,7 +148,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
               </NavbarLink>
             </Dropdown.Item>
           </DynamicDropdown>
-          <DynamicDropdown
+          {/* <DynamicDropdown
             label={<Avatar name={user?.username} round={true} size="30px" />}
             user={user}
             visibleFor="user"
@@ -206,7 +173,7 @@ const Layout: React.FC<{children: React.ReactNode; user?: User}> = ({
                 Logout
               </NavbarLink>
             </Dropdown.Item>
-          </DynamicDropdown>
+          </DynamicDropdown> */}
           <DarkThemeToggle />
         </Navbar.Collapse>
       </Navbar>

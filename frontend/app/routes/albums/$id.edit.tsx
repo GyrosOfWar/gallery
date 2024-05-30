@@ -31,6 +31,8 @@ const Overlay: React.FC<OverlayProps> = ({selected, setSelected}) => {
   const onToggle = () => setSelected(!selected)
 
   return (
+    // FIXME
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <div
       onClick={onToggle}
       className="w-full h-full absolute cursor-pointer z-10 transition hover:bg-black hover:bg-opacity-25"

@@ -18,6 +18,7 @@ import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
@@ -76,8 +77,9 @@ public class ImageService {
   public Page<ImageListDTO> listImages(@Nullable String query, Pageable pageable, long userId) {
     var where = IMAGE.OWNER_ID.eq(userId);
     if (StringUtils.isNotBlank(query)) {
-      where =
-        where.and(DSL.condition("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query)));
+      where = where.and(
+        DSL.condition("ts_vec @@ plainto_tsquery('english', {0})", DSL.inline(query))
+      );
     }
 
     var images = dsl
@@ -154,16 +156,35 @@ public class ImageService {
         );
         return description;
       } catch (IOException e) {
-        log.error("failed to get description:", e);
+        log.error("failed to generate description:", e);
       }
     }
     return null;
   }
 
-  public void setGeneratedDescriptionAsync(Image image) {
-    log.info("generating description for file {}", image.id());
+  @Transactional
+  public Set<String> setGeneratedTags(Image image) {
+    if (image.tags() == null || image.tags().length == 0) {
+      try {
+        var tags = imageLabeler.getTags(Path.of(image.filePath()));
+        var tagsArray = tags.toArray(String[]::new);
+        dsl.update(IMAGE).set(IMAGE.TAGS, tagsArray).where(IMAGE.ID.eq(image.id())).execute();
+
+        return tags;
+      } catch (IOException e) {
+        log.error("failed to generate tags", e);
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  public void setGeneratedDataAsync(Image image) {
+    log.info("generating tags and description for file {}", image.id());
     TaskHelper.runInBackground(() -> {
       setGeneratedDescription(image);
+      setGeneratedTags(image);
     });
   }
 

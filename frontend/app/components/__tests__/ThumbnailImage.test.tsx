@@ -1,11 +1,8 @@
-import {expect, describe, it, beforeAll, afterEach, afterAll} from "vitest"
+import {expect, describe, it} from "vitest"
 import {render, within} from "@testing-library/react"
 import ThumbnailImage, {getImageSize} from "../ThumbnailImage"
 import type {ClientImage} from "~/routes"
 import {MemoryRouter} from "react-router"
-import {rest} from "msw"
-import {setupServer} from "msw/node"
-// import userEvent from "@testing-library/user-event"
 
 const image = {
   createdOn: new Date().toISOString(),
@@ -15,18 +12,6 @@ const image = {
   width: 4000,
   id: "b349a127-a9f0-40d8-b37c-f5b5166efa7b",
 } satisfies ClientImage
-
-const server = setupServer(
-  rest.post("/api/image/*/favorite", (req, res, ctx) => {
-    return res(ctx.json({...image, favorite: true}))
-  }),
-)
-
-beforeAll(() => server.listen())
-
-afterEach(() => server.resetHandlers())
-
-afterAll(() => server.close())
 
 describe("ThumbnailImage", () => {
   it("should render an image with a link", () => {

@@ -1,25 +1,24 @@
-import type {LoaderFunction, MetaFunction} from "@remix-run/node"
+import type {LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react"
-import {Flowbite} from "flowbite-react"
+import {Flowbite, ThemeModeScript} from "flowbite-react"
 import Layout from "./components/Layout"
-import css from "./css/app.css"
 import type {User} from "./services/auth.server"
 import {authenticator} from "./services/auth.server"
 import type {Device} from "./services/device.server"
 import {detectDevice} from "./services/device.server"
+import stylesheet from "~/tailwind.css?url"
 
 export function links() {
   return [
-    {rel: "stylesheet", href: css},
+    {rel: "stylesheet", href: stylesheet},
     {
       rel: "stylesheet",
       href: "https://unpkg.com/leaflet@1.9.3/dist/leaflet.css",
@@ -28,12 +27,6 @@ export function links() {
     },
   ]
 }
-
-export const meta: MetaFunction = () => ({
-  charset: "utf-8",
-  title: "Imagehive",
-  viewport: "width=device-width,initial-scale=1",
-})
 
 export interface OutletData {
   user: User | null
@@ -52,6 +45,10 @@ export default function App() {
   return (
     <html lang="en">
       <head>
+        <meta charSet="utf-8" />
+        <title>ImageHive</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+
         <Meta />
         <Links />
         <meta httpEquiv="Accept-CH" content="DPR, Viewport-Width, Width" />
@@ -64,7 +61,7 @@ export default function App() {
         </Flowbite>
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
+        <ThemeModeScript />
       </body>
     </html>
   )
