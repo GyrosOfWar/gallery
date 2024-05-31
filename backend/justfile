@@ -5,3 +5,6 @@ format:
 
 start:
     mvn compile mn:run
+
+build:
+    mvn compile test-compile

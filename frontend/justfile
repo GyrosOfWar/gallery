@@ -4,4 +4,5 @@ format:
     npm run format
 
 start:
+    npm install
     npm run dev
