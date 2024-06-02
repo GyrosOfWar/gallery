@@ -1,14 +1,18 @@
-FROM python:3.10
+FROM python:3.12
+
+RUN pip install poetry
+
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y build-essential python3-dev python3-setuptools make cmake \
-    ffmpeg libavcodec-dev libavfilter-dev libavformat-dev libavutil-dev
+COPY pyproject.toml poetry.lock ./
+COPY imagehive_ai ./imagehive_ai
+RUN touch README.md
 
-COPY requirements.txt .
-RUN pip install -r ./requirements.txt
+RUN poetry install --without dev && rm -rf $POETRY_CACHE_DIR
 
-COPY . .
-EXPOSE 5000
-CMD [ "flask", "--app", "services", "run" ]
+ENTRYPOINT ["poetry", "run", "python", "-m", "imagehive_ai"]
