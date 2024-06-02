@@ -25,6 +25,6 @@ format:
     just codegen format
 
 generate-client:
-    rm -r imagehive-client
+    if ("imagehive-client" | path exists) { rm -r imagehive-client }
     just backend build
     npx @openapitools/openapi-generator-cli generate
