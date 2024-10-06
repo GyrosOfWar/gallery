@@ -42,10 +42,5 @@ services:
     ports:
       - "3000:3000"
 
-  ai:
-    image: ghcr.io/gyrosofwar/imagehive-ai:main
-    ports:
-      - "5000:5000"
-
 volumes:
   postgres-data:

@@ -10,6 +10,7 @@ import com.github.gyrosofwar.imagehive.dto.image.ImageListDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageUpdateDTO;
 import com.github.gyrosofwar.imagehive.helper.TaskHelper;
 import com.github.gyrosofwar.imagehive.service.MediaService;
+import com.github.gyrosofwar.imagehive.service.ai.ImageLabeler;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
