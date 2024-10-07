@@ -6,4 +6,6 @@ datasources:
 imagehive:
   image-base-path: test-images
   ai:
-    enabled: false
+    type: openai
+    openai-url: "http://localhost:11434"
+    inference-model: llava
