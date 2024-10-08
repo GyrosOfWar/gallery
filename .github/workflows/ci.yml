@@ -60,6 +60,10 @@ jobs:
         with:
           crate: nu
           locked: true
+      - name: Install ollama
+        run: curl -fsSL https://ollama.com/install.sh | sh
+      - name: Run ollama and install model
+        run: ollama serve && ollama pull llava:7b
       - name: Generate code and build
         run: just generate-client && just backend build
         env:
