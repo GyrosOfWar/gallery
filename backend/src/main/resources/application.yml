@@ -75,8 +75,12 @@ imagehive:
   thumbnailer: JAVA
 
   ai:
-    enabled: true
-    url: "http://localhost:5000"
+    type: ${IMAGEHIVE_AI_TYPE:openai}
+    openaiKey: ${IMAGEHIVE_OPENAI_KEY:}
+    openaiUrl: ${IMAGEHIVE_OPENAI_URL:}
+    inferenceModel: ${IMAGEHIVE_INFERENCE_MODEL:}
+    inferenceLang: ${IMAGEHIVE_INFERENCE_LANG:en}
+    inferenceTimeout: ${IMAGEHIVE_INFERENCE_TIMEOUT:30}
 
   img-proxy:
     uri: "http://localhost:8081"

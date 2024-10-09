@@ -12,7 +12,13 @@ public record ImageHiveConfiguration(
   ThumbnailerType thumbnailer
 ) {
   @ConfigurationProperties("ai")
-  public record AiServiceConfiguration(boolean enabled, @Nullable URI url) {}
+  public record AiServiceConfiguration(
+    @Nullable String openaiKey,
+    @Nullable String openaiUrl,
+    @Nullable String inferenceModel,
+    @Nullable String inferenceLang,
+    @Nullable String inferenceTimeout
+  ) {}
 
   @ConfigurationProperties("img-proxy")
   public record ImgProxyConfiguration(URI uri, String key, String salt) {}

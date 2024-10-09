@@ -10,6 +10,7 @@ import com.github.gyrosofwar.imagehive.dto.image.ImageListDTO;
 import com.github.gyrosofwar.imagehive.dto.image.ImageUpdateDTO;
 import com.github.gyrosofwar.imagehive.helper.TaskHelper;
 import com.github.gyrosofwar.imagehive.service.MediaService;
+import com.github.gyrosofwar.imagehive.service.ai.ImageLabeler;
 import com.github.gyrosofwar.imagehive.sql.tables.pojos.Image;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
@@ -21,6 +22,7 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.mime.MimeTypeException;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -155,7 +157,7 @@ public class ImageService {
           updateCount
         );
         return description;
-      } catch (IOException e) {
+      } catch (IOException | MimeTypeException e) {
         log.error("failed to generate description:", e);
       }
     }
