@@ -1,17 +1,17 @@
 package com.github.gyrosofwar.imagehive.service.ai;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.awt.*;
+import com.github.gyrosofwar.imagehive.util.TikaUtil;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
 import javax.imageio.ImageIO;
 import net.coobird.thumbnailator.Thumbnails;
+import org.apache.tika.mime.MimeTypeException;
 
 public record ChatCompletionsRequest(
   String model,
@@ -51,12 +51,13 @@ public record ChatCompletionsRequest(
       }
     }
 
-    public static ChatCompletionMessage userImageMessage(InputStream inputStream)
-      throws IOException {
+    public static ChatCompletionMessage userImageMessage(BufferedInputStream inputStream)
+      throws IOException, MimeTypeException {
+      var format = TikaUtil.getExtensionByMimeType(inputStream);
       var scaledDownImage = resizeImage(inputStream);
       var stream = new ByteArrayOutputStream(1024 * 1024);
 
-      ImageIO.write(scaledDownImage, "jpeg", stream);
+      ImageIO.write(scaledDownImage, format, stream);
       var base64 = Base64.getEncoder().encodeToString(stream.toByteArray());
       var url = String.format("data:image/jpeg;base64,%s", base64);
 

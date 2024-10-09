@@ -3,10 +3,11 @@ package com.github.gyrosofwar.imagehive.service.ai;
 import com.github.gyrosofwar.imagehive.configuration.ImageHiveConfiguration;
 import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
+import org.apache.tika.mime.MimeTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +29,13 @@ public class OpenAiImageLabeler implements ImageLabeler {
   }
 
   @Override
-  public Set<String> getTags(InputStream inputStream) throws IOException {
+  public Set<String> getTags(BufferedInputStream inputStream) throws IOException {
     return Set.of();
   }
 
   @Override
-  public String getDescription(InputStream inputStream) throws IOException {
+  public String getDescription(BufferedInputStream inputStream)
+    throws IOException, MimeTypeException {
     var payload = new ChatCompletionsRequest(
       config.inferenceModel(),
       List.of(

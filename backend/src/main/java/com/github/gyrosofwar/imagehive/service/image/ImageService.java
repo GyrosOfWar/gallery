@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.mime.MimeTypeException;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -156,7 +157,7 @@ public class ImageService {
           updateCount
         );
         return description;
-      } catch (IOException e) {
+      } catch (IOException | MimeTypeException e) {
         log.error("failed to generate description:", e);
       }
     }
